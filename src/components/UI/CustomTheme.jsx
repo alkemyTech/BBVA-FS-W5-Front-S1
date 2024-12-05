@@ -6,5 +6,22 @@ export const CustomTheme = createTheme({
   },
   typography:{
     fontFamily: "Cabin"
+  },
+  components: { 
+    MuiCssBaseline: { 
+      styleOverrides: { 
+        body: { 
+          margin: 0, 
+          padding: 0, 
+          minheight: "100vh"
+        },
+        html: { 
+          height: '100%', 
+        },
+        '#root': { 
+          height: '100%'
+        },
+      }
+    }
   }
 });

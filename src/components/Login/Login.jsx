@@ -28,172 +28,196 @@ export default function Login() {
   return (
     <Grid
       container
-      spacing={4}
       sx={{
         background:
-          "linear-gradient(90deg, rgba(95,73,208,1) 0%, rgba(102,85,217,1) 39%, rgba(165,153,242,1) 92%)",
+          "linear-gradient(30deg, rgba(122,15,244,1) 30%, rgba(171,107,249,1) 70%)",
         flexDirection: "row",
-        p: 17.1,
+        alignItems: "center",
+        height: "100vh",
       }}
     >
-      <Grid
-        container
-        spacing={2}
-        size={7}
-        sx={{ flexDirection: "column", p: 1 }}
-      >
-        <Grid item>
-          <Typography
-            variant="h3"
-            color="white"
-            sx={{
-              fontWeight: "bold",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
+      <Grid item size={7}>
+        <Grid
+          container
+          spacing={4}
+          sx={{
+            flexDirection: "column",
+            p: 5,
+            justifyContent: "center",
+          }}
+        >
+          <Grid item>
+            <Typography
+              variant="h3"
+              color="white"
+              sx={{
+                fontWeight: "bold",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+              }}
+            >
+              <img
+                src="/public/assets/iconoPaginaVioleta.png"
+                alt=""
+                style={{ height: "45px" }}
+              />
+              DiMo
+            </Typography>
+          </Grid>
+
+          <Grid
+            container
+            spacing={1}
+            sx={{ flexDirection: "row", alignItems: "baseline" }}
           >
-            <img
-              src="/public/assets/iconoPaginaVioleta.png"
-              alt=""
-              style={{ height: "45px" }}
-            />
-            DiMo
-          </Typography>
-        </Grid>
+            <SecurityIcon
+              sx={{ color: "white", fontSize: "20px" }}
+            ></SecurityIcon>
 
-        <Grid
-          container
-          spacing={1}
-          sx={{ flexDirection: "row", alignItems: "baseline" }}
-        >
-          <SecurityIcon
-            sx={{ color: "white", fontSize: "20px" }}
-          ></SecurityIcon>
+            <Grid container spacing={1} sx={{ flexDirection: "column" }}>
+              <Typography
+                variant="h5"
+                color="white"
+                sx={{ fontWeight: "bold" }}
+              >
+                Seguridad
+              </Typography>
 
-          <Grid container spacing={1} sx={{ flexDirection: "column" }}>
-            <Typography variant="h5" color="white" sx={{ fontWeight: "bold" }}>
-              Seguridad
-            </Typography>
-
-            <Typography variant="p" color="white">
-              Seguridad en cada transacción, garantizando la protección de tus
-              datos.
-            </Typography>
+              <Typography variant="p" color="white">
+                Seguridad en cada transacción, garantizando la protección de tus
+                datos.
+              </Typography>
+            </Grid>
           </Grid>
-        </Grid>
 
-        <Grid
-          container
-          spacing={1}
-          sx={{ flexDirection: "row", alignItems: "baseline" }}
-        >
-          <ChairIcon sx={{ color: "white", fontSize: "20px" }}></ChairIcon>
+          <Grid
+            container
+            spacing={1}
+            sx={{ flexDirection: "row", alignItems: "baseline" }}
+          >
+            <ChairIcon sx={{ color: "white", fontSize: "20px" }}></ChairIcon>
 
-          <Grid container spacing={1} sx={{ flexDirection: "column" }}>
-            <Typography variant="h5" color="white" sx={{ fontWeight: "bold" }}>
-              Comodidad
-            </Typography>
+            <Grid container spacing={1} sx={{ flexDirection: "column" }}>
+              <Typography
+                variant="h5"
+                color="white"
+                sx={{ fontWeight: "bold" }}
+              >
+                Comodidad
+              </Typography>
 
-            <Typography variant="p" color="white">
-              Accede a tu dinero con comodidad desde cualquier lugar, en
-              cualquier momento, con DiMo.
-            </Typography>
+              <Typography variant="p" color="white">
+                Accede a tu dinero con comodidad desde cualquier lugar, en
+                cualquier momento, con DiMo.
+              </Typography>
+            </Grid>
           </Grid>
-        </Grid>
 
-        <Grid
-          container
-          spacing={1}
-          sx={{ flexDirection: "row", alignItems: "baseline" }}
-        >
-          <AssuredWorkloadIcon
-            sx={{ color: "white", fontSize: "20px" }}
-          ></AssuredWorkloadIcon>
+          <Grid
+            container
+            spacing={1}
+            sx={{ flexDirection: "row", alignItems: "baseline" }}
+          >
+            <AssuredWorkloadIcon
+              sx={{ color: "white", fontSize: "20px" }}
+            ></AssuredWorkloadIcon>
 
-          <Grid container spacing={1} sx={{ flexDirection: "column" }}>
-            <Typography variant="h5" color="white" sx={{ fontWeight: "bold" }}>
-              Confiabilidad
-            </Typography>
+            <Grid container spacing={1} sx={{ flexDirection: "column" }}>
+              <Typography
+                variant="h5"
+                color="white"
+                sx={{ fontWeight: "bold" }}
+              >
+                Confiabilidad
+              </Typography>
 
-            <Typography variant="p" color="white">
-              La billetera digital confiable que te acompaña de manera constante
-              y precisa.
-            </Typography>
+              <Typography variant="p" color="white">
+                La billetera digital confiable que te acompaña de manera
+                constante y precisa.
+              </Typography>
+            </Grid>
           </Grid>
-        </Grid>
 
-        <Grid
-          container
-          spacing={1}
-          sx={{ flexDirection: "row", alignItems: "baseline" }}
-        >
-          <AutoFixHighIcon
-            sx={{ color: "white", fontSize: "20px" }}
-          ></AutoFixHighIcon>
+          <Grid
+            container
+            spacing={1}
+            sx={{ flexDirection: "row", alignItems: "baseline" }}
+          >
+            <AutoFixHighIcon
+              sx={{ color: "white", fontSize: "20px" }}
+            ></AutoFixHighIcon>
 
-          <Grid container spacing={1} sx={{ flexDirection: "column" }}>
-            <Typography variant="h5" color="white" sx={{ fontWeight: "bold" }}>
-              Versatilidad
-            </Typography>
+            <Grid container spacing={1} sx={{ flexDirection: "column" }}>
+              <Typography
+                variant="h5"
+                color="white"
+                sx={{ fontWeight: "bold" }}
+              >
+                Versatilidad
+              </Typography>
 
-            <Typography variant="p" color="white">
-              Con DiMo, disfruta de la versatilidad para adaptarte a múltiples
-              opciones de pago y servicios.
-            </Typography>
+              <Typography variant="p" color="white">
+                Con DiMo, disfruta de la versatilidad para adaptarte a múltiples
+                opciones de pago y servicios.
+              </Typography>
+            </Grid>
           </Grid>
         </Grid>
       </Grid>
 
-      <Grid container size={5} sx={{ p: 3 }}>
-        <Card
-          variant="elevation"
-          elevation={10}
-          sx={{ backgroundColor: "white", width: "90%" }}
-        >
-          <CardContent
-            sx={{ display: "flex", flexDirection: "column", gap: "40px" }}
+      <Grid item size={5}>
+        <Grid container sx={{ p: 3 }}>
+          <Card
+            variant="elevation"
+            elevation={20}
+            sx={{ backgroundColor: "#e8e8e8", width: "90%" }}
           >
-            <Typography
-              variant="h4"
-              color="#5F49D7"
-              sx={{ fontWeight: "bold" }}
+            <CardContent
+              sx={{ display: "flex", flexDirection: "column", gap: "40px" }}
             >
-              Iniciar Sesión
-            </Typography>
-            <CustomTextField id="" label="E-mail" size="small" />
-            <CustomTextField id="" label="Contraseña" size="small" />
-            <Button
-              variant="contained"
-              type="submit"
-              sx={{ backgroundColor: "#6655D9" }}
-            >
-              Ingresar
-            </Button>
+              <Typography
+                variant="h4"
+                color="#6655D9"
+                sx={{ fontWeight: "bold", textAlign: "center" }}
+              >
+                Iniciar Sesión
+              </Typography>
+              <CustomTextField id="" label="E-mail" size="small" />
+              <CustomTextField id="" label="Password" size="small" />
+              <Button
+                variant="contained"
+                type="submit"
+                sx={{ backgroundColor: "#6655D9" }}
+              >
+                Ingresar
+              </Button>
 
-            <Grid
-              container
-              spacing={0}
-              alignItems="center"
-              flexDirection="column"
-            >
-              <Typography
-                variant="h6"
-                color="#373738"
-                sx={{ fontSize: "medium" }}
+              <Grid
+                container
+                spacing={1.5}
+                alignItems="center"
+                flexDirection="column"
               >
-                Todavía no tenes una cuenta?
-              </Typography>
-              <Typography
-                variant="p"
-                color="#A599F2"
-                sx={{ fontSize: "medium", cursor: "pointer" }}
-              >
-                Registrate acá
-              </Typography>
-            </Grid>
-          </CardContent>
-        </Card>
+                <Typography
+                  variant="p"
+                  color="#373738"
+                  sx={{ fontSize: "medium" }}
+                >
+                  Todavía no tenes una cuenta?
+                </Typography>
+                <Typography
+                  variant="p"
+                  fontWeight="bold"
+                  color="#6655D9"
+                  sx={{ cursor: "pointer" }}
+                >
+                  Registrate acá
+                </Typography>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
     </Grid>
   );

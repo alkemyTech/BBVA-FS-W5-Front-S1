@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
-import Button from '@mui/material/Button';
-import { Typography, Menu, MenuItem, ListItemText, ListItemIcon, Avatar } from '@mui/material';
+import { Typography, Menu, MenuItem, ListItemText, ListItemIcon, Avatar, Card, CardContent, AppBar, Toolbar, Button, Box, Divider } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import CurrencyExchangeOutlinedIcon from '@mui/icons-material/CurrencyExchangeOutlined';
+import AccountBalanceOutlinedIcon from '@mui/icons-material/AccountBalanceOutlined';
+import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import SettingsIcon from '@mui/icons-material/Settings';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 
 export default function NavBar() {
-    const [anchorEl, setAnchorEl] = useState(false);
-    const [openMenu, setOpenMenu] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [openMenu, setOpenMenu] = useState(null);
 
     const handleClick = (event, menu) => {
         setAnchorEl(event.currentTarget);
@@ -14,109 +19,165 @@ export default function NavBar() {
     };
 
     const handleClose = () => {
-        setAnchorEl(false);
-        setOpenMenu(false);
+        setAnchorEl(null);
+        setOpenMenu(null);
     };
 
     return (
-        <Grid container direction="column" sx={{ backgroundColor: "#5F49D7", color: 'white', height: '100vh', width: '250px', paddingTop: "2vh" }}>
-            <Grid item>
-                <Avatar src="\src\DiMoIcon.jpeg">
-                    
-                </Avatar>
-                <Typography variant="h6" component="div" paddingLeft={"2vh"}>
-                    DiMo
-                </Typography>
+        <Grid container>
+            <Grid item size={12}>
+                {/* Header */}
+                <Grid item xs={12}>
+                    <AppBar position="static" sx={{ backgroundColor: "#6655D9", boxShadow: 'none' }}>
+                        <Toolbar sx={{ justifyContent: "space-between" }}>
+                            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "30px" }}>
+                                <Typography
+                                    variant="h3"
+                                    color="white"
+                                    sx={{
+                                        fontWeight: "bold",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "10px",
+                                    }}
+                                >
+                                    <img
+                                        src="/public/assets/iconoPaginaVioleta.png"
+                                        alt=""
+                                        style={{ height: "45px" }}
+                                    />
+                                    DiMo
+                                </Typography>
+                                <Typography
+                                    variant="h4"
+
+                                >
+                                    Bienvenido jhon!
+                                </Typography>
+                            </Box>
+                            <Box>
+                                <Button color='white'>
+                                    <NotificationsIcon/>
+                                </Button>
+                                <Button color='white'>
+                                    <SettingsIcon/>
+                                </Button>
+                                <Button sx={{ cursor: 'pointer' }} color="inherit" onClick={(event) => handleClick(event, 'fotoPerfil')}>
+                                    <Avatar src="/src/asd.png" sx={{ margin: "10px auto", width: 56, height: 56 }} />
+                                </Button>
+                                <Menu
+                                    anchorEl={anchorEl}
+                                    open={openMenu === 'fotoPerfil'}
+                                    onClose={handleClose}
+                                    MenuListProps={{
+                                        'aria-labelledby': 'foto-perfil-button',
+                                    }}
+                                >
+                                    <MenuItem onClick={handleClose}>
+                                        <ListItemText primary="Mi perfil" />
+                                    </MenuItem>
+                                    <MenuItem>
+                                        <ListItemText primary="Mis ajustes" />
+                                    </MenuItem>
+                                    <MenuItem>
+                                        <ListItemText primary="Mis pagos" />
+                                    </MenuItem>
+                                </Menu>
+                            </Box>
+                        </Toolbar>
+                    </AppBar>
+                </Grid>
+
             </Grid>
-            <Grid item>
-                <Typography
-                    variant="body1"
-                    sx={{ color: 'white', textDecoration: 'none', cursor: 'pointer', padding: '10px' }}
-                    onClick={(event) => handleClick(event, 'plazoFijos')}
-                >
-                    Plazo fijos
-                </Typography>
-                <Menu
-                    anchorEl={anchorEl}
-                    open={openMenu === 'plazoFijos'}
-                    onClose={handleClose}
-                    MenuListProps={{
-                        'aria-labelledby': 'plazo-fijos-button',
-                    }}
-                >
-                    <MenuItem onClick={handleClose}>
-                        <ListItemText primary="Opción 1" />
-                    </MenuItem>
-                    <MenuItem onClick={handleClose}>
-                        <ListItemText primary="Opción 2" />
-                    </MenuItem>
-                </Menu>
+            <Grid item size={12}>
+                <Grid container sx={{ height: '100vh' }}>
+                    {/* Navbar Lateral */}
+                    <Grid item size={1.5} sx={{ backgroundColor: "#6655D9", color: 'white', boxShadow: "2px 0px 0px 0px rgba(0, 0, 0, 0.3)" }}>
+                        <Grid container direction="column" sx={{ p:3 , height: '80vh', alignItems:"center", textAlign:"center"}} spacing={3}>
+                            <Grid item size={12}>
+                            <Divider sx={{backgroundColor:"white"}}/>
+                                <Button
+                                    variant="body1"
+                                    sx={{ color: 'white', textDecoration: 'none', padding: '10px' }}
+                                    startIcon=<HomeOutlinedIcon/>
+                                >
+                                    Inicio
+                                </Button>
+                                <Divider sx={{backgroundColor:"white"}}/>
+                            </Grid>
+                            
+                            <Grid item size={12}>
+                                <Button
+                                    variant="body1"
+                                    sx={{ color: 'white', textDecoration: 'none'}}
+                                    startIcon=<CurrencyExchangeOutlinedIcon/>
+                                >
+                                    Transferencias
+                                </Button>
+                                <Divider sx={{backgroundColor:"white"}}/>
+                            </Grid>
+                            <Grid item size={12}>
+                                <Button
+                                    variant="body1"
+                                    sx={{ color: 'white', textDecoration: 'none' }}
+                                    startIcon=<PaymentsOutlinedIcon/>
+                                >
+                                    pagos
+                                </Button>
+                                <Divider sx={{backgroundColor:"white"}}/>
+                            </Grid>
+                            <Grid item size={12} >
+                                <Button
+                                    variant="body1"
+                                    sx={{ color: 'white', textDecoration: 'none'}}
+                                    startIcon=<AccountBalanceOutlinedIcon/>
+                                >
+                                    Plazo fijos
+                                </Button>
+                                <Divider sx={{backgroundColor:"white"}}/>
+                            </Grid>
+                            <Grid item sx={{ flexGrow: 1 }} />
+                            <Grid item sx={{ paddingBottom: '10px' }} >
+                                <Button variant="contained" sx={{color:"black"}}
+                                        startIcon=<LogoutOutlinedIcon/>
+                                >
+                                    Log out
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    {/* Contenido Principal */}
+                    <Grid item size={10.5} sx={{ padding: "2vh" }}>
+                        <Card sx={{ background: "#e8e8e8" }}>
+                            <CardContent>
+                                <Typography>
+                                    AAAAAAAAA
+                                </Typography>
+                                <Typography>
+                                    AAAAAAAAA
+                                </Typography>
+                                <Typography>
+                                    AAAAAAAAA
+                                </Typography>
+                                <Typography>
+                                    AAAAAAAAA
+                                </Typography>
+                                <Typography>
+                                    AAAAAAAAA
+                                </Typography>
+                                <Typography>
+                                    AAAAAAAAA
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                </Grid>
+
             </Grid>
-            <Grid item>
-                <Typography
-                    variant="body1"
-                    sx={{ color: 'white', textDecoration: 'none', cursor: 'pointer', padding: '10px' }}
-                    onClick={(event) => handleClick(event, 'transferencias')}
-                >
-                    Transferencias
-                </Typography>
-                <Menu
-                    anchorEl={anchorEl}
-                    open={openMenu === 'transferencias'}
-                    onClose={handleClose}
-                    MenuListProps={{
-                        'aria-labelledby': 'transferencias-button',
-                    }}
-                >
-                    <MenuItem onClick={handleClose}>
-                        <ListItemIcon>
-                            <ArrowRightIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Opción 1" />
-                    </MenuItem>
-                    <MenuItem onClick={handleClose}>
-                        <ListItemIcon>
-                            <ArrowRightIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Opción 2" />
-                    </MenuItem>
-                </Menu>
-            </Grid>
-            <Grid item>
-                <Typography
-                    variant="body1"
-                    sx={{ color: 'white', textDecoration: 'none', cursor: 'pointer', padding: '10px' }}
-                    onClick={(event) => handleClick(event, 'misPagos')}
-                >
-                    Mis pagos
-                </Typography>
-                <Menu
-                    anchorEl={anchorEl}
-                    open={openMenu === 'misPagos'}
-                    onClose={handleClose}
-                    MenuListProps={{
-                        'aria-labelledby': 'mis-pagos-button',
-                    }}
-                >
-                    <MenuItem onClick={handleClose}>
-                        <ListItemIcon>
-                            <ArrowRightIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Opción 1" />
-                    </MenuItem>
-                    <MenuItem onClick={handleClose}>
-                        <ListItemIcon>
-                            <ArrowRightIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Opción 2" />
-                    </MenuItem>
-                </Menu>
-            </Grid>
-            <Grid item>
-                <Button variant="contained" color="error">
-                    Log out
-                </Button>
-            </Grid>
+
         </Grid>
+
+
+
     );
 }

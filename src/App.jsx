@@ -1,18 +1,13 @@
-import { CssBaseline } from "@mui/material";
-import { ThemeProvider } from "@emotion/react";
-import { CustomTheme } from './components/UI/CustomTheme';
 import Login from "./components/Login/Login";
+import Page from "./components/UI/Page";
+import "./App.css"
 
 function App() {
-
   return (
-    <ThemeProvider theme={CustomTheme}>
-      <CssBaseline />
-      <>
-        <Login/>
-      </>
-    </ThemeProvider>
-  )
+      <Page>
+        <Login />
+      </Page>
+  );
 }
 
-export default App
+export default App;

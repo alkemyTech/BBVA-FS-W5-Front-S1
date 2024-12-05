@@ -33,7 +33,7 @@ export default function Login() {
         background:
           "linear-gradient(90deg, rgba(95,73,208,1) 0%, rgba(102,85,217,1) 39%, rgba(165,153,242,1) 92%)",
         flexDirection: "row",
-        p: 17.1,
+        
       }}
     >
       <Grid

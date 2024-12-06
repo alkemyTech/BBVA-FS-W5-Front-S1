@@ -8,10 +8,12 @@ import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import SettingsIcon from '@mui/icons-material/Settings';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import { useNavigate } from 'react-router-dom';
 
 export default function NavBar() {
     const [anchorEl, setAnchorEl] = useState(null);
     const [openMenu, setOpenMenu] = useState(null);
+    const navigate = useNavigate();
 
     const handleClick = (event, menu) => {
         setAnchorEl(event.currentTarget);
@@ -22,6 +24,10 @@ export default function NavBar() {
         setAnchorEl(null);
         setOpenMenu(null);
     };
+
+    const handleNavigate = () =>{
+        navigate("/login");
+    }
 
     return (
         <Grid container>
@@ -140,6 +146,7 @@ export default function NavBar() {
                             <Grid item sx={{ paddingBottom: '10px' }} >
                                 <Button variant="contained" sx={{color:"black"}}
                                         startIcon=<LogoutOutlinedIcon/>
+                                        onClick={handleNavigate}
                                 >
                                     Log out
                                 </Button>

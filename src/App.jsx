@@ -10,6 +10,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path='/navBar' element={<NavBar/>} />
           <Route path="/login" element={<LoginSignUp isLogin={true} />} />
           <Route path="/signUp" element={<LoginSignUp isLogin={false}  />} />
         </Routes>

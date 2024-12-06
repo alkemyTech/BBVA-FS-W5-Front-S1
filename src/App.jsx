@@ -1,23 +1,21 @@
-import { CssBaseline } from "@mui/material";
-import { ThemeProvider } from "@emotion/react";
-import { CustomTheme } from './components/UI/CustomTheme';
+import Page from "./components/UI/Page";
+import "./App.css";
+import LoginSignUp from "./components/LoginSignUp/LoginSignUp";
 import NavBar from "./components/UI/NavBar";
-import Login from "./components/Login/Login";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 function App() {
-
   return (
-    <>
-    <NavBar/>
-    <ThemeProvider theme={CustomTheme}>
-      <CssBaseline />
-      <>
-        <Login/>
-      </>
-    </ThemeProvider>
-    </>
-    
-  )
+    <Page>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/login" element={<LoginSignUp isLogin={true} />} />
+          <Route path="/signUp" element={<LoginSignUp isLogin={false}  />} />
+        </Routes>
+      </Router>
+    </Page>
+  );
 }
 
-export default App
+export default App;

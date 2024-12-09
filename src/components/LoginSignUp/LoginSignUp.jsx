@@ -114,7 +114,7 @@ export default function LoginSignUp({ isLogin }) {
       container
       sx={{
         background:
-          "linear-gradient(30deg, rgba(122,15,244,1) 30%, rgba(171,107,249,1) 70%)",
+          "radial-gradient(circle, rgba(147,92,201,1) 0%, rgba(114,65,173,1) 20%, rgba(93,39,150,1) 38%, rgba(82,32,142,1) 55%, rgba(63,15,119,1) 73%, rgba(36,8,70,1) 100%)",
         flexDirection: "row",
         alignItems: "center",
         height: "100vh",
@@ -126,14 +126,13 @@ export default function LoginSignUp({ isLogin }) {
           spacing={4}
           sx={{
             flexDirection: "column",
-            p: 5,
-            justifyContent: "center",
+            p: 6.5,
           }}
         >
           <Grid item>
             <Typography
               variant="h3"
-              color="white"
+              color="#e8e8e8"
               sx={{
                 fontWeight: "bold",
                 display: "flex",
@@ -156,19 +155,19 @@ export default function LoginSignUp({ isLogin }) {
             sx={{ flexDirection: "row", alignItems: "baseline" }}
           >
             <SecurityIcon
-              sx={{ color: "white", fontSize: "20px" }}
+              sx={{ color: "#A599F2", fontSize: "20px" }}
             ></SecurityIcon>
 
             <Grid container spacing={1} sx={{ flexDirection: "column" }}>
               <Typography
                 variant="h5"
-                color="white"
+                color="#e8e8e8"
                 sx={{ fontWeight: "bold" }}
               >
                 Seguridad
               </Typography>
 
-              <Typography variant="p" color="white">
+              <Typography variant="p" color="#e8e8e8">
                 Seguridad en cada transacción, garantizando la protección de tus
                 datos.
               </Typography>
@@ -180,18 +179,18 @@ export default function LoginSignUp({ isLogin }) {
             spacing={1}
             sx={{ flexDirection: "row", alignItems: "baseline" }}
           >
-            <ChairIcon sx={{ color: "white", fontSize: "20px" }}></ChairIcon>
+            <ChairIcon sx={{ color: "#A599F2", fontSize: "20px" }}></ChairIcon>
 
             <Grid container spacing={1} sx={{ flexDirection: "column" }}>
               <Typography
                 variant="h5"
-                color="white"
+                color="#e8e8e8"
                 sx={{ fontWeight: "bold" }}
               >
                 Comodidad
               </Typography>
 
-              <Typography variant="p" color="white">
+              <Typography variant="p" color="#e8e8e8">
                 Accede a tu dinero con comodidad desde cualquier lugar, en
                 cualquier momento, con DiMo.
               </Typography>
@@ -204,19 +203,19 @@ export default function LoginSignUp({ isLogin }) {
             sx={{ flexDirection: "row", alignItems: "baseline" }}
           >
             <AssuredWorkloadIcon
-              sx={{ color: "white", fontSize: "20px" }}
+              sx={{ color: "#A599F2", fontSize: "20px" }}
             ></AssuredWorkloadIcon>
 
             <Grid container spacing={1} sx={{ flexDirection: "column" }}>
               <Typography
                 variant="h5"
-                color="white"
+                color="#e8e8e8"
                 sx={{ fontWeight: "bold" }}
               >
                 Confiabilidad
               </Typography>
 
-              <Typography variant="p" color="white">
+              <Typography variant="p" color="#e8e8e8">
                 La billetera digital confiable que te acompaña de manera
                 constante y precisa.
               </Typography>
@@ -229,19 +228,19 @@ export default function LoginSignUp({ isLogin }) {
             sx={{ flexDirection: "row", alignItems: "baseline" }}
           >
             <AutoFixHighIcon
-              sx={{ color: "white", fontSize: "20px" }}
+              sx={{ color: "#A599F2", fontSize: "20px" }}
             ></AutoFixHighIcon>
 
             <Grid container spacing={1} sx={{ flexDirection: "column" }}>
               <Typography
                 variant="h5"
-                color="white"
+                color="#e8e8e8"
                 sx={{ fontWeight: "bold" }}
               >
                 Versatilidad
               </Typography>
 
-              <Typography variant="p" color="white">
+              <Typography variant="p" color="#e8e8e8">
                 Con DiMo, disfruta de la versatilidad para adaptarte a múltiples
                 opciones de pago y servicios.
               </Typography>
@@ -255,7 +254,18 @@ export default function LoginSignUp({ isLogin }) {
           <Card
             variant="elevation"
             elevation={20}
-            sx={{ backgroundColor: "#e8e8e8", width: "90%" }}
+            sx={{
+              backgroundColor: "rgba(0,0,0,0.5)",
+              width: "90%",
+              maxWidth: "500px", 
+              backdropFilter: "blur(10px)",
+              borderRadius: "15px", 
+              padding: "30px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              border: "1px solid #505050",
+            }}
           >
             <CardContent
               sx={{
@@ -266,7 +276,7 @@ export default function LoginSignUp({ isLogin }) {
             >
               <Typography
                 variant="h4"
-                color="#6655D9"
+                color="#e8e8e8"
                 sx={{ fontWeight: "bold", textAlign: "center" }}
               >
                 {isLogin == true ? "Iniciar Sesión" : "Registrarse"}
@@ -290,6 +300,25 @@ export default function LoginSignUp({ isLogin }) {
                   setUsuario({ ...usuario, email: e.target.value })
                 }
                 onBlur={(e) => validarCampo("email", e.target.value)}
+                sx={{
+                  "& .MuiInputBase-root": {
+                    color: "#FFFFFF",
+                    backgroundColor: "rgba(0,0,0, 0.5)",
+                  },
+                  "& .MuiInputLabel-root": { color: "#BBBBBB" },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#505050",
+                    borderWidth: "1px",
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#a1a1a1",
+                    borderWidth: "1px",
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#6655D9",
+                    borderWidth: "1px",
+                  },
+                }}
               />
 
               <TextField
@@ -307,7 +336,7 @@ export default function LoginSignUp({ isLogin }) {
                       <IconButton
                         onClick={changePasswordVisibility}
                         edge="end"
-                        sx={{ p: 1 }}
+                        sx={{ p: 1, color:"#5F49D7" }}
                       >
                         {passwordVisibility ? (
                           <Visibility />
@@ -318,11 +347,36 @@ export default function LoginSignUp({ isLogin }) {
                     </InputAdornment>
                   ),
                 }}
+                sx={{
+                  "& .MuiInputBase-root": {
+                    color: "#FFFFFF",
+                    backgroundColor: "rgba(0,0,0, 0.5)",
+                  },
+                  "& .MuiInputLabel-root": { color: "#BBBBBB" },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#505050",
+                    borderWidth: "1px",
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#a1a1a1",
+                    borderWidth: "1px",
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#6655D9",
+                    borderWidth: "1px",
+                  },
+                }}
               />
               <Button
                 variant="contained"
                 type="submit"
-                sx={{ backgroundColor: "#6655D9" }}
+                sx={{
+                  backgroundColor: "#5F49D7",
+                  "&.Mui-disabled": {
+                    backgroundColor: "#cdcdcd",
+                    color: "#666",
+                  },
+                }}
                 disabled={!datosCompletos(usuario) || presenciaDeErrores}
                 endIcon={<LoginIcon />}
                 onClick={manejarEnvio}
@@ -339,7 +393,7 @@ export default function LoginSignUp({ isLogin }) {
                 >
                   <Typography
                     variant="p"
-                    color="#373738"
+                    color="#e8e8e8"
                     sx={{ fontSize: "medium" }}
                   >
                     Todavía no tenes una cuenta?
@@ -348,7 +402,7 @@ export default function LoginSignUp({ isLogin }) {
                     variant="p"
                     fontWeight="bold"
                     color="#6655D9"
-                    sx={{ cursor: "pointer" }}
+                    sx={{ cursor: "pointer", textDecoration:"underline" }}
                     onClick={handleNavigateSignUp}
                   >
                     Registrate acá

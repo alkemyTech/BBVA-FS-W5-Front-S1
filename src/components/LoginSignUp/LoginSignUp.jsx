@@ -19,6 +19,12 @@ export default function LoginSignUp({ isLogin }) {
     email: "",
     password: "",
   });
+  const [usuarioRegister, setUsuarioRegister] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+  });
 
   const [errores, setErrores] = useState([]);
 
@@ -34,8 +40,8 @@ export default function LoginSignUp({ isLogin }) {
     navigate("/signUp");
   };
 
-  const datosCompletos = (usuario) => {
-    return Object.values(usuario).every(
+  const datosCompletos = (formulario) => {
+    return Object.values(formulario).every(
       (valor) => valor !== null && valor !== undefined && valor !== ""
     );
   };
@@ -63,7 +69,7 @@ export default function LoginSignUp({ isLogin }) {
   const manejarEnvio = async () => {
     let response;
 
-    if (isLogin) {
+    if (isLogin == true) {
       try {
         response = await axios.post("http://localhost:8080/auth/login", {
           email: usuario.email,
@@ -81,12 +87,26 @@ export default function LoginSignUp({ isLogin }) {
       }
     } else {
       //Registro de usuario.
+      try {
+        response = await axios.post("http://localhost:8080/auth/register", {
+          firstName: usuarioRegister.firstName,
+          lastName: usuarioRegister.lastName,
+          email: usuarioRegister.email,
+          password: usuarioRegister.password,
+        });
+        alert(`Usuario Creado Correctamente!`);
+        navigate("/");
+      } catch (e) {
+        console.log(e);
+        alert(`Formato Invalido de datos`);
+        setUsuarioRegister({
+          firstName: "",
+          lastName: "",
+          email: "",
+          password: "",
+        });
+      }
     }
-
-    setUsuario({
-      email: "",
-      password: "",
-    });
   };
 
   const CustomTextField = styled(TextField)({
@@ -283,8 +303,30 @@ export default function LoginSignUp({ isLogin }) {
               </Typography>
               {!isLogin && (
                 <>
-                  <CustomTextField id="" label="Nombre" size="small" />
-                  <CustomTextField id="" label="Apellido" size="small" />
+                  <TextField
+                    id=""
+                    label="Nombre"
+                    value={usuarioRegister.firstName}
+                    onChange={(e) =>
+                      setUsuarioRegister({
+                        ...usuarioRegister,
+                        firstName: e.target.value,
+                      })
+                    }
+                    size="small"
+                  />
+                  <TextField
+                    id=""
+                    label="Apellido"
+                    value={usuarioRegister.lastName}
+                    onChange={(e) =>
+                      setUsuarioRegister({
+                        ...usuarioRegister,
+                        lastName: e.target.value,
+                      })
+                    }
+                    size="small"
+                  />
                 </>
               )}
               <TextField
@@ -293,11 +335,16 @@ export default function LoginSignUp({ isLogin }) {
                 label="E-mail"
                 name="email"
                 size="small"
-                value={usuario.email}
+                value={isLogin == true ? usuario.email : usuarioRegister.email}
                 helperText={errores.email}
                 error={Boolean(errores.email)}
                 onChange={(e) =>
-                  setUsuario({ ...usuario, email: e.target.value })
+                  isLogin == true
+                    ? setUsuario({ ...usuario, email: e.target.value })
+                    : setUsuarioRegister({
+                        ...usuarioRegister,
+                        email: e.target.value,
+                      })
                 }
                 onBlur={(e) => validarCampo("email", e.target.value)}
                 sx={{
@@ -326,9 +373,16 @@ export default function LoginSignUp({ isLogin }) {
                 type={passwordVisibility ? "text" : "password"}
                 label="Contraseña"
                 size="small"
-                value={usuario.password}
+                value={
+                  isLogin == true ? usuario.password : usuarioRegister.password
+                }
                 onChange={(e) =>
-                  setUsuario({ ...usuario, password: e.target.value })
+                  isLogin == true
+                    ? setUsuario({ ...usuario, password: e.target.value })
+                    : setUsuarioRegister({
+                        ...usuarioRegister,
+                        password: e.target.value,
+                      })
                 }
                 InputProps={{
                   endAdornment: (
@@ -377,7 +431,11 @@ export default function LoginSignUp({ isLogin }) {
                     color: "#666",
                   },
                 }}
-                disabled={!datosCompletos(usuario) || presenciaDeErrores}
+                disabled={
+                  !datosCompletos(
+                    isLogin == true ? usuario : usuarioRegister
+                  ) || presenciaDeErrores
+                }
                 endIcon={<LoginIcon />}
                 onClick={manejarEnvio}
               >

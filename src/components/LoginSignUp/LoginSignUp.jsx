@@ -161,7 +161,7 @@ export default function LoginSignUp({ isLogin }) {
               }}
             >
               <img
-                src="/public/assets/iconoPaginaVioleta.png"
+                src="assets/iconoPaginaVioleta.png"
                 alt=""
                 style={{ height: "45px" }}
               />

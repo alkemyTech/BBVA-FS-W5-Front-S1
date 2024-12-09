@@ -147,6 +147,7 @@ export default function LoginSignUp({ isLogin }) {
           sx={{
             flexDirection: "column",
             p: 5,
+            pl:10,
             justifyContent: "center",
           }}
         >

@@ -119,13 +119,13 @@ export default function LoginSignUp({ isLogin }) {
         dispatch(
           setUserAuthenticated({
             id: tokenPayload.jti,
-            token: response.data.token,
             role: tokenPayload.role,
             firstName: response.data.firstName,
             lastName: response.data.lastName,
             email: tokenPayload.sub,
           })
         );
+        localStorage.setItem("token", response.data.token);
         setLoadingScreen({
           message:"Iniciando Sesión",
           duration:"2000"
@@ -201,7 +201,7 @@ export default function LoginSignUp({ isLogin }) {
           "radial-gradient(circle, rgba(147,92,201,1) 0%, rgba(114,65,173,1) 20%, rgba(93,39,150,1) 38%, rgba(82,32,142,1) 55%, rgba(63,15,119,1) 73%, rgba(36,8,70,1) 100%)",
         flexDirection: "row",
         alignItems: "center",
-        height: "100vh",
+        height:"100vh"
       }}
     >
       <Grid item size={7}>
@@ -225,11 +225,11 @@ export default function LoginSignUp({ isLogin }) {
               }}
             >
               <img
-                src="assets/prueba1.png"
+                src="/assets/iconoPaginaVioleta.png"
                 alt=""
-                style={{ height: "200px" }}
+                style={{height:"50px"}}
               />
-              
+              DiMo
             </Typography>
           </Grid>
 

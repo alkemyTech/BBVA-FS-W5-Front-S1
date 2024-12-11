@@ -163,7 +163,7 @@ export default function LoginSignUp({ isLogin }) {
               <img
                 src="assets/prueba1.png"
                 alt=""
-                style={{ height: "300px" }}
+                style={{ height: "200px" }}
               />
               
             </Typography>

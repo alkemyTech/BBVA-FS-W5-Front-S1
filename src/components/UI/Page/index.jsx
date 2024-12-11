@@ -1,14 +1,16 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
+import Header from "../Header";
+import Footer from "../Footer"
 
 export default function Page({ children }) {
   const [juan, setJuan] = useState(false);
 
   return (
     <div>
-      <header />
+      <Header />
       <main style={{ minHeight: juan ? "90vh" : "100vh" }}>{children}</main>
-      <footer/>
+      <Footer/>
     </div>
   );
 }

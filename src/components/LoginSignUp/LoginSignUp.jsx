@@ -161,11 +161,11 @@ export default function LoginSignUp({ isLogin }) {
               }}
             >
               <img
-                src="assets/iconoPaginaVioleta.png"
+                src="assets/prueba1.png"
                 alt=""
-                style={{ height: "45px" }}
+                style={{ height: "200px" }}
               />
-              DiMo
+              
             </Typography>
           </Grid>
 

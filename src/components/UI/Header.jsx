@@ -4,12 +4,12 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import Avatar from '@mui/material/Avatar';
 
 export default function Header() {
+
     return(
 
     <Grid container sx={{ backgroundColor: "#5F49D7", color: 'white', width: '100%', marginBottom: "5vh" }}>
         <Grid item size={12} sm={6}>
             <Typography variant="h6" component="div" textAlign={"left"} paddingLeft={"2vh"}>
-                Hola jhon
             </Typography>
         </Grid>
         <Grid item size={12}>

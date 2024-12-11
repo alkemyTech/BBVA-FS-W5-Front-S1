@@ -1,13 +1,33 @@
 import Grid from '@mui/material/Grid2';
-import Carrousel from '../Carrousel/Carrousel';
 import SendIcon from '@mui/icons-material/Send';
-import { Card, CardContent, IconButton, Typography, Link as MuiLink } from '@mui/material';
+import { Card, CardContent, IconButton, Typography, Link as MuiLink, List, ListItem } from '@mui/material';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 
 export default function Home() {
+
+    const [accounts, setAccounts] = useState([]);
+
+    useEffect(() => {
+        const fetchAccounts = async () => {
+            try {
+                const response = await axios.get("http://localhost:8080/accounts", {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
+                setAccounts(response.data);
+            } catch (error) {
+                console.error('Error fetching accounts:', error);
+            }
+        };
+
+        fetchAccounts();
+    }, []);
 
     return (
 
@@ -63,9 +83,7 @@ export default function Home() {
                     <Grid item size={4}>
                         <Grid container sx={{ flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
                             <MuiLink component={Link} to="/#" sx={{ textDecoration: "none" }}>
-                                <Card sx={{
-                                    transition: 'transform 0.2s, box-shadow 0.2s', '&:hover': { transform: 'scale(1.05)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }
-                                }}>
+                                <Card>
                                     <CardContent>
                                         <Grid container>
                                             <Grid item size={12}>
@@ -85,9 +103,7 @@ export default function Home() {
                     <Grid item size={4}>
                         <Grid container sx={{ flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
                             <MuiLink component={Link} to="/#" sx={{ textDecoration: "none" }}>
-                                <Card sx={{
-                                    transition: 'transform 0.2s, box-shadow 0.2s', '&:hover': { transform: 'scale(1.05)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }
-                                }}>
+                                <Card>
                                     <CardContent>
                                         <Grid container>
                                             <Grid item size={12}>
@@ -108,9 +124,7 @@ export default function Home() {
                         <Grid container sx={{ flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
                             <Grid container sx={{ flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
                                 <MuiLink component={Link} to="/#" sx={{ textDecoration: "none" }}>
-                                    <Card sx={{
-                                        transition: 'transform 0.2s, box-shadow 0.2s', '&:hover': { transform: 'scale(1.05)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }
-                                    }}>
+                                    <Card>
                                         <CardContent>
                                             <Grid container>
                                                 <Grid item size={12}>
@@ -131,22 +145,99 @@ export default function Home() {
                 </Grid>
             </Grid>
             <Grid item size={12}>
-                <Grid container sx={{ textAlign: 'center', height: "50vh",alignItems: "center" , border:1}}>
+                <Grid container sx={{ textAlign: 'center', height: "50vh", border: 1 }}>
                     <Grid item size={6}>
                         <Card>
                             <CardContent>
-                                <Typography>
-                                    cOLUMNA A
+                                <Typography variant='h5' sx={{ fontWeight: "bold" }}>
+                                    Transferencias
                                 </Typography>
+                            </CardContent>
+                            <CardContent>
+                                <List>
+                                <ListItem sx={{ padding: 0 }}>
+                                    <MuiLink component={Link} to="/#" sx={{ textDecoration: "none", width: "100%" }}>
+                                            <Card sx={{ width: "100%", '&:hover': { backgroundColor: '#f0f0f0'} }}>
+                                                <CardContent>
+                                                    <Typography sx={{ fontWeight: "bold" }}>
+                                                        Nombre de transferencia
+                                                    </Typography>
+                                                    <Typography>
+                                                        Movimiento
+                                                    </Typography>
+                                                    <Typography>
+                                                        Monto:
+                                                    </Typography>
+                                                </CardContent>
+                                            </Card>
+                                        </MuiLink>
+                                    </ListItem>
+                                    <ListItem sx={{ padding: 0 }}>
+                                    <MuiLink component={Link} to="/#" sx={{ textDecoration: "none", width: "100%" }}>
+                                            <Card sx={{ width: "100%", '&:hover': { backgroundColor: '#f0f0f0'} }}>
+                                                <CardContent>
+                                                    <Typography sx={{ fontWeight: "bold" }}>
+                                                        Nombre de transferencia
+                                                    </Typography>
+                                                    <Typography>
+                                                        Movimiento
+                                                    </Typography>
+                                                    <Typography>
+                                                        Monto:
+                                                    </Typography>
+                                                </CardContent>
+                                            </Card>
+                                        </MuiLink>
+                                    </ListItem>
+                                </List>
+
                             </CardContent>
                         </Card>
                     </Grid>
                     <Grid item size={6}>
                         <Card>
                             <CardContent>
-                                <Typography>
-                                    cOLUMNA A
-                                </Typography>
+                                <CardContent>
+                                    <Typography variant='h5' sx={{ fontWeight: "bold" }}>
+                                        Transferencias
+                                    </Typography>
+                                </CardContent>
+                                <List>
+                                    <ListItem sx={{ padding: 0}}>
+                                        <MuiLink component={Link} to="/#" sx={{ textDecoration: "none", width: "100%" }}>
+                                            <Card sx={{ width: "100%", '&:hover': { backgroundColor: '#f0f0f0'} }}>
+                                                <CardContent>
+                                                    <Typography sx={{ fontWeight: "bold" }}>
+                                                        Nombre de transferencia
+                                                    </Typography>
+                                                    <Typography>
+                                                        Movimiento
+                                                    </Typography>
+                                                    <Typography>
+                                                        Monto:
+                                                    </Typography>
+                                                </CardContent>
+                                            </Card>
+                                        </MuiLink>
+                                    </ListItem>
+                                    <ListItem sx={{ padding: 0 }}>
+                                    <MuiLink component={Link} to="/#" sx={{ textDecoration: "none", width: "100%" }}>
+                                            <Card sx={{ width: "100%", '&:hover': { backgroundColor: '#f0f0f0'} }}>
+                                                <CardContent>
+                                                    <Typography sx={{ fontWeight: "bold" }}>
+                                                        Nombre de transferencia
+                                                    </Typography>
+                                                    <Typography>
+                                                        Movimiento
+                                                    </Typography>
+                                                    <Typography>
+                                                        Monto:
+                                                    </Typography>
+                                                </CardContent>
+                                            </Card>
+                                        </MuiLink>
+                                    </ListItem>
+                                </List>
                             </CardContent>
                         </Card>
                     </Grid>

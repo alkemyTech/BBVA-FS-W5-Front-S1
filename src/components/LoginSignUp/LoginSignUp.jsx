@@ -5,14 +5,19 @@ import ChairIcon from "@mui/icons-material/Chair";
 import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
 import AssuredWorkloadIcon from "@mui/icons-material/AssuredWorkload";
 import LoginIcon from "@mui/icons-material/Login";
+import HowToRegIcon from "@mui/icons-material/HowToReg";
 import { InputAdornment, IconButton } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Card, CardContent, TextField, Button } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useState } from "react";
-import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+import { useDispatch } from "react-redux";
+import { setUserAuthenticated } from "../../Redux/Slices/userAuthenticatedSlice";
+import GenericSnackbar from "../UI/Snackbar/Snackbar";
+import apiConfig from "../../Config/axiosConfig";
+import LoadingScreen from '../UI/LoadingScreen/LoadingScreen';
 
 export default function LoginSignUp({ isLogin }) {
   const [usuario, setUsuario] = useState({
@@ -30,11 +35,27 @@ export default function LoginSignUp({ isLogin }) {
 
   const [passwordVisibility, setPasswordVisibility] = useState(false);
 
+  const [snackbar, setSnackbar] = useState({
+    status: "",
+    message: "",
+  });
+
+  const [snackbarVisibility, setSnackbarVisibility] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [loadingScreen, setLoadingScreen] = useState({
+    message: "",
+    duration: null
+  });
+
   const changePasswordVisibility = () => {
     setPasswordVisibility(!passwordVisibility);
   };
 
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
 
   const handleNavigateSignUp = () => {
     navigate("/signUp");
@@ -51,7 +72,7 @@ export default function LoginSignUp({ isLogin }) {
   );
 
   const validarCampo = (campo, valor) => {
-    const patronEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const patronEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$/;
 
     if (campo === "email" && !patronEmail.test(valor) && valor != "") {
       setErrores((errores) => ({
@@ -64,70 +85,113 @@ export default function LoginSignUp({ isLogin }) {
         email: null,
       }));
     }
+
+    if (
+      campo === "contraseña" &&
+      (valor.length < 6 || valor.length > 20) &&
+      valor != ""
+    ) {
+      setErrores((errores) => ({
+        ...errores,
+        contraseña: "La contraseña debe ser de entre 6 y 20 caracteres.",
+      }));
+    } else {
+      setErrores((errores) => ({
+        ...errores,
+        contraseña: null,
+      }));
+    }
   };
 
   const manejarEnvio = async () => {
     let response;
+    let tokenPayload;
+    setSnackbarVisibility(false);
+    setIsLoading(false);
 
     if (isLogin == true) {
       try {
-        response = await axios.post("http://localhost:8080/auth/login", {
+        response = await apiConfig.post("/auth/login", {
           email: usuario.email,
           password: usuario.password,
         });
-        alert(`Credenciales correctas!`);
+        tokenPayload = jwtDecode(response.data.token);
+        dispatch(
+          setUserAuthenticated({
+            id: tokenPayload.jti,
+            role: tokenPayload.role,
+            firstName: response.data.firstName,
+            lastName: response.data.lastName,
+            email: tokenPayload.sub,
+          })
+        );
         localStorage.setItem("token", response.data.token);
+        setLoadingScreen({
+          message:"Iniciando Sesión",
+          duration:"2000"
+        })
+        setIsLoading(true);
       } catch (e) {
         console.log(e);
-        alert(`Credenciales invalidas!`);
-        setUsuario({
-          email: "",
-          password: "",
+        setSnackbar({
+          status: "error",
+          message: "ERROR! Credenciales inválidas!",
         });
+        setSnackbarVisibility(true);
       }
+      setUsuario({
+        email: "",
+        password: "",
+      });
     } else {
-      //Registro de usuario.
       try {
-        response = await axios.post("http://localhost:8080/auth/register", {
+        response = await apiConfig.post("/auth/register", {
           firstName: usuarioRegister.firstName,
           lastName: usuarioRegister.lastName,
           email: usuarioRegister.email,
           password: usuarioRegister.password,
         });
-        alert(`Usuario Creado Correctamente!`);
-        navigate("/");
       } catch (e) {
         console.log(e);
         alert(`Formato Invalido de datos`);
-        setUsuarioRegister({
-          firstName: "",
-          lastName: "",
-          email: "",
-          password: "",
-        });
       }
+      setUsuarioRegister({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+      });
     }
   };
 
-  const CustomTextField = styled(TextField)({
-    "& label.Mui-focused": {
-      color: "#6655D9",
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: "#6655D9",
-    },
+  const textFieldStyle = {
     "& .MuiOutlinedInput-root": {
-      "&:hover fieldset": {
-        borderColor: "#6655D9",
-      },
       "&.Mui-focused fieldset": {
         borderColor: "#6655D9",
       },
+      "& .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#505050",
+      },
+    },
+    "& .MuiInputLabel-root": {
+      color: "#BBBBBB",
+    },
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: "#6655D9",
     },
     "& .MuiOutlinedInput-root.Mui-error fieldset": {
       borderColor: "red",
     },
-  });
+    "& .MuiInputBase-input": {
+      color: "#BBBBBB",
+      "&:focus": {
+        color: "#BBBBBB",
+      },
+    },
+    "& .MuiInputLabel-root.Mui-error": {
+      color: "red",
+    },
+  };
 
   return (
     <Grid
@@ -137,7 +201,7 @@ export default function LoginSignUp({ isLogin }) {
           "radial-gradient(circle, rgba(147,92,201,1) 0%, rgba(114,65,173,1) 20%, rgba(93,39,150,1) 38%, rgba(82,32,142,1) 55%, rgba(63,15,119,1) 73%, rgba(36,8,70,1) 100%)",
         flexDirection: "row",
         alignItems: "center",
-        height: "100vh",
+        height:"100vh"
       }}
     >
       <Grid item size={7}>
@@ -161,11 +225,11 @@ export default function LoginSignUp({ isLogin }) {
               }}
             >
               <img
-                src="assets/prueba1.png"
+                src="/assets/iconoPaginaVioleta.png"
                 alt=""
-                style={{ height: "200px" }}
+                style={{height:"50px"}}
               />
-              
+              DiMo
             </Typography>
           </Grid>
 
@@ -174,9 +238,7 @@ export default function LoginSignUp({ isLogin }) {
             spacing={1}
             sx={{ flexDirection: "row", alignItems: "baseline" }}
           >
-            <SecurityIcon
-              sx={{ color: "#A599F2", fontSize: "20px" }}
-            ></SecurityIcon>
+            <SecurityIcon sx={{ color: "#A599F2", fontSize: "20px" }} />
 
             <Grid container spacing={1} sx={{ flexDirection: "column" }}>
               <Typography
@@ -222,9 +284,7 @@ export default function LoginSignUp({ isLogin }) {
             spacing={1}
             sx={{ flexDirection: "row", alignItems: "baseline" }}
           >
-            <AssuredWorkloadIcon
-              sx={{ color: "#A599F2", fontSize: "20px" }}
-            ></AssuredWorkloadIcon>
+            <AssuredWorkloadIcon sx={{ color: "#A599F2", fontSize: "20px" }} />
 
             <Grid container spacing={1} sx={{ flexDirection: "column" }}>
               <Typography
@@ -276,10 +336,9 @@ export default function LoginSignUp({ isLogin }) {
             elevation={20}
             sx={{
               backgroundColor: "rgba(0,0,0,0.5)",
-              width: "90%",
-              maxWidth: "500px", 
+              width: "100%",
               backdropFilter: "blur(10px)",
-              borderRadius: "15px", 
+              borderRadius: "15px",
               padding: "30px",
               display: "flex",
               flexDirection: "column",
@@ -314,6 +373,7 @@ export default function LoginSignUp({ isLogin }) {
                       })
                     }
                     size="small"
+                    sx={textFieldStyle}
                   />
                   <TextField
                     id=""
@@ -326,6 +386,7 @@ export default function LoginSignUp({ isLogin }) {
                       })
                     }
                     size="small"
+                    sx={textFieldStyle}
                   />
                 </>
               )}
@@ -347,35 +408,19 @@ export default function LoginSignUp({ isLogin }) {
                       })
                 }
                 onBlur={(e) => validarCampo("email", e.target.value)}
-                sx={{
-                  "& .MuiInputBase-root": {
-                    color: "#FFFFFF",
-                    backgroundColor: "rgba(0,0,0, 0.5)",
-                  },
-                  "& .MuiInputLabel-root": { color: "#BBBBBB" },
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#505050",
-                    borderWidth: "1px",
-                  },
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#a1a1a1",
-                    borderWidth: "1px",
-                  },
-                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#6655D9",
-                    borderWidth: "1px",
-                  },
-                }}
+                sx={textFieldStyle}
               />
-
               <TextField
                 id=""
                 type={passwordVisibility ? "text" : "password"}
                 label="Contraseña"
+                name="contraseña"
                 size="small"
                 value={
                   isLogin == true ? usuario.password : usuarioRegister.password
                 }
+                helperText={errores.contraseña}
+                error={Boolean(errores.contraseña)}
                 onChange={(e) =>
                   isLogin == true
                     ? setUsuario({ ...usuario, password: e.target.value })
@@ -390,7 +435,7 @@ export default function LoginSignUp({ isLogin }) {
                       <IconButton
                         onClick={changePasswordVisibility}
                         edge="end"
-                        sx={{ p: 1, color:"#5F49D7" }}
+                        sx={{ p: 1, color: "#5F49D7" }}
                       >
                         {passwordVisibility ? (
                           <Visibility />
@@ -401,25 +446,8 @@ export default function LoginSignUp({ isLogin }) {
                     </InputAdornment>
                   ),
                 }}
-                sx={{
-                  "& .MuiInputBase-root": {
-                    color: "#FFFFFF",
-                    backgroundColor: "rgba(0,0,0, 0.5)",
-                  },
-                  "& .MuiInputLabel-root": { color: "#BBBBBB" },
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#505050",
-                    borderWidth: "1px",
-                  },
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#a1a1a1",
-                    borderWidth: "1px",
-                  },
-                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#6655D9",
-                    borderWidth: "1px",
-                  },
-                }}
+                onBlur={(e) => validarCampo("contraseña", e.target.value)}
+                sx={textFieldStyle}
               />
               <Button
                 variant="contained"
@@ -436,7 +464,7 @@ export default function LoginSignUp({ isLogin }) {
                     isLogin == true ? usuario : usuarioRegister
                   ) || presenciaDeErrores
                 }
-                endIcon={<LoginIcon />}
+                endIcon={isLogin == true ? <LoginIcon /> : <HowToRegIcon />}
                 onClick={manejarEnvio}
               >
                 {isLogin == true ? "Ingresar" : "Crear Cuenta"}
@@ -460,7 +488,7 @@ export default function LoginSignUp({ isLogin }) {
                     variant="p"
                     fontWeight="bold"
                     color="#6655D9"
-                    sx={{ cursor: "pointer", textDecoration:"underline" }}
+                    sx={{ cursor: "pointer", textDecoration: "underline" }}
                     onClick={handleNavigateSignUp}
                   >
                     Registrate acá
@@ -471,6 +499,14 @@ export default function LoginSignUp({ isLogin }) {
           </Card>
         </Grid>
       </Grid>
+      {snackbarVisibility && (
+        <GenericSnackbar
+          status={snackbar.status}
+          message={snackbar.message}
+          visibility={snackbarVisibility}
+        />
+      )}
+       {isLoading && <LoadingScreen message={loadingScreen.message} duration={loadingScreen.duration} />} 
     </Grid>
   );
 }

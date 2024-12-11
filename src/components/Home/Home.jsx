@@ -62,7 +62,7 @@ export default function Home() {
                 <Grid container sx={{ textAlign: 'center', height: "10vh" }}>
                     <Grid item size={4}>
                         <Grid container sx={{ flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-                            <MuiLink component={Link} to="/#" sx={{ textDecoration: "none" }}>
+                            <MuiLink component={Link} to="/sendmoney" sx={{ textDecoration: "none" }}>
                                 <Card sx={{
                                     transition: 'transform 0.2s, box-shadow 0.2s', '&:hover': { transform: 'scale(1.05)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }
                                 }}>

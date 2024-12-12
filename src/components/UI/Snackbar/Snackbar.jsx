@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import Snackbar from "@mui/material/Snackbar";
 
 function GenericSnackbar({ status, message, visibility }) {
   const [open, setOpen] = useState(false);
-  
+
   useEffect(() => {
     if (visibility) {
       setOpen(true);
@@ -21,14 +21,12 @@ function GenericSnackbar({ status, message, visibility }) {
   return (
     <Snackbar
       open={open}
-      autoHideDuration={3000}
-      onClose={handleClose}
       anchorOrigin={{ vertical: "top", horizontal: "center" }}
     >
       <Alert
-        onClose={handleClose}
         severity={status === "success" ? "success" : "error"}
         variant="filled"
+        sx={{backgroundColor: status === "success" ? "#008000" : "#8B0000"}}
         action={
             <IconButton
               size="small"

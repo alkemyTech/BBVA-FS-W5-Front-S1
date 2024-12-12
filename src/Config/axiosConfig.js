@@ -12,7 +12,7 @@ apiConfig.interceptors.request.use(
     if (!config.url.startsWith("/auth")) {
       const token = localStorage.getItem("token"); 
       if (token) {
-        config.headers.Authorization = `Bearer ${token}`; // Añade el token al header
+        config.headers.Authorization = `Bearer ${token}`;
       }
     }
     return config;

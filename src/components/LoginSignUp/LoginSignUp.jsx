@@ -17,7 +17,7 @@ import { useDispatch } from "react-redux";
 import { setUserAuthenticated } from "../../Redux/Slices/userAuthenticatedSlice";
 import GenericSnackbar from "../UI/Snackbar/Snackbar";
 import apiConfig from "../../Config/axiosConfig";
-import LoadingScreen from '../UI/LoadingScreen/LoadingScreen';
+import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
 
 export default function LoginSignUp({ isLogin }) {
   const [usuario, setUsuario] = useState({
@@ -31,7 +31,7 @@ export default function LoginSignUp({ isLogin }) {
     password: "",
   });
 
-  const [errores, setErrores] = useState([]);
+  const [errores, setErrores] = useState({});
 
   const [passwordVisibility, setPasswordVisibility] = useState(false);
 
@@ -46,7 +46,7 @@ export default function LoginSignUp({ isLogin }) {
 
   const [loadingScreen, setLoadingScreen] = useState({
     message: "",
-    duration: null
+    duration: null,
   });
 
   const changePasswordVisibility = () => {
@@ -61,8 +61,8 @@ export default function LoginSignUp({ isLogin }) {
     navigate("/signUp");
   };
 
-  const datosCompletos = (formulario) => {
-    return Object.values(formulario).every(
+  const datosCompletos = (objeto) => {
+    return Object.values(objeto).every(
       (valor) => valor !== null && valor !== undefined && valor !== ""
     );
   };
@@ -79,7 +79,9 @@ export default function LoginSignUp({ isLogin }) {
         ...errores,
         email: "El formato del email no es válido.",
       }));
-    } else {
+    } 
+
+    if(campo === "email" && (patronEmail.test(valor) || valor === "")) {
       setErrores((errores) => ({
         ...errores,
         email: null,
@@ -95,7 +97,9 @@ export default function LoginSignUp({ isLogin }) {
         ...errores,
         contraseña: "La contraseña debe ser de entre 6 y 20 caracteres.",
       }));
-    } else {
+    } 
+    
+    if(campo === "contraseña" && (valor.length >= 6 && valor.length <=20 || valor === "")) {
       setErrores((errores) => ({
         ...errores,
         contraseña: null,
@@ -106,6 +110,7 @@ export default function LoginSignUp({ isLogin }) {
   const manejarEnvio = async () => {
     let response;
     let tokenPayload;
+    const duration = 1500;
     setSnackbarVisibility(false);
     setIsLoading(false);
 
@@ -127,10 +132,13 @@ export default function LoginSignUp({ isLogin }) {
         );
         localStorage.setItem("token", response.data.token);
         setLoadingScreen({
-          message:"Iniciando Sesión",
-          duration:"2000"
-        })
+          message: "Iniciando Sesión",
+          duration: duration,
+        });
         setIsLoading(true);
+        setTimeout(() => {
+          navigate("/home")
+        }, duration)
       } catch (e) {
         console.log(e);
         setSnackbar({
@@ -151,9 +159,21 @@ export default function LoginSignUp({ isLogin }) {
           email: usuarioRegister.email,
           password: usuarioRegister.password,
         });
+        setLoadingScreen({
+          message: "Creando cuenta...",
+          duration: "2000",
+        });
+        setIsLoading(true);
+        setTimeout(() => {
+          navigate("/")
+          setSnackbar({
+            status: "success",
+            message: "Te has registrado con éxito!",
+          });
+          setSnackbarVisibility(true);
+        }, duration)
       } catch (e) {
         console.log(e);
-        alert(`Formato Invalido de datos`);
       }
       setUsuarioRegister({
         firstName: "",
@@ -201,7 +221,7 @@ export default function LoginSignUp({ isLogin }) {
           "radial-gradient(circle, rgba(147,92,201,1) 0%, rgba(114,65,173,1) 20%, rgba(93,39,150,1) 38%, rgba(82,32,142,1) 55%, rgba(63,15,119,1) 73%, rgba(36,8,70,1) 100%)",
         flexDirection: "row",
         alignItems: "center",
-        height:"100vh"
+        height: "100vh",
       }}
     >
       <Grid item size={7}>
@@ -227,7 +247,7 @@ export default function LoginSignUp({ isLogin }) {
               <img
                 src="/assets/iconoPaginaVioleta.png"
                 alt=""
-                style={{height:"50px"}}
+                style={{ height: "50px" }}
               />
               DiMo
             </Typography>
@@ -397,8 +417,8 @@ export default function LoginSignUp({ isLogin }) {
                 name="email"
                 size="small"
                 value={isLogin == true ? usuario.email : usuarioRegister.email}
-                helperText={errores.email}
                 error={Boolean(errores.email)}
+                helperText={errores.email}
                 onChange={(e) =>
                   isLogin == true
                     ? setUsuario({ ...usuario, email: e.target.value })
@@ -506,7 +526,12 @@ export default function LoginSignUp({ isLogin }) {
           visibility={snackbarVisibility}
         />
       )}
-       {isLoading && <LoadingScreen message={loadingScreen.message} duration={loadingScreen.duration} />} 
+      {isLoading && (
+        <LoadingScreen
+          message={loadingScreen.message}
+          duration={loadingScreen.duration}
+        />
+      )}
     </Grid>
   );
 }

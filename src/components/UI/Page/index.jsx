@@ -1,16 +1,19 @@
-import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 import Header from "../Header";
 import Footer from "../Footer"
 
 export default function Page({ children }) {
-  const [juan, setJuan] = useState(false);
+  
+  const location = useLocation();
+
+  const ocultarHeader = ["/", "/signUp"].includes(location.pathname);
 
   return (
     <div>
-      <Header />
-      <main style={{ minHeight: juan ? "90vh" : "100vh" }}>{children}</main>
-      <Footer/>
+      {!ocultarHeader && <Header />}
+      <main style={{ minHeight: "100vh"}}>{children}</main>
+      {!ocultarHeader && <Footer />}
     </div>
   );
 }

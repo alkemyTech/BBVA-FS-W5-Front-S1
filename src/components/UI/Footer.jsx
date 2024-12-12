@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Container, Typography, Stack, IconButton, Divider } from '@mui/material';
 import { Facebook, Twitter, Instagram, LinkedIn } from '@mui/icons-material';  // Corregir nombre de LinkedIn
 import { Mail as MailIcon, Phone as PhoneIcon } from '@mui/icons-material';
@@ -10,7 +9,7 @@ export default function Footer() {
       background: 'linear-gradient(180deg, rgba(147,92,201,1) 0%, rgba(114,65,173,1) 20%, rgba(93,39,150,1) 38%, rgba(82,32,142,1) 55%, rgba(63,15,119,1) 73%, rgba(36,8,70,1) 100%)',
       color: 'white', py: 4, mt: 'auto'
     }}>
-      <Container maxWidth="lg">
+      <Container>
         <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} justifyContent="space-between" alignItems="center">
           <Box textAlign={{ xs: 'center', md: 'left' }} mb={{ xs: 3, md: 0 }}>
             <Typography variant="body2" color="inherit">

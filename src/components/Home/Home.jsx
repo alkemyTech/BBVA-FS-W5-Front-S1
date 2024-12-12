@@ -1,16 +1,13 @@
 import Grid from '@mui/material/Grid2';
-import Carrousel from '../Carrousel/Carrousel';
 import SendIcon from '@mui/icons-material/Send';
-import { Card, CardContent, IconButton, Typography, Link as MuiLink } from '@mui/material';
+import { Card, CardContent, Typography, Link as MuiLink } from '@mui/material';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
 import { Link } from 'react-router-dom';
 
 
 export default function Home() {
-
     return (
-
         <Grid container sx={{ height: "100vh", textAlign: "center" }}>
             <Grid item size={12} sx={{ height: "30vh" }} border={1}>
                 <Grid container sx={{ height: "30vh", alignItems: "center" }}>

@@ -1,25 +1,48 @@
 import Grid from "@mui/material/Grid2";
 import Typography from "@mui/material/Typography";
-import SecurityIcon from "@mui/icons-material/Security";
-import ChairIcon from "@mui/icons-material/Chair";
-import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
-import AssuredWorkloadIcon from "@mui/icons-material/AssuredWorkload";
-import LoginIcon from "@mui/icons-material/Login";
-import { InputAdornment, IconButton, Box } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Card, CardContent, TextField, Button, MenuItem } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { useEffect, useState } from 'react';
+import apiConfig from '../../Config/axiosConfig';
+import { Card, CardContent, TextField, Button, MenuItem, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import PropTypes from "prop-types";
-import { useState } from "react";
 import axios from "axios";
 import Chip from "@mui/material/Chip";
 import Avatar from "@mui/material/Avatar";
 import { NumericFormat } from "react-number-format";
-import apiConfig from "../../Config/axiosConfig";
+
+
 
 export default function SendMoney({ send }) {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
+    const [accounts, setAccounts] = useState([]);
+    const [transactions, setTransactions] = useState([]);
+    const [cbuCompleto, setCbuCompleto] = useState(false);
+
+
+    useEffect(() => {
+        const fetchAccounts = async () => {
+            try {
+                const response = await apiConfig.get("accounts/");
+                setAccounts(response.data);
+            } catch (error) {
+                console.error('Error fetching accounts:', error);
+            }
+        };
+        const fetchTransactions = async () => {
+            try {
+                const response = await apiConfig.get("/transactions");
+
+                const sortedTransactions = response.data.content
+                    .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate))
+                    .slice(0, 3);
+                setTransactions(sortedTransactions);
+            } catch (error) {
+                console.error('Error fetching accounts:', error);
+            }
+        };
+        console.log(accounts)
+        fetchAccounts();
+        fetchTransactions();
+    }, []);
 
   const [transaction, setTransaction] = useState({
     amount: "",
@@ -63,7 +86,18 @@ export default function SendMoney({ send }) {
     }
   };
 
+
+    const obtenerIniciales = (cadena) => {
+      return cadena
+        .split(' ') // Divide el texto en palabras
+        .filter((palabra) => palabra) // Elimina posibles cadenas vacías
+        .map((palabra) => palabra.charAt(0).toUpperCase()) // Toma la primera letra y la convierte a mayúsculas
+        .join(''); // Une las iniciales en un string
+    };
+  
+
   return (
+    (accounts.map((account) => (
     <div
       style={{
         display: "flex",
@@ -83,21 +117,21 @@ export default function SendMoney({ send }) {
         >
           <Grid item size={12}>
             <Grid container>
-            <Grid item size={3}>
+            <Grid item size={2}>
               <Typography
                 onClick={handleGoHome}
                 sx={{
                   cursor: "pointer",
                   color: "#646cff",
-                  fontSize: "30px",
-                  fontWeight: "bold",
+                  fontSize: "20px",
+
                   margin: 2,
                 }}
               >
                 ← Volver
               </Typography>
             </Grid>
-            <Grid item size={6}>
+            <Grid item size={8}>
               <Typography variant="h4" sx={{ p: 2 }}>
                 {send ? "Transferencia" : "Deposito"}
               </Typography>
@@ -129,12 +163,14 @@ export default function SendMoney({ send }) {
                     id=""
                     label="CBU"
                     value={transaction.cuentaDestino}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const nuevoCbu = e.target.value;
                       setTransaction({
                         ...transaction,
-                        cuentaDestino: e.target.value,
-                      })
-                    }
+                        cuentaDestino: nuevoCbu,
+                      });
+                      setCbuCompleto(nuevoCbu.length === 20); 
+                    }}
                     sx={{ width: "50%" }}
                   />
                 </Grid>
@@ -142,39 +178,48 @@ export default function SendMoney({ send }) {
             </Grid>
           </Grid>
           <Grid item size={12}>
-            {send ? (
-              <Chip
-                avatar={
-                  <Avatar
-                    sx={{
-                      backgroundColor: "#646cff",
-                      color: "#ffffff !important",
-                      fontWeight: "bold",
-                      fontSize: "14px",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      height: "56px",
-                      width: "56px",
-                      padding: "4px",
-                    }}
-                  >
-                    <div>LT</div>
-                  </Avatar>
-                }
-                label="Lucca Trovato"
-                variant="outlined"
+          {send == true ?
+              (
+                <Box
                 sx={{
-                  fontSize: "20px",
-                  color: "#646cff",
-                  borderColor: "#646cff",
-                  "&:hover": { backgroundColor: "#f3eaff" },
-                  p: 3,
+                  opacity: cbuCompleto ? 1 : 0,
+                  transform: cbuCompleto ? "translateY(0)" : "translateY(-10px)",
+                  transition: "opacity 0.3s ease, transform 0.3s ease",
+                  display: cbuCompleto ? "block" : "none", 
                 }}
-              />
-            ) : (
-              <Card
+              >
+                <Chip
+                  avatar={
+                    <Avatar
+                      sx={{
+                        backgroundColor: "#646cff",
+                        color: "#ffffff !important",
+                        fontWeight: "bold",
+                        fontSize: "14px",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: "56px",
+                        width: "56px",
+                        padding: "4px",
+                      }}
+                    >
+                      {obtenerIniciales(account.titular)}
+                    </Avatar>
+                  }
+                  label={account.titular}
+                  variant="outlined"
+                  sx={{
+                    fontSize: "20px",
+                    color: "#646cff",
+                    borderColor: "#646cff",
+                    "&:hover": { backgroundColor: "#f3eaff" },
+                    p: 3,
+                  }}
+                />
+              </Box>): 
+              (<Card
                 sx={{
                   border: "1px solid #646cff",
                   borderRadius: "10px",
@@ -197,7 +242,7 @@ export default function SendMoney({ send }) {
                       width: "56px",
                     }}
                   >
-                    LT
+                    {obtenerIniciales(account.titular)}
                   </Avatar>
                   <Box
                     sx={{
@@ -213,18 +258,17 @@ export default function SendMoney({ send }) {
                       component="div"
                       sx={{ fontSize: "16px", color: "#646cff" }}
                     >
-                      Lucca Trovato
+                      {account.titular}
                     </Typography>
                     <Typography variant="p" color="textSecondary">
-                      CBU: 123411234512343213
+                      CBU: {account.cbu}
                     </Typography>
                     <Typography variant="p" color="textSecondary">
-                      Balance: $ 120.00,00
+                      Balance: ${account.balance}
                     </Typography>
                   </Box>
                 </CardContent>
-              </Card>
-            )}
+              </Card>)}
           </Grid>
 
           <Grid
@@ -282,8 +326,8 @@ export default function SendMoney({ send }) {
             />
           </Grid>
           <Grid item size={12}>
-            <Grid container>
-              <Grid item>
+            <Grid container justifyContent="end" alignItems="end" >
+              
                 <Button
                   variant="contained"
                   color="primary"
@@ -296,13 +340,15 @@ export default function SendMoney({ send }) {
                   }}
                   onClick={manejarTransferencia}
                 >
-                  Continuar
+                  continuar
                 </Button>
-              </Grid>
+              
             </Grid>
           </Grid>
         </Grid>
       </Card>
+      
     </div>
+    )))
   );
 }

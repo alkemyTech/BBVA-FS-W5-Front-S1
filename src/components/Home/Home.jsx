@@ -10,13 +10,17 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import MovingIcon from '@mui/icons-material/Moving';
 import GradeIcon from '@mui/icons-material/Grade';
+import PersonIcon from "@mui/icons-material/Person";
 import { IconButton } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { GrTransaction } from "react-icons/gr";
+import { FaArrowDown } from "react-icons/fa";
 
 
 export default function Home() {
 
     const [accounts, setAccounts] = useState([]);
+    const[favList, setFavList] = useState([]);
     const [transactions, setTransactions] = useState([]);
     const [balanceVisibility, setBalanceVisibility] = useState(true);
     const changeBalanceVisibility = () => {
@@ -49,6 +53,19 @@ export default function Home() {
 
         fetchAccounts();
         fetchTransactions();
+    }, []);
+
+    useEffect(() => {
+        const fetchFavList = async () => {
+            try {
+                const response = await apiConfig.get("/users/favList");
+                setFavList(response.data);
+            } catch (error) {
+                console.error('Error fetching accounts:', error);
+            }
+        };
+
+        fetchFavList();
     }, []);
 
     return (
@@ -95,11 +112,11 @@ export default function Home() {
                                                 </Box>
                                             </Grid>
                                             <Grid item size={6}>
-                                                <Box sx={{ textAlign: "left", ml:2 }}>
+                                                <Box sx={{ textAlign: "left", ml:4 }}>
                                                     <Typography sx={{ color: "gray" }}>
                                                         Limite de Transacción:
                                                     </Typography>
-                                                    <Typography sx={{ fontWeight: "bold", fontSize: "25px" }}>
+                                                    <Typography sx={{ fontWeight: "bold", fontSize: "25px"}}>
                                                         ${account.transactionLimit.toLocaleString("es-AR", { minimumFractionDigits: 0 })}
                                                         
                                                     </Typography>
@@ -131,7 +148,7 @@ export default function Home() {
                                         Cuenta en USD
                                     </Typography>
                                 </CardContent>
-                                <CardContent sx={{height:"28.1vh", display:"flex", alignItems:"center", justifyContent:"center", 
+                                <CardContent sx={{height:"25vh", display:"flex", alignItems:"center", justifyContent:"center", 
                                     flexDirection:"column"}}>
                                     <IconButton aria-label="" >
                                         <AddCircleOutlineIcon sx={{fontSize:"40px", color:"#6655D9"}}/>
@@ -146,7 +163,7 @@ export default function Home() {
                 </Grid>
             </Grid>
             <Grid item size={12}>
-                <Grid container flexDirection="row" justifyContent="center" spacing={15}>
+                <Grid container flexDirection="row" justifyContent="center" spacing={10}>
                     <Grid item>
                         <Grid container flexDirection="column" alignItems="center">
                             <IconButton sx={{display:"flex", flexDirection:"column", gap:"5px", fontSize:"15px", fontWeight:"bold"}}>
@@ -176,7 +193,7 @@ export default function Home() {
             <Grid item size={12}>
                 <Grid container spacing={15}>
                     <Grid item size={6}>
-                        <Card>
+                        <Card variant="elevation" elevation={5}>
                             <CardContent sx={{ background: "#A599F2" }}>
                                 <Typography variant='h6' sx={{ fontWeight: "bold", display:"flex", flexDirection:"row", alignItems:"center", gap:"5px" }}>
                                     <MovingIcon sx={{fontSize:"25px", color:"red"}}/>
@@ -185,24 +202,51 @@ export default function Home() {
                             </CardContent>
                             <Divider />
                             <CardContent sx={{ alignContent: "center" }}>
+                            {console.log(transactions)}
                             {transactions.length > 0 ? (
                                     <List>
                                     {transactions.map((transaction) => (
+                                        <>
                                         <ListItem sx={{ padding: 0 }} key={transaction.cuenta}>
                                             <MuiLink component={Link} to="/#" sx={{ textDecoration: "none", width: "100%", color: "black" }}>
                                                 <CardContent sx={{ width: "100%", '&:hover': { backgroundColor: '#f0f0f0' } }}>
-                                                    <Typography sx={{ fontWeight: "bold" }}>
-                                                        Nombre de transferencia: {transaction.titular}
-                                                    </Typography>
-                                                    <Typography>
-                                                        Tipo: {transaction.type}
-                                                    </Typography>
-                                                    <Typography>
-                                                        Monto: {transaction.amount}
-                                                    </Typography>
+                                                   <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", gap:"240px"}}>
+                                                        <Box sx={{display:"flex", flexDirection:"row", gap:"10px", alignItems:"center"}}>
+                                                            <Box>
+                                                                {transaction.type === "payment" ? 
+
+                                                                    <GrTransaction style={{color:"white", background:"grey", fontSize:"30px", 
+                                                                        borderRadius:"15px", padding:"5px"}}/> :
+
+                                                                        <FaArrowDown  style={{color:"white", background:"grey", fontSize:"30px", 
+                                                                            borderRadius:"15px", padding:"5px"}}/>
+                                                                }
+                                                            </Box>
+                                                            <Box sx={{display:"flex", flexDirection:"column"}}>
+                                                                <Typography variant='p'>
+                                                                    {(transaction.type).toUpperCase()}
+                                                                </Typography>
+                                                                <Typography variant='p'>
+                                                                {transaction.transactionDate}
+                                                                </Typography>
+                                                            </Box>
+                                                        </Box>
+                                                        <Box sx={{display:"flex", flexDirection:"column"}}>
+                                                            <Typography variant='p' sx={{color: transaction.type == "payment" ? "red" : "green", display:"flex", 
+                                                                flexDirection: "row", alignItems:"center", gap:"10px"}}>
+                                                                {transaction.type == "payment" ? "-" : "+"}
+                                                                {transaction.amount.toLocaleString("es-AR", { minimumFractionDigits: 0 })}
+                                                                <Typography variant="body1" color="grey" fontWeight="bold">
+                                                                    {transaction.currency == "ARS" ? " ARS" : " USD"}
+                                                                </Typography>
+                                                            </Typography>
+                                                        </Box>
+                                                   </Box>
                                                 </CardContent>
                                             </MuiLink>
                                         </ListItem>
+                                        <Divider />
+                                        </>
                                     ))}
                                 </List>
                                 ):
@@ -212,7 +256,7 @@ export default function Home() {
                         </Card>
                     </Grid>
                     <Grid item size={6}>
-                        <Card>
+                        <Card variant="elevation" elevation={5}>
                             <CardContent sx={{ background: "#A599F2" }}>
                             <Typography variant='h6' sx={{ fontWeight: "bold", display:"flex", flexDirection:"row", alignItems:"center", gap:"5px" }}>
                                 <GradeIcon sx={{fontSize:"25px", color:"gold"}}/>
@@ -221,24 +265,25 @@ export default function Home() {
                             </CardContent>
                             <Divider />
                             <CardContent>
-                                {transactions.length > 0 ? (
+                                {favList.length > 0 ? (
                                     <List>
-                                    {transactions.map((transaction) => (
-                                        <ListItem sx={{ padding: 0 }} key={transaction.cuenta}>
+                                    {favList.map((favUser) => (
+                                         <>
+                                        <ListItem key={favUser.email}>
                                             <MuiLink component={Link} to="/#" sx={{ textDecoration: "none", width: "100%", color: "black" }}>
                                                 <CardContent sx={{ width: "100%", '&:hover': { backgroundColor: '#f0f0f0' } }}>
-                                                    <Typography sx={{ fontWeight: "bold" }}>
-                                                        Nombre de transferencia: {transaction.titular}
-                                                    </Typography>
-                                                    <Typography>
-                                                        Tipo: {transaction.type}
-                                                    </Typography>
-                                                    <Typography>
-                                                        Monto: {transaction.amount}
-                                                    </Typography>
+                                                    <Box sx={{display:"flex", flexDirection:"row", gap:"10px", alignItems:"center"}}>
+                                                        <PersonIcon style={{color:"white", background:"grey", fontSize:"30px", 
+                                                                borderRadius:"15px", padding:"5px"}}/> 
+                                                        <Typography variant='p'>
+                                                            {(favUser.firstName + " " + favUser.lastName).toUpperCase()}
+                                                        </Typography>
+                                                    </Box>
                                                 </CardContent>
                                             </MuiLink>
                                         </ListItem>
+                                        <Divider />
+                                        </>
                                     ))}
                                 </List>
                                 ):

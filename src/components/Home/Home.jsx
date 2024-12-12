@@ -3,7 +3,7 @@ import SendIcon from '@mui/icons-material/Send';
 import { Card, CardContent, Typography, Link as MuiLink, List, ListItem, Divider, Box } from '@mui/material';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import apiConfig from '../../Config/axiosConfig';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
@@ -26,7 +26,7 @@ export default function Home() {
     const changeBalanceVisibility = () => {
         setBalanceVisibility(!balanceVisibility);
     };
-    
+    const navigate = useNavigate();
     
 
     useEffect(() => {
@@ -67,6 +67,10 @@ export default function Home() {
 
         fetchFavList();
     }, []);
+
+    const handleNavegar = (ruta) => {
+        navigate(ruta);
+    }
 
     return (
     <Grid item size = {12}>
@@ -166,7 +170,7 @@ export default function Home() {
                 <Grid container flexDirection="row" justifyContent="center" spacing={10}>
                     <Grid item>
                         <Grid container flexDirection="column" alignItems="center">
-                            <IconButton sx={{display:"flex", flexDirection:"column", gap:"5px", fontSize:"15px", fontWeight:"bold"}}>
+                            <IconButton sx={{display:"flex", flexDirection:"column", gap:"5px", fontSize:"15px", fontWeight:"bold"}} onClick={() => handleNavegar("/sendmoney")}>
                                 <SendIcon sx={{ fontSize: "40px", color:"#6655D9" }} />
                                 Enviar dinero
                             </IconButton>
@@ -174,7 +178,7 @@ export default function Home() {
                     </Grid>
                     <Grid item>
                         <Grid container flexDirection="column" alignItems="center">
-                            <IconButton sx={{display:"flex", flexDirection:"column", gap:"5px", fontSize:"15px", fontWeight:"bold"}}>
+                            <IconButton sx={{display:"flex", flexDirection:"column", gap:"5px", fontSize:"15px", fontWeight:"bold"}} onClick={() => handleNavegar("/depositmoney")}>
                                 <AssuredWorkloadIcon sx={{ fontSize: "40px", color:"#6655D9" }} />
                                 Ingresar dinero
                             </IconButton>

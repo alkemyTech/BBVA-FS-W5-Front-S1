@@ -73,7 +73,7 @@ export default function Home() {
         <Grid container flexDirection="column" sx={{p:3}} spacing={4}>
             <Grid item size={12}>
                 <Grid container justifyContent="center">
-                    <Typography variant="h4" color="initial" sx={{fontWeight:"bold", color:"#6655D9"}}>Mis cuentas</Typography>
+                    <Typography variant="h4" color="initial" sx={{fontWeight:"bold", color:"#6655D9"}}>MIS CUENTAS</Typography>
                 </Grid>
             </Grid>
             <Grid item size={12}>
@@ -211,7 +211,7 @@ export default function Home() {
                                             <MuiLink component={Link} to="/#" sx={{ textDecoration: "none", width: "100%", color: "black" }}>
                                                 <CardContent sx={{ width: "100%", '&:hover': { backgroundColor: '#f0f0f0' } }}>
                                                    <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", gap:"240px"}}>
-                                                        <Box sx={{display:"flex", flexDirection:"row", gap:"10px", alignItems:"center"}}>
+                                                        <Box sx={{display:"flex", flexDirection:"row", gap:"10px"}}>
                                                             <Box>
                                                                 {transaction.type === "payment" ? 
 
@@ -222,9 +222,12 @@ export default function Home() {
                                                                             borderRadius:"15px", padding:"5px"}}/>
                                                                 }
                                                             </Box>
-                                                            <Box sx={{display:"flex", flexDirection:"column"}}>
+                                                            <Box sx={{display:"flex", flexDirection:"column", gap:"2px"}}>
                                                                 <Typography variant='p'>
                                                                     {(transaction.type).toUpperCase()}
+                                                                </Typography>
+                                                                <Typography variant='p' color='#A599F2'>
+                                                                    {transaction.description}
                                                                 </Typography>
                                                                 <Typography variant='p'>
                                                                 {transaction.transactionDate}

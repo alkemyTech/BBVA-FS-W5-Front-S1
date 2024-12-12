@@ -34,6 +34,9 @@ export default function Header() {
     localStorage.clear();
     dispatch(logout());
   };
+  const handleHome = () =>{
+    navigate("/home")
+  };
   const userAuthenticated = useSelector((state) => state.userAuthenticated);
 
   return (
@@ -62,10 +65,11 @@ export default function Header() {
             <Button
               sx={{
                 color: "#ffffff",
-                fontSize: "13px",
+                fontSize: "16px",
                 alignItems: "center",
               }}
               startIcon={<HomeIcon />}
+              onClick={handleHome}
             >
               <Typography variant="p" color="#ffffff">
                 Inicio
@@ -76,7 +80,7 @@ export default function Header() {
             <Button
               sx={{
                 color: "#ffffff",
-                fontSize: "13px",
+                fontSize: "16px",
                 alignItems: "center",
               }}
               startIcon={<AccountBalanceIcon />}
@@ -90,7 +94,7 @@ export default function Header() {
             <Button
               sx={{
                 color: "#ffffff",
-                fontSize: "13px",
+                fontSize: "16px",
               }}
               startIcon={<CurrencyExchangeIcon />}
             >

@@ -17,7 +17,9 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/login" element={<LoginSignUp isLogin={true} />} />
           <Route path="/signUp" element={<LoginSignUp isLogin={false} />} />
-          <Route path="/sendmoney" element={<SendMoney />} />
+          <Route path="/sendmoney" element={<SendMoney send={true}/>} />
+          <Route path="/depositmoney" element={<SendMoney send={false}/>} />
+
         </Routes>
       </Router>
     </Page>

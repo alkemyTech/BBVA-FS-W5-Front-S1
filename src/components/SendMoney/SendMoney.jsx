@@ -16,20 +16,14 @@ import axios from "axios";
 import Chip from "@mui/material/Chip";
 import Avatar from "@mui/material/Avatar";
 import { NumericFormat } from "react-number-format";
+import apiConfig from "../../Config/axiosConfig";
 
-export default function SendMoney() {
-  const [value, setValue] = useState(""); // Valor inicial como "0"
-  const [tipoCuenta, setTipoCuenta] = useState("");
+export default function SendMoney({ send }) {
   const navigate = useNavigate();
 
   const [transaction, setTransaction] = useState({
     amount: "",
-    currencyType: "",
-    type: "",
     description: "",
-    transactionDate: "",
-    cuenta: "",
-    titular: "",
     cuentaDestino: "",
   });
 
@@ -37,33 +31,35 @@ export default function SendMoney() {
     navigate("/home"); // Navegar a la ruta "/home"
   };
 
-  const handleTipoCuentaChange = (event) => {
-    setTipoCuenta(event.target.value);
-  };
-
   const manejarTransferencia = async () => {
     let response;
+
     try {
-      (response = await apiConfig.post("/transactions/sendArs")),
+    console.log(transaction);
+      
+      response = await axios.post(
+        "http://localhost:8080/transactions/sendArs",
         {
           amount: transaction.amount,
           description: transaction.description,
           cuentaDestino: transaction.cuentaDestino,
-        };
-        alert("BOOOOCA")
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
+      );
+      alert("BOOOOCA");
     } catch (e) {
       console.log(e);
       setTransaction({
         amount: "",
-        currencyType: "",
-        type: "",
         description: "",
-        transactionDate: "",
-        cuenta: "",
-        titular: "",
         cuentaDestino: "",
       });
-      alert("No se pudo realizar la transaccion")
+      console.log(transaction);
+      alert("No se pudo realizar la transaccion");
     }
   };
 
@@ -73,8 +69,8 @@ export default function SendMoney() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "80vh",
-        margin: 0,
+        height: "100vh",
+        margin: "auto",
       }}
     >
       <Card sx={{ width: "80%" }}>
@@ -87,66 +83,129 @@ export default function SendMoney() {
         >
           <Grid item size={12}>
             <Typography variant="h4" sx={{ p: 2 }}>
-              Transferencia
+              {send ? "Transferencia" : "Deposito"}
             </Typography>
           </Grid>
           <Grid item size={12}>
-            <Grid container justifyContent="space-between">
-              <Grid item size={6}>
+            <Grid
+              container
+              justifyContent="space-between"
+              paddingBottom={send ? "10px" : "50px"}
+            >
+              <Grid item size={send ? 6 : 12}>
                 <TextField
                   id="tipo-cuenta"
                   label="Tipo de cuenta"
                   select
-                  sx={{ width: "50%" }}
-                  value={tipoCuenta}
-                  onChange={handleTipoCuentaChange}
+                  sx={{ width: send ? "50%" : "30%" }}
                   variant="outlined"
                 >
                   <MenuItem value="ARS">ARS</MenuItem>
                   <MenuItem value="USD">USD</MenuItem>
                 </TextField>
               </Grid>
-              <Grid item size={6}>
-                <TextField
-                  id=""
-                  label="CBU"
-                  value={transaction.cuentaDestino}
-                  onChange={(e) =>
-                    setTransaction({
-                      ...transaction,
-                      cuentaDestino: e.target.value,
-                    })
-                  }
-                  sx={{ width: "50%" }}
-                />
-              </Grid>
+              {send && (
+                <Grid item size={6}>
+                  <TextField
+                    id=""
+                    label="CBU"
+                    value={transaction.cuentaDestino}
+                    onChange={(e) =>
+                      setTransaction({
+                        ...transaction,
+                        cuentaDestino: e.target.value,
+                      })
+                    }
+                    sx={{ width: "50%" }}
+                  />
+                </Grid>
+              )}
             </Grid>
           </Grid>
           <Grid item size={12}>
-            <Chip
-              avatar={
-                <Avatar
-                  sx={{
-                    backgroundColor: "#646cff",
-                    color: "#ffffff !important",
-                    fontWeight: "bold",
-                    fontSize: "23px",
-                  }}
-                >
-                  LT
-                </Avatar>
-              }
-              label="Lucca Trovato"
-              variant="outlined"
-              sx={{
-                fontSize: "30px",
-                color: "#646cff",
-                borderColor: "#646cff",
-                "&:hover": {
-                  backgroundColor: "#f3eaff",
-                },
-              }}
-            />
+            {send ? (
+              <Chip
+                avatar={
+                  <Avatar
+                    sx={{
+                      backgroundColor: "#646cff",
+                      color: "#ffffff !important",
+                      fontWeight: "bold",
+                      fontSize: "14px",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: "56px",
+                      width: "56px",
+                      padding: "4px",
+                    }}
+                  >
+                    <div>LT</div>
+                  </Avatar>
+                }
+                label="Lucca Trovato"
+                variant="outlined"
+                sx={{
+                  fontSize: "20px",
+                  color: "#646cff",
+                  borderColor: "#646cff",
+                  "&:hover": { backgroundColor: "#f3eaff" },
+                  p: 3,
+                }}
+              />
+            ) : (
+              <Card
+                sx={{
+                  border: "1px solid #646cff",
+                  borderRadius: "10px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "30%",
+                  margin: "auto",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                <CardContent sx={{ display: "flex", alignItems: "center" }}>
+                  <Avatar
+                    sx={{
+                      backgroundColor: "#646cff",
+                      color: "#ffffff !important",
+                      fontWeight: "bold",
+                      fontSize: "20px",
+                      height: "56px",
+                      width: "56px",
+                    }}
+                  >
+                    LT
+                  </Avatar>
+                  <Box
+                    sx={{
+                      textAlign: "center",
+                      display: "flex",
+                      flexDirection: "column",
+                      p: 2,
+                      gap: 0.5,
+                    }}
+                  >
+                    <Typography
+                      variant="h6"
+                      component="div"
+                      sx={{ fontSize: "16px", color: "#646cff" }}
+                    >
+                      Lucca Trovato
+                    </Typography>
+                    <Typography variant="p" color="textSecondary">
+                      CBU: 123411234512343213
+                    </Typography>
+                    <Typography variant="p" color="textSecondary">
+                      Balance: $ 120.00,00
+                    </Typography>
+                  </Box>
+                </CardContent>
+              </Card>
+            )}
           </Grid>
 
           <Grid
@@ -187,7 +246,6 @@ export default function SendMoney() {
               variant="standard"
               placeholder="$0"
             />
-            {console.log(transaction.amount)}
           </Grid>
 
           <Grid item size={12}>

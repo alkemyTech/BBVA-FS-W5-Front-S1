@@ -8,16 +8,19 @@ import axios from "axios";
 import Chip from "@mui/material/Chip";
 import Avatar from "@mui/material/Avatar";
 import { NumericFormat } from "react-number-format";
+import { useSelector } from "react-redux";
 
 
 
 export default function SendMoney({ send }) {
     const navigate = useNavigate();
+    const userAuthenticated = useSelector((state) => state.userAuthenticated);
     const [accounts, setAccounts] = useState([]);
     const [transactions, setTransactions] = useState([]);
     const [cbuCompleto, setCbuCompleto] = useState(false);
-
-
+    const [tipoCuenta, setTipoCuenta] = useState({
+      currency:"ARS"
+    });
     useEffect(() => {
         const fetchAccounts = async () => {
             try {
@@ -39,7 +42,6 @@ export default function SendMoney({ send }) {
                 console.error('Error fetching accounts:', error);
             }
         };
-        console.log(accounts)
         fetchAccounts();
         fetchTransactions();
     }, []);
@@ -47,7 +49,7 @@ export default function SendMoney({ send }) {
   const [transaction, setTransaction] = useState({
     amount: "",
     description: "",
-    cuentaDestino: "",
+    cbu: "",
   });
 
   const handleGoHome = () => {
@@ -58,14 +60,12 @@ export default function SendMoney({ send }) {
     let response;
 
     try {
-      console.log(transaction);
-
       response = await axios.post(
         "http://localhost:8080/transactions/sendArs",
         {
           amount: transaction.amount,
           description: transaction.description,
-          cuentaDestino: transaction.cuentaDestino,
+          cbu: transaction.cbu,
         },
         {
           headers: {
@@ -73,31 +73,44 @@ export default function SendMoney({ send }) {
           },
         }
       );
-      alert("BOOOOCA");
+      alert("Transferencia realizada con exito");
+      navigate("/home")
     } catch (e) {
       console.log(e);
       setTransaction({
         amount: "",
         description: "",
-        cuentaDestino: "",
+        cbu: "",
       });
-      console.log(transaction);
-      alert("No se pudo realizar la transaccion");
+      if(e.response.status === 500){
+        alert("ERROR! No pudo realizarse la transferencia");
+      } else{
+      alert(e.response.data.Mensaje);}
     }
   };
 
 
     const obtenerIniciales = (cadena) => {
       return cadena
-        .split(' ') // Divide el texto en palabras
-        .filter((palabra) => palabra) // Elimina posibles cadenas vacías
-        .map((palabra) => palabra.charAt(0).toUpperCase()) // Toma la primera letra y la convierte a mayúsculas
-        .join(''); // Une las iniciales en un string
+        .split(' ') 
+        .filter((palabra) => palabra) 
+        .map((palabra) => palabra.charAt(0).toUpperCase()) 
+        .join('');
     };
   
+    const obtenerCuenta = (currency) => {
+      let accountBuscada = null;
+      accounts.map(account => {
+        if (account.currency === currency){
+          accountBuscada = account;
+        }
+      })
+      console.log(accountBuscada)
+      return accountBuscada;
+    }
+    console.log(accounts)
 
   return (
-    (accounts.map((account) => (
     <div
       style={{
         display: "flex",
@@ -124,7 +137,6 @@ export default function SendMoney({ send }) {
                   cursor: "pointer",
                   color: "#646cff",
                   fontSize: "20px",
-
                   margin: 2,
                 }}
               >
@@ -149,6 +161,8 @@ export default function SendMoney({ send }) {
                 <TextField
                   id="tipo-cuenta"
                   label="Tipo de cuenta"
+                  value={tipoCuenta.currency}
+                  onChange={(e) => setTipoCuenta({...tipoCuenta, currency:e.target.value})}
                   select
                   sx={{ width: send ? "50%" : "30%" }}
                   variant="outlined"
@@ -162,12 +176,12 @@ export default function SendMoney({ send }) {
                   <TextField
                     id=""
                     label="CBU"
-                    value={transaction.cuentaDestino}
+                    value={transaction.cbu}
                     onChange={(e) => {
                       const nuevoCbu = e.target.value;
                       setTransaction({
                         ...transaction,
-                        cuentaDestino: nuevoCbu,
+                        cbu: nuevoCbu,
                       });
                       setCbuCompleto(nuevoCbu.length === 20); 
                     }}
@@ -184,7 +198,7 @@ export default function SendMoney({ send }) {
                 sx={{
                   opacity: cbuCompleto ? 1 : 0,
                   transform: cbuCompleto ? "translateY(0)" : "translateY(-10px)",
-                  transition: "opacity 0.3s ease, transform 0.3s ease",
+                  transition: "opacity 3.0s ease, transform 5.0s ease",
                   display: cbuCompleto ? "block" : "none", 
                 }}
               >
@@ -205,10 +219,10 @@ export default function SendMoney({ send }) {
                         padding: "4px",
                       }}
                     >
-                      {obtenerIniciales(account.titular)}
+                      {obtenerIniciales("Lucca Trovato")}
                     </Avatar>
                   }
-                  label={account.titular}
+                  label="Lucca Trovato"
                   variant="outlined"
                   sx={{
                     fontSize: "20px",
@@ -218,8 +232,11 @@ export default function SendMoney({ send }) {
                     p: 3,
                   }}
                 />
+                
               </Box>): 
-              (<Card
+              ( 
+                obtenerCuenta(tipoCuenta.currency) != null && (
+                <Card
                 sx={{
                   border: "1px solid #646cff",
                   borderRadius: "10px",
@@ -242,7 +259,7 @@ export default function SendMoney({ send }) {
                       width: "56px",
                     }}
                   >
-                    {obtenerIniciales(account.titular)}
+                    {obtenerIniciales(userAuthenticated.firstName + " "+userAuthenticated.lastName)}
                   </Avatar>
                   <Box
                     sx={{
@@ -258,17 +275,22 @@ export default function SendMoney({ send }) {
                       component="div"
                       sx={{ fontSize: "16px", color: "#646cff" }}
                     >
-                      {account.titular}
+                      {userAuthenticated.firstName + " " + userAuthenticated.lastName}
                     </Typography>
                     <Typography variant="p" color="textSecondary">
-                      CBU: {account.cbu}
+                      CBU: {obtenerCuenta(tipoCuenta.currency).cbu}
                     </Typography>
                     <Typography variant="p" color="textSecondary">
-                      Balance: ${account.balance}
+                      Balance: $ {obtenerCuenta(tipoCuenta.currency).balance}
                     </Typography>
                   </Box>
                 </CardContent>
-              </Card>)}
+              </Card>
+              )
+                
+              )}
+              
+              
           </Grid>
 
           <Grid
@@ -280,7 +302,7 @@ export default function SendMoney({ send }) {
             paddingBottom="20px"
           >
             <NumericFormat
-              sx={{ width: "50%" }}
+              sx={{ width: "50%"}}
               value={transaction.amount}
               onValueChange={(values) => {
                 const { value } = values;
@@ -301,13 +323,14 @@ export default function SendMoney({ send }) {
                   style: {
                     textAlign: "center",
                     fontSize: "50px",
-                    fontWeight: "bold",
+                    color: transaction.amount ? "#646cff" : "#000000"
                   },
                 },
               }}
               size="small"
               variant="standard"
               placeholder="$0"
+              
             />
           </Grid>
 
@@ -327,7 +350,6 @@ export default function SendMoney({ send }) {
           </Grid>
           <Grid item size={12}>
             <Grid container justifyContent="end" alignItems="end" >
-              
                 <Button
                   variant="contained"
                   color="primary"
@@ -347,8 +369,7 @@ export default function SendMoney({ send }) {
           </Grid>
         </Grid>
       </Card>
-      
     </div>
-    )))
+    
   );
 }

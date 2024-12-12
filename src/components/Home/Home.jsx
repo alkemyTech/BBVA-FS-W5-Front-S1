@@ -1,69 +1,104 @@
 import Grid from '@mui/material/Grid2';
 import SendIcon from '@mui/icons-material/Send';
-import { Card, CardContent, Typography, Link as MuiLink } from '@mui/material';
+import { Card, CardContent, IconButton, Typography, Link as MuiLink, List, ListItem, Divider, Box } from '@mui/material';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import apiConfig from '../../Config/axiosConfig';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 
 
 export default function Home() {
+
+    const [accounts, setAccounts] = useState([]);
+    const [transactions, setTransactions] = useState([]);
+
+    useEffect(() => {
+        const fetchAccounts = async () => {
+            try {
+                const response = await apiConfig.get("accounts/");
+                setAccounts(response.data);
+            } catch (error) {
+                console.error('Error fetching accounts:', error);
+            }
+        };
+        const fetchTransactions = async () => {
+            try {
+                const response = await apiConfig.get("/transactions");
+
+                const sortedTransactions = response.data.content
+                    .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate))
+                    .slice(0, 3);
+                setTransactions(sortedTransactions);
+            } catch (error) {
+                console.error('Error fetching accounts:', error);
+            }
+        };
+
+        fetchAccounts();
+        fetchTransactions();
+    }, []);
+
     return (
-        <Grid container sx={{ height: "100vh", textAlign: "center" }}>
-            <Grid item size={12} sx={{ height: "30vh" }} border={1}>
-                <Grid container sx={{ height: "30vh", alignItems: "center" }}>
-                    <Grid item size={6}>
-                        <Grid container sx={{ justifyContent: "center" }}>
-                            <Card sx={{ width: "70%" }}>
-                                <CardContent sx={{ background: "#A599F2" }}>
-                                    <Typography sx={{ textAlign: "left", fontWeight: "bold" }}>
-                                        Cuenta en ARS
-                                    </Typography>
-                                </CardContent>
-                                <CardContent>
-                                    <Typography>
-                                        Balance:
-                                    </Typography>
-                                </CardContent>
-                                <CardContent>
-                                    <Typography>
-                                        CBU:
-                                    </Typography>
-                                </CardContent>
-                            </Card>
+
+        <Grid container sx={{ height: "100vh", textAlign: "center", background: "#eee" }}>
+            <Grid item size={12}>
+                <Grid container sx={{ alignItems: "center", marginTop: "1vh", height: "15vh" }}>
+                    {accounts.map((account) => (
+                        <Grid item size={6} key={account.cbu}>
+                            <Grid container sx={{ justifyContent: "center" }}>
+                                <Card sx={{ width: "70%" }}>
+                                    <CardContent sx={{ background: "#A599F2" }}>
+                                        <Typography sx={{ textAlign: "left", fontWeight: "bold", fontSize: "30px" }}>
+                                            Cuenta en {account.currency}
+                                        </Typography>
+                                    </CardContent>
+                                    <CardContent>
+                                        <Grid container>
+                                            <Grid item size={6}>
+                                                <Typography sx={{ color: "gray", textAlign: "left", marginLeft: "2vh" }}>
+                                                    Dinero disponible:
+                                                </Typography>
+                                                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "left" }}>
+                                                    <AttachMoneyIcon sx={{ fontSize: "50px" }} />
+                                                    <Typography sx={{ textAlign: "center", fontWeight: "bold", fontSize: "45px" }}>
+                                                        {account.balance}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item size={6}>
+                                                <Box sx={{ textAlign: "left", marginLeft: "2vh" }}>
+                                                    <Typography sx={{ color: "gray" }}>
+                                                        CBU:
+                                                    </Typography>
+                                                    <Typography sx={{ fontWeight: "bold", fontSize: "25px" }}>
+                                                        {account.cbu}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+
+                                        </Grid>
+
+                                    </CardContent>
+                                    <CardContent>
+
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+
                         </Grid>
-                    </Grid>
-                    <Grid item size={6}>
-                        <Grid container sx={{ justifyContent: "center" }}>
-                            <Card sx={{ width: "70%" }} >
-                                <CardContent sx={{ background: "#8DC989" }}>
-                                    <Typography sx={{ textAlign: "left", fontWeight: "bold" }}>
-                                        Cuenta en USD
-                                    </Typography>
-                                </CardContent>
-                                <CardContent>
-                                    <Typography>
-                                        Balance:
-                                    </Typography>
-                                </CardContent>
-                                <CardContent>
-                                    <Typography>
-                                        CBU:
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                    </Grid>
+                    ))}
                 </Grid>
             </Grid>
-            <Grid item size={12}>
-                <Grid container sx={{ textAlign: 'center', height: "10vh" }}>
+            <Grid item size={12} sx={{ height: "1vh" }}>
+                <Grid container sx={{ textAlign: 'center', alignContent: "center" }}>
                     <Grid item size={4}>
-                        <Grid container sx={{ flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+                        <Grid container sx={{  justifyContent:"end" }}>
                             <MuiLink component={Link} to="/#" sx={{ textDecoration: "none" }}>
-                                <Card sx={{
-                                    transition: 'transform 0.2s, box-shadow 0.2s', '&:hover': { transform: 'scale(1.05)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }
-                                }}>
-                                    <CardContent>
+                                <Card>
+                                    <CardContent sx={{'&:hover': { backgroundColor: '#00bcb0' }}}>
                                         <Grid container>
                                             <Grid item size={12}>
                                                 <SendIcon sx={{ fontSize: "30px" }} />
@@ -82,10 +117,8 @@ export default function Home() {
                     <Grid item size={4}>
                         <Grid container sx={{ flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
                             <MuiLink component={Link} to="/#" sx={{ textDecoration: "none" }}>
-                                <Card sx={{
-                                    transition: 'transform 0.2s, box-shadow 0.2s', '&:hover': { transform: 'scale(1.05)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }
-                                }}>
-                                    <CardContent>
+                                <Card>
+                                    <CardContent sx={{'&:hover': { backgroundColor: '#00bcb0' }}}>
                                         <Grid container>
                                             <Grid item size={12}>
                                                 <AssuredWorkloadIcon sx={{ fontSize: "30px" }} />
@@ -102,13 +135,10 @@ export default function Home() {
                         </Grid>
                     </Grid>
                     <Grid item size={4}>
-                        <Grid container sx={{ flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-                            <Grid container sx={{ flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+                        <Grid container sx={{ justifyContent:"start" }}>
                                 <MuiLink component={Link} to="/#" sx={{ textDecoration: "none" }}>
-                                    <Card sx={{
-                                        transition: 'transform 0.2s, box-shadow 0.2s', '&:hover': { transform: 'scale(1.05)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }
-                                    }}>
-                                        <CardContent>
+                                    <Card>
+                                        <CardContent sx={{'&:hover': { backgroundColor: '#00bcb0' }}}>
                                             <Grid container>
                                                 <Grid item size={12}>
                                                     <RequestQuoteIcon sx={{ fontSize: "30px" }} />
@@ -122,28 +152,73 @@ export default function Home() {
                                         </CardContent>
                                     </Card>
                                 </MuiLink>
-                            </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
             </Grid>
             <Grid item size={12}>
-                <Grid container sx={{ textAlign: 'center', height: "50vh",alignItems: "center" , border:1}}>
+                <Grid container sx={{ textAlign: 'center' }}>
                     <Grid item size={6}>
                         <Card>
-                            <CardContent>
-                                <Typography>
-                                    cOLUMNA A
+                            <CardContent sx={{ background: "#A599F2" }}>
+                                <Typography variant='h5' sx={{ fontWeight: "bold" }}>
+                                    Transferencias
                                 </Typography>
+                            </CardContent>
+                            <Divider />
+                            <CardContent sx={{ alignContent: "center" }}>
+                                <List>
+                                    {transactions.map((transaction) => (
+                                        <ListItem sx={{ padding: 0 }} key={transaction.cuenta}>
+                                            <MuiLink component={Link} to="/#" sx={{ textDecoration: "none", width: "100%", color: "black" }}>
+                                                <CardContent sx={{ width: "100%", '&:hover': { backgroundColor: '#f0f0f0' } }}>
+                                                    <Typography sx={{ fontWeight: "bold" }}>
+                                                        Nombre de transferencia: {transaction.titular}
+                                                    </Typography>
+                                                    <Typography>
+                                                        Tipo: {transaction.type}
+                                                    </Typography>
+                                                    <Typography>
+                                                        Monto: {transaction.amount}
+                                                    </Typography>
+                                                </CardContent>
+                                            </MuiLink>
+                                        </ListItem>
+                                    ))}
+                                </List>
+
                             </CardContent>
                         </Card>
                     </Grid>
                     <Grid item size={6}>
                         <Card>
-                            <CardContent>
-                                <Typography>
-                                    cOLUMNA A
+                            <CardContent sx={{ background: "#A599F2" }}>
+                                <Typography variant='h5' sx={{ fontWeight: "bold" }}>
+                                    Transferencias
                                 </Typography>
+                            </CardContent>
+                            <Divider />
+                            <CardContent>
+                                <List>
+                                    {transactions.map((transaction) => (
+                                        <ListItem sx={{ padding: 0 }} key={transaction.cuenta}>
+                                            <MuiLink component={Link} to="/#" sx={{ textDecoration: "none", width: "100%", color: "black" }}>
+                                                <CardContent sx={{ width: "100%", '&:hover': { backgroundColor: '#f0f0f0' } }}>
+                                                    <Typography sx={{ fontWeight: "bold" }}>
+                                                        Nombre de transferencia: {transaction.titular}
+                                                    </Typography>
+                                                    <Typography>
+                                                        Tipo: {transaction.type}
+                                                    </Typography>
+                                                    <Typography>
+                                                        Monto: {transaction.amount}
+                                                    </Typography>
+                                                </CardContent>
+                                            </MuiLink>
+                                        </ListItem>
+                                    ))}
+                                </List>
+
                             </CardContent>
                         </Card>
                     </Grid>

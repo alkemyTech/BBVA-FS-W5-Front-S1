@@ -10,17 +10,20 @@ import PaymentsServices from "./components/Payment/PaymentsServices";
 
 function App() {
   return (
+    <Router>
     <Page>
-      <Router>
         <Routes>
+          <Route path="/" element={<LoginSignUp isLogin={true} />} />        
           <Route path="/" element={<WelcomePage />} />       
           <Route path="/home" element={<Home />} />
-          <Route path="/login" element={<LoginSignUp isLogin={true} />} />
           <Route path="/signUp" element={<LoginSignUp isLogin={false} />} />
+          <Route path="/sendmoney" element={<SendMoney send={true}/>} />
+          <Route path="/depositmoney" element={<SendMoney send={false}/>} />
+
           <Route path="/payment" element={<PaymentsServices />} /> 
         </Routes>
-      </Router>
     </Page>
+    </Router>
   );
 }
 

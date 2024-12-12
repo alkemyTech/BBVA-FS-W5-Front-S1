@@ -9,21 +9,30 @@ import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useState } from "react";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Divider from "@mui/material/Divider";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Logout from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
+import { useNavigate } from "react-router-dom";
+import {logout} from "../../Redux/Slices/userAuthenticatedSlice";
 
 
 export default function Header() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+  const handleLogout = () =>{
+    navigate("/")
+    localStorage.clear();
+    dispatch(logout());
   };
   const userAuthenticated = useSelector((state) => state.userAuthenticated);
 
@@ -136,12 +145,13 @@ export default function Header() {
               Mi cuenta
             </MenuItem>
             <Divider />
-            <MenuItem onClick={handleClose} sx={{ fontSize: "14px" }}>
+            <MenuItem sx={{ fontSize: "14px" }} onClick={handleLogout}>
               <ListItemIcon>
                 <Logout
                   fontSize="small"
                   fontColor="#6655D9"
                   sx={{ color: "#6655D9" }}
+                  
                 />
               </ListItemIcon>
               Logout

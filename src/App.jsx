@@ -2,7 +2,6 @@ import Page from "./components/UI/Page";
 import "./App.css";
 import LoginSignUp from "./components/LoginSignUp/LoginSignUp";
 import WelcomePage from "./components/WelcomePage/WelcomePage";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import SendMoney from "./components/SendMoney/SendMoney"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./components/Home/home";

@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Typography ,TextField, MenuItem } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 
 export default function Transactions() {
@@ -13,17 +13,34 @@ export default function Transactions() {
             <Grid item size={12}>
                 <Grid container>
                     <Grid item size={6}>
-                        
+                        <TextField
+                            id="tipo-cuenta"
+                            label="Tipo de cuenta"
+                            select
+                            sx={{ width: "50%" }}
+                            variant="outlined"
+                        >
+                            <MenuItem value="ARS">ARS</MenuItem>
+                            <MenuItem value="USD">USD</MenuItem>
+                        </TextField>
                     </Grid>
                     <Grid item size={6}>
-
+                    <TextField
+                            id="tipo-cuenta"
+                            label="Tipo de cuenta"
+                            select
+                            sx={{ width: "50%" }}
+                            variant="outlined"
+                        >
+                            <MenuItem value="ARS">ARS</MenuItem>
+                            <MenuItem value="USD">USD</MenuItem>
+                        </TextField>
                     </Grid>
                 </Grid>
-
             </Grid>
             <Grid item size={12}>
                 <Grid container>
-                    
+
                 </Grid>
 
             </Grid>

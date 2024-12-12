@@ -4,8 +4,8 @@ import LoginSignUp from "./components/LoginSignUp/LoginSignUp";
 import WelcomePage from "./components/WelcomePage/WelcomePage";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./components/Home/home";
+import SendMoney from "./components/SendMoney/SendMoney"
 import PaymentsServices from "./components/Payment/PaymentsServices";
-
 
 
 function App() {

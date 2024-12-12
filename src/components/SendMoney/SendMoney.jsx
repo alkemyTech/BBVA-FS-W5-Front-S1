@@ -28,15 +28,15 @@ export default function SendMoney({ send }) {
   });
 
   const handleGoHome = () => {
-    navigate("/home"); // Navegar a la ruta "/home"
+    navigate("/home");
   };
 
   const manejarTransferencia = async () => {
     let response;
 
     try {
-    console.log(transaction);
-      
+      console.log(transaction);
+
       response = await axios.post(
         "http://localhost:8080/transactions/sendArs",
         {
@@ -82,9 +82,28 @@ export default function SendMoney({ send }) {
           textAlign="center"
         >
           <Grid item size={12}>
-            <Typography variant="h4" sx={{ p: 2 }}>
-              {send ? "Transferencia" : "Deposito"}
-            </Typography>
+            <Grid container>
+            <Grid item size={3}>
+              <Typography
+                onClick={handleGoHome}
+                sx={{
+                  cursor: "pointer",
+                  color: "#646cff",
+                  fontSize: "30px",
+                  fontWeight: "bold",
+                  margin: 2,
+                }}
+              >
+                ← Volver
+              </Typography>
+            </Grid>
+            <Grid item size={6}>
+              <Typography variant="h4" sx={{ p: 2 }}>
+                {send ? "Transferencia" : "Deposito"}
+              </Typography>
+            </Grid>
+            </Grid>
+
           </Grid>
           <Grid item size={12}>
             <Grid
@@ -263,21 +282,7 @@ export default function SendMoney({ send }) {
             />
           </Grid>
           <Grid item size={12}>
-            <Grid container justifyContent="space-between">
-              <Grid item>
-                <Typography
-                  onClick={handleGoHome}
-                  sx={{
-                    cursor: "pointer",
-                    color: "#646cff",
-                    fontSize: "30px",
-                    fontWeight: "bold",
-                    margin: 2,
-                  }}
-                >
-                  ← Volver
-                </Typography>
-              </Grid>
+            <Grid container>
               <Grid item>
                 <Button
                   variant="contained"

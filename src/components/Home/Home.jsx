@@ -96,7 +96,7 @@ export default function Home() {
                 <Grid container sx={{ textAlign: 'center', alignContent: "center" }}>
                     <Grid item size={4}>
                         <Grid container sx={{  justifyContent:"end" }}>
-                            <MuiLink component={Link} to="/#" sx={{ textDecoration: "none" }}>
+                            <MuiLink component={Link} to="/sendMoney" sx={{ textDecoration: "none" }}>
                                 <Card>
                                     <CardContent sx={{'&:hover': { backgroundColor: '#00bcb0' }}}>
                                         <Grid container>
@@ -116,7 +116,7 @@ export default function Home() {
                     </Grid>
                     <Grid item size={4}>
                         <Grid container sx={{ flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-                            <MuiLink component={Link} to="/#" sx={{ textDecoration: "none" }}>
+                            <MuiLink component={Link} to="/depositMoney" sx={{ textDecoration: "none" }}>
                                 <Card>
                                     <CardContent sx={{'&:hover': { backgroundColor: '#00bcb0' }}}>
                                         <Grid container>

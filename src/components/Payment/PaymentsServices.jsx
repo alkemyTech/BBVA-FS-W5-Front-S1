@@ -1,159 +1,182 @@
-// src/components/Payment.jsx
-import React, { useState, useEffect } from 'react';
-import { Container, Card, CardContent, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, Box, TextField, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, FormHelperText } from '@mui/material';
-import Grid from '@mui/material/Grid2'; // Import Grid
-import { Home, Wifi, Lightbulb, Opacity, WbIncandescent } from '@mui/icons-material';
-
-const services = [
-  { name: 'Movistar', icon: <Home fontSize="large" />, price: 'ARS 1200' },
-  { name: 'Netflix', icon: <Wifi fontSize="large" />, price: 'ARS 900' },
-  { name: 'Edenor', icon: <Lightbulb fontSize="large" />, price: 'ARS 1500' },
-  { name: 'Agua', icon: <Opacity fontSize="large" />, price: 'ARS 700' },
-  { name: 'Luz', icon: <WbIncandescent fontSize="large" />, price: 'ARS 1600' },
-];
-
-// Valores fijos para los balances
-const balancePesos = 50000; // Ejemplo: 50,000 pesos disponibles
-const balanceDolares = 1000; // Ejemplo: 1,000 dólares disponibles
+import React, { useEffect, useState } from 'react';
+import Grid from '@mui/material/Grid2';
+import { Card, CardContent, Typography, Button, Box, CardMedia } from '@mui/material';
+import apiConfig from '../../Config/axiosConfig';
+import Swal from "sweetalert2";
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 const Payment = () => {
-  const [open, setOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState(null);
-  const [amount, setAmount] = useState('');
-  const [concept, setConcept] = useState('');
-  const [currency, setCurrency] = useState('');
-  const [paymentDate, setPaymentDate] = useState('');
-  const [errors, setErrors] = useState({});
+  const [accounts, setAccounts] = useState([]);
+  const [transaction, setTransaction] = useState({
+    amount: "",
+    description: "",
+    currencyType: "",
+  });
 
-  useEffect(() => {
-    setPaymentDate(new Date().toLocaleString());
-  }, [open]);
-
-  const handleClickOpen = (service) => {
-    setSelectedService(service);
-    setOpen(true);
+  const alertaPagoServicio = (valorServicio, servicio) => {
+    Swal.fire({
+      title: "Pago de Servicio",
+      html: `
+        <p>No va a ser posible revertir la operación.</p>
+        <input id="concepto" class="swal2-input" placeholder="Ingrese el concepto del pago" />
+      `,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Confirmar",
+      confirmButtonColor: "#0cae27",
+      cancelButtonColor: "#fe5b5b",
+      cancelButtonText: "Cancelar",
+      reverseButtons: true,
+      preConfirm: () => {
+        const concepto = Swal.getPopup().querySelector("#concepto").value;
+        if (!concepto) {
+          Swal.showValidationMessage("Por favor, ingrese un concepto");
+        }
+        return concepto;
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const descripcion = result.value;
+        const nuevaTransaccion = {
+          amount: valorServicio,
+          description: `${descripcion || `Pago de ${servicio}`}`,
+          currencyType: "ARS",
+        };
+        pagarServicio(nuevaTransaccion);
+      }
+    });
   };
 
-  const handleClose = () => {
-    setOpen(false);
-    setSelectedService(null);
-    setAmount('');
-    setConcept('');
-    setCurrency('');
-    setPaymentDate('');
-    setErrors({});
-  };
-
-  const validate = () => {
-    let tempErrors = {};
-    if (!currency) tempErrors.currency = "Seleccione una moneda.";
-    if (amount <= 0) tempErrors.amount = "El monto debe ser mayor que cero.";
-    if (concept.length > 100) tempErrors.concept = "El concepto debe tener un máximo de 100 caracteres.";
-    setErrors(tempErrors);
-    return Object.keys(tempErrors).length === 0;
-  };
-
-  const handleConfirmPayment = () => {
-    if (validate()) {
-      alert(`Pago confirmado:
-Servicio: ${selectedService.name}
-Monto: ${amount} ${currency}
-Concepto: ${concept}
-Fecha y hora: ${paymentDate}`);
-      handleClose();
+  const pagarServicio = async (transaction) => {
+    try {
+      await apiConfig.post("/transactions/payment", transaction);
+      Swal.fire({
+        title: "Pago realizado",
+        text: "El servicio fue pagado con éxito",
+        icon: "success",
+      }).then(() => {       
+        window.location.reload();
+      });
+    } catch (e) {
+      Swal.fire("Error", "Ocurrió un error al realizar el pago", "error");
     }
   };
 
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      try {
+        const response = await apiConfig.get("accounts/");
+        setAccounts(response.data);
+      } catch (error) {
+        console.error('Error fetching accounts:', error);
+      }
+    };
+    fetchAccounts();
+  }, []);
+
+  const accountPesos = accounts.filter(account => account.currency === "ARS");
+
+  const services = [
+    { name: "Netflix", price: 500, image: "https://www.liderlogo.es/wp-content/uploads/2022/12/pasted-image-0-6-1024x576.png" },
+    { name: "Spotify", price: 300, image: "https://www.liderlogo.es/wp-content/uploads/2022/12/pasted-image-0-4.png" },
+    { name: "Disney+", price: 400, image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhdhsY8X-02mpMvDgZea_Je-bPG8qnqFLb4bHrLpQ5Gluam6M-jMUm8rsXigVpzz6dDV-Mc-kVUtvqovFn2T3S1cZ15yOE2MAMu6f_ng-jxkv-oXHGeVv4JajAT0KimCb5-LImrnxd23Le4/s1600/disney%252B.jpg" },
+    { name: "HBO Max", price: 450, image: "https://logos-world.net/wp-content/uploads/2022/01/HBO-Max-Symbol.png" },
+    { name: "Amazon Prime", price: 350, image: "https://imagenes.elpais.com/resizer/v2/XUFZ2BH5C5JWNICKSC5CJBGCZU.jpg?auth=5ad75fc3c1809da6275fc1bb154727678ba7e8cacc6bf8a16e0f3464699684cf&width=1200" },
+    { name: "YouTube Premium", price: 200, image: "https://gagadget.com/media/cache/ce/91/ce91b0023268291238a231d2439c882c.jpg" },
+    { name: "Apple TV+", price: 250, image: "https://www.apple.com/v/apple-tv-plus/ai/images/meta/apple-tv__e7aqjl2rqzau_og.png" },
+    { name: "Paramount+", price: 220, image: "https://vocescriticas1.cdn.net.ar/252/vocescriticas1/images/90/31/903166_cd67f78df6b3b77bf98a13e2d1cffe049216f34dc82ae586c1d6c37bdb8e8edf/lg.webp" },
+  ];
+
   return (
-    <Container>
-      <Typography variant="h4" align="center" gutterBottom>
-        Servicios Disponibles para Pagar
-      </Typography>
-      <Grid container spacing={3} justifyContent="center">
-        {services.map((service) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={service.name}>
-            <Card sx={{ borderRadius: '8px', border: '1px solid violet' }}>
-              <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                <Typography variant="h5">{service.name}</Typography>
-                <Box display="flex" justifyContent="center" alignItems="center" marginBottom={2}>
-                  {service.icon}
-                </Box>
-                <Typography variant="h6">{service.price}</Typography>
-                <Button variant="contained" color="primary" onClick={() => handleClickOpen(service)}>
-                  Pagar
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+    <Grid container sx={{ height: "100vh", background: "#f5f5f5", position: "relative" }}>
+
+      <Grid item size={12}>
+        <Grid container sx={{ marginTop: "5vh", height: "20vh" }}>
+          {accountPesos.map(account => (
+            <Grid item size={4} key={account.currency}>
+              <Grid container sx={{ justifyContent: "center" }}>
+                <Card sx={{ width: "80%", height: "80%" }}>
+                  <CardContent sx={{ background: "#A599F2" }}>
+                    <Typography sx={{ textAlign: "center", fontWeight: "bold", fontSize: "30px" }}>
+                      Nombre de Usuario
+                    </Typography> </CardContent> <CardContent> <Grid container> <Grid item size={6}>
+                      <Typography sx={{ color: "gray", textAlign: "left", marginLeft: "2vh" }}>
+                        Dinero disponible:
+                      </Typography>
+                      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "left" }}>
+                        <AttachMoneyIcon sx={{ fontSize: "50px" }} />
+                        <Typography sx={{ textAlign: "center", fontWeight: "bold", fontSize: "45px" }}>
+                          {account.balance}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                      <Grid item size={6}>
+                        <Box sx={{ textAlign: "left", marginLeft: "2vh" }}>
+                          <Typography sx={{ color: "gray" }}>
+                            Moneda:
+                          </Typography>
+                          <Typography sx={{ fontWeight: "bold", fontSize: "25px" }}>
+                            {account.currency}
+                          </Typography>
+                        </Box>
+                      </Grid>
+                    </Grid>
+                  </CardContent>
+                  <CardContent>
+                    {/* Falta agregar contenido */}
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+          ))}
+        </Grid>
       </Grid>
 
-      {selectedService && (
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          PaperProps={{
-            sx: {
-              borderRadius: '8px',
-              border: '1px solid violet',
-            },
-          }}
-        >
-          <DialogTitle sx={{ textAlign: 'center' }}>
-            Confirmar Pago
-          </DialogTitle>
-          <DialogContent>
-            <Box textAlign="center">
-              {selectedService.icon}
-              <Typography variant="h5">{selectedService.name}</Typography>
-              <Typography variant="h6">{selectedService.price}</Typography>
-              <FormControl component="fieldset" fullWidth margin="normal" required error={!!errors.currency}>
-                <FormLabel component="legend">Moneda</FormLabel>
-                <RadioGroup row value={currency} onChange={(e) => setCurrency(e.target.value)}>
-                  <FormControlLabel value="Pesos" control={<Radio />} label={`Pesos (Disponible: ${balancePesos} ARS)`} />
-                  <FormControlLabel value="Dólares" control={<Radio />} label={`Dólares (Disponible: ${balanceDolares} USD)`} />
-                </RadioGroup>
-                {errors.currency && <FormHelperText>{errors.currency}</FormHelperText>}
-              </FormControl>
-              <TextField
-                label="Monto"
-                type="number"
-                fullWidth
-                value={amount}
-                onChange={(e) => setAmount(Math.max(0, e.target.value))}
-                margin="normal"
-                required
-                error={!!errors.amount}
-                helperText={errors.amount}
-              />
-              <TextField
-                label="Concepto"
-                fullWidth
-                value={concept}
-                onChange={(e) => setConcept(e.target.value)}
-                inputProps={{ maxLength: 100 }}
-                margin="normal"
-                required
-                error={!!errors.concept}
-                helperText={errors.concept}
-              />
-              <Typography variant="body2" color="textSecondary" mt={2}>
-                Fecha y hora: {paymentDate}
-              </Typography>
-            </Box>
-          </DialogContent>
-          <DialogActions sx={{ justifyContent: 'space-between' }}>
-            <Button onClick={handleClose} variant="outlined" color="secondary">
-              Volver
-            </Button>
-            <Button onClick={handleConfirmPayment} variant="contained" color="primary">
-              Confirmar Pago
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
-    </Container>
+      {/* SServicios */}
+      <Grid item size={12}>
+        <Grid container sx={{ display: "flex", justifyContent: "center" }}>
+          <Typography variant="h4" sx={{ marginBottom: 3, textAlign: "center" }}>
+            Pagar servicios
+          </Typography>
+          <Grid container spacing={3} paddingLeft={5} paddingRight={5}>
+            {services.map((service) => (
+              <Grid item size={2} key={service.name}>
+                <Card sx={{ boxShadow: 4, borderRadius: 4 }}>
+                  <CardMedia
+                    component="img"
+                    height="140"
+                    image={service.image}
+                    alt={service.name}
+                  />
+                  <CardContent>
+                    <Typography variant="h6" sx={{ marginBottom: 1 }}>
+                      {service.name}
+                    </Typography>
+                    <Typography variant="body1" sx={{ marginBottom: 2 }}>
+                      ${service.price}
+                    </Typography>
+                    <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => alertaPagoServicio(service.price, service.name)}
+                      >
+                        Pagar
+                      </Button>
+                      <Button variant="outlined" color="secondary">
+                        Ver más
+                      </Button>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Grid>
+      </Grid>
+    </Grid>
   );
 };
 
 export default Payment;
+

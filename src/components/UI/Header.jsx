@@ -34,8 +34,8 @@ export default function Header() {
     localStorage.clear();
     dispatch(logout());
   };
-  const handleHome = () =>{
-    navigate("/home")
+  const redirect = (page) =>{
+    navigate(page)
   };
   const userAuthenticated = useSelector((state) => state.userAuthenticated);
 
@@ -55,7 +55,7 @@ export default function Header() {
         <Grid container alignItems="center" flexDirection="row" spacing={3}>
           <Grid item>
             <img
-              src="/public/assets/prueba1.png"
+              src="/assets/prueba1.png"
               alt="Logo"
               style={{ height: "40px" }}
             />
@@ -69,7 +69,7 @@ export default function Header() {
                 alignItems: "center",
               }}
               startIcon={<HomeIcon />}
-              onClick={handleHome}
+              onClick={()=>redirect("/home")}
             >
               <Typography variant="p" color="#ffffff">
                 Inicio
@@ -84,6 +84,7 @@ export default function Header() {
                 alignItems: "center",
               }}
               startIcon={<AccountBalanceIcon />}
+              onClick={()=>redirect("/plazosFijos")}
             >
               <Typography variant="p" color="#ffffff">
                 Plazos Fijos
@@ -97,6 +98,7 @@ export default function Header() {
                 fontSize: "16px",
               }}
               startIcon={<CurrencyExchangeIcon />}
+              onClick={()=>redirect("/prestamos")}
             >
               <Typography variant="p" color="#ffffff">
                 Préstamos

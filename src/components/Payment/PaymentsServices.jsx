@@ -54,7 +54,7 @@ const Payment = () => {
         title: "Pago realizado",
         text: "El servicio fue pagado con éxito",
         icon: "success",
-      }).then(() => {       
+      }).then(() => {
         window.location.reload();
       });
     } catch (e) {
@@ -88,14 +88,14 @@ const Payment = () => {
   ];
 
   return (
-    <Grid container sx={{ height: "100vh", background: "#f5f5f5", position: "relative" }}>
+    <Grid container sx={{ minHeightt: "100vh", background: "#f5f5f5", position: "relative" }}>
 
       <Grid item size={12}>
-        <Grid container sx={{ marginTop: "5vh", height: "20vh" }}>
+        <Grid container sx={{ height: "100%" }}>
           {accountPesos.map(account => (
-            <Grid item size={4} key={account.currency}>
+            <Grid item size={4} key={account.currency} sx={{ margin: "40px" }}>
               <Grid container sx={{ justifyContent: "center" }}>
-                <Card sx={{ width: "80%", height: "80%" }}>
+                <Card sx={{ width: "80%", height: "100%" }}>
                   <CardContent sx={{ background: "#A599F2" }}>
                     <Typography sx={{ textAlign: "center", fontWeight: "bold", fontSize: "30px" }}>
                       Nombre de Usuario
@@ -133,11 +133,16 @@ const Payment = () => {
       </Grid>
 
       {/* SServicios */}
-      <Grid item size={12}>
-        <Grid container sx={{ display: "flex", justifyContent: "center" }}>
-          <Typography variant="h4" sx={{ marginBottom: 3, textAlign: "center" }}>
-            Pagar servicios
-          </Typography>
+      <Grid item size={12} sx={{ paddingBottom: "50px" }}>
+        <Grid container sx={{ display: "flex", justifyContent: "center", paddingBottom: "5px" }}>
+          <CardContent sx={{ height:"140px", width:"100%", margin:" 0 5px 0 5px"}}>
+          <img
+              src="/public/assets/banner2.png"
+              alt="Logo"
+              style={{ width: "100%", height:"100%" }}
+              
+            />
+          </CardContent>
           <Grid container spacing={3} paddingLeft={5} paddingRight={5}>
             {services.map((service) => (
               <Grid item size={2} key={service.name}>

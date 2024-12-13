@@ -186,7 +186,7 @@ export default function Home() {
                     </Grid>
                     <Grid item>
                         <Grid container flexDirection="column" alignItems="center">
-                            <IconButton sx={{display:"flex", flexDirection:"column", gap:"5px", fontSize:"15px", fontWeight:"bold"}}>
+                            <IconButton sx={{display:"flex", flexDirection:"column", gap:"5px", fontSize:"15px", fontWeight:"bold"}} onClick={() => handleNavegar("/payment")}>
                                 <RequestQuoteIcon sx={{ fontSize: "40px", color:"#6655D9" }} />
                                 Pagar servicios
                             </IconButton>

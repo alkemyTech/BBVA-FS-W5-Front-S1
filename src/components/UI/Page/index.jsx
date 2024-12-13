@@ -12,7 +12,7 @@ export default function Page({ children }) {
   return (
     <div >
       {!ocultarHeader && <Header />}
-      <main style={{ minHeight: "120vh"}}>{children}</main>
+      <main style={{ minHeight: "100vh"}}>{children}</main>
       {!ocultarHeader && <Footer />}
     </div>
   );

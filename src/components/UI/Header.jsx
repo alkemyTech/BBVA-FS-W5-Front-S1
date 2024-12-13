@@ -36,6 +36,11 @@ export default function Header() {
   };
   const userAuthenticated = useSelector((state) => state.userAuthenticated);
 
+  const handleNavigate = () =>{
+    navigate("/home")
+    
+  };
+
   return (
     <Grid
       container
@@ -55,6 +60,7 @@ export default function Header() {
               src="/public/assets/prueba1.png"
               alt="Logo"
               style={{ height: "40px" }}
+              onClick={handleNavigate}
             />
           </Grid>
 
@@ -66,6 +72,7 @@ export default function Header() {
                 alignItems: "center",
               }}
               startIcon={<HomeIcon />}
+              onClick={handleNavigate}
             >
               <Typography variant="p" color="#ffffff">
                 Inicio

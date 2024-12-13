@@ -2,11 +2,11 @@ import Page from "./components/UI/Page";
 import "./App.css";
 import LoginSignUp from "./components/LoginSignUp/LoginSignUp";
 import WelcomePage from "./components/WelcomePage/WelcomePage";
-import SendMoney from "./components/SendMoney/SendMoney"
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./components/Home/home";
+import SendMoney from "./components/SendMoney/SendMoney"
 import Transactions from "./components/Transactions/Transactions";
-
+import PaymentsServices from "./components/Payment/PaymentsServices";
 
 
 function App() {
@@ -15,12 +15,13 @@ function App() {
     <Page>
         <Routes>
           <Route path="/" element={<LoginSignUp isLogin={true} />} />        
+                 
           <Route path="/home" element={<Home />} />
           <Route path="/signUp" element={<LoginSignUp isLogin={false} />} />
           <Route path="/sendmoney" element={<SendMoney send={true}/>} />
           <Route path="/depositmoney" element={<SendMoney send={false}/>} />
-
           <Route path="/Transactions" element={<Transactions/>} />
+          <Route path="/payment" element={<PaymentsServices />} /> 
         </Routes>
     </Page>
     </Router>

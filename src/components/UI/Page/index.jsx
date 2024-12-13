@@ -10,7 +10,7 @@ export default function Page({ children }) {
   const ocultarHeader = ["/", "/signUp"].includes(location.pathname);
 
   return (
-    <div>
+    <div >
       {!ocultarHeader && <Header />}
       <main style={{ minHeight: "70vh"}}>{children}</main>
       {!ocultarHeader && <Footer />}

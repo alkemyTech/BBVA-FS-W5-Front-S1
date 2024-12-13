@@ -39,6 +39,11 @@ export default function Header() {
   };
   const userAuthenticated = useSelector((state) => state.userAuthenticated);
 
+  const handleNavigate = () =>{
+    navigate("/home")
+    
+  };
+
   return (
     <Grid
       container
@@ -58,6 +63,7 @@ export default function Header() {
               src="/assets/prueba1.png"
               alt="Logo"
               style={{ height: "40px" }}
+              onClick={handleNavigate}
             />
           </Grid>
 

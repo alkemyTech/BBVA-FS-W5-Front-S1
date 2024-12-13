@@ -6,17 +6,4 @@
     font-weight: 500;
 }
 
-html, body {
-    height: 100%; /* Asegura que el HTML y el body ocupen toda la altura de la ventana */
-    margin: 0;
-  }
-  
-  #root {
-    display: flex;
-    flex-direction: column; /* Organiza los elementos en columna (Header, main, Footer) */
-    min-height: 100vh; /* Garantiza que el contenedor principal ocupe toda la altura */
-  }
-  
-  main {
-    flex: 1; /* Permite que el contenido principal tome el espacio restante */
-  }
+

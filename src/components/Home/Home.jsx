@@ -7,7 +7,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import apiConfig from '../../Config/axiosConfig';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import MovingIcon from '@mui/icons-material/Moving';
 import GradeIcon from '@mui/icons-material/Grade';
 import PersonIcon from "@mui/icons-material/Person";
@@ -81,7 +80,7 @@ export default function Home() {
                     </Grid>
                 </Grid>
                 {accounts.map((account) => (
-                    <Grid item size={4}>
+                    <Grid item size={4} key={account.cbu}>
                         <Card>
                             <CardContent  sx={{ background: account.currency == "ARS" ? "#00aae4" : "#228B22" }}>
                                 <Typography sx={{ textAlign: "left", fontWeight: "bold", fontSize: "20px" }}>

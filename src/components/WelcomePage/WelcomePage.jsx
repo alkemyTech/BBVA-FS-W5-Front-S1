@@ -5,11 +5,11 @@ const WelcomePage = () => {
   const navigate = useNavigate();
 
   const handleLoginRedirect = () => {
-    navigate('/login'); 
+    navigate('/login');
   };
 
   const handleSignUpRedirect = () => {
-    navigate('/signUp'); 
+    navigate('/signUp');
   };
 
   return (
@@ -43,7 +43,7 @@ const WelcomePage = () => {
           ¡Comienza ahora! Si ya tienes una cuenta, inicia sesión, o si eres nuevo, regístrate en Dimo.
         </Typography>
 
-        
+
         <Box sx={{ marginTop: 3, display: 'flex', justifyContent: 'center', gap: 2 }}>
           <Button
             variant="contained"

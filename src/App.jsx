@@ -2,7 +2,7 @@ import Page from "./components/UI/Page";
 import "./App.css";
 import LoginSignUp from "./components/LoginSignUp/LoginSignUp";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./components/Home/Home";
+import Home from "./components/Home/home";
 import SendMoney from "./components/SendMoney/SendMoney"
 import Transactions from "./components/Transactions/Transactions";
 import PaymentsServices from "./components/Payment/PaymentsServices";
@@ -21,7 +21,7 @@ function App() {
           <Route path="/signUp" element={<LoginSignUp isLogin={false} />} />
           <Route path="/sendmoney" element={<SendMoney send={true}/>} />
           <Route path="/depositmoney" element={<SendMoney send={false}/>} />
-          <Route path="/Transactions" element={<Transactions/>} />
+          <Route path="/transactions" element={<Transactions/>} />
           <Route path="/payment" element={<PaymentsServices />} /> 
           <Route path="/prestamos" element={<Prestamos />} />
           <Route path="/plazosFijos" element={<PlazosFijos />} />

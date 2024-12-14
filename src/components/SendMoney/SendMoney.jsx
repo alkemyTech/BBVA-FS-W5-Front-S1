@@ -21,16 +21,28 @@ export default function SendMoney({ send }) {
   const navigate = useNavigate();
   const userAuthenticated = useSelector((state) => state.userAuthenticated);
   const [accounts, setAccounts] = useState([]);
-  const [transactions, setTransactions] = useState([]);
   const [cbuCompleto, setCbuCompleto] = useState(false);
   const [cbuValido, setCbuValido] = useState(false);
   const [userChip, setUserChip] = useState({
     firstName: "",
     lastName: "",
+    currency: "",
+    transactionLimit: "",
   });
   const [tipoCuenta, setTipoCuenta] = useState({
     currency: "ARS",
+  });  
+  const [transaction, setTransaction] = useState({
+    amount: "",
+    description: "",
+    cbu: "",
   });
+  const [deposit, setDeposit] = useState({
+    amount: "",
+    description: "",
+    currencyType: "",
+  });
+
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
@@ -40,35 +52,15 @@ export default function SendMoney({ send }) {
         console.error("Error fetching accounts:", error);
       }
     };
-    const fetchTransactions = async () => {
-      try {
-        const response = await apiConfig.get("/transactions");
-
-        const sortedTransactions = response.data.content
-          .sort(
-            (a, b) => new Date(b.transactionDate) - new Date(a.transactionDate)
-          )
-          .slice(0, 3);
-        setTransactions(sortedTransactions);
-      } catch (error) {
-        console.error("Error fetching accounts:", error);
-      }
-    };
-    fetchAccounts();
-    fetchTransactions();
+    fetchAccounts()
   }, []);
 
-  const [transaction, setTransaction] = useState({
-    amount: "",
-    description: "",
-    cbu: "",
-  });
-
-  const [deposit, setDeposit] = useState({
-    amount: "",
-    description: "",
-    currencyType: "",
-  });
+  
+  useEffect(() => {
+    if(transaction.cbu.length == 20){
+      buscarCuentaCbu()
+    }
+  }, [transaction.cbu || deposit.currencyType])
 
   const handleGoHome = () => {
     navigate("/home");
@@ -82,6 +74,8 @@ export default function SendMoney({ send }) {
       setUserChip({
         firstName: response.data.user.firstName,
         lastName: response.data.user.lastName,
+        currency: response.data.currency,
+        transactionLimit: response.data.transactionLimit
       })
       setCbuValido(true)
     } catch (e) {
@@ -90,13 +84,10 @@ export default function SendMoney({ send }) {
       setUserChip({
         firstName: "",
         lastName: "",
+        currency: "",
+        transactionLimit: "",
       })
     }
-  }
-  console.log(userChip)
-  console.log(cbuValido)
-  if(cbuCompleto){
-    buscarCuentaCbu()
   }
 
   const manejarTransferencia = async () => {
@@ -155,7 +146,7 @@ export default function SendMoney({ send }) {
           currencyType: tipoCuenta.currency,
         });
         alert("Deposito realizado con exito");
-        handleGoHome;
+        navigate("/home");
       } catch (e) {
         console.log(e);
         setTransaction({
@@ -163,11 +154,7 @@ export default function SendMoney({ send }) {
           description: "",
           currencyType: "",
         });
-        if (e.response.status === 500) {
           alert("ERROR! El deposito no pudo realizarse");
-        } else {
-          alert(e.response.data.Mensaje);
-        }
       }
     }
   };
@@ -187,10 +174,8 @@ export default function SendMoney({ send }) {
         accountBuscada = account;
       }
     });
-    console.log(accountBuscada);
     return accountBuscada;
   };
-  console.log(accounts);
 
   return (
     <div
@@ -202,7 +187,7 @@ export default function SendMoney({ send }) {
         margin: "auto",
       }}
     >
-      <Card sx={{ width: "70%" }}>
+      <Card sx={{ width: "60%" }}>
         <Grid
           container
           flexDirection="column"
@@ -233,7 +218,7 @@ export default function SendMoney({ send }) {
             </Grid>
           </Grid>
           <Grid item size={12}>
-            {send == true ? (
+            {send ? 
               (cbuCompleto && cbuValido &&(
               <Box sx={{p:3}}>
                 <Chip
@@ -267,8 +252,7 @@ export default function SendMoney({ send }) {
                 />
               </Box>
               ))
-              
-            ) : (
+              : 
               obtenerCuenta(tipoCuenta.currency) != null && (
                 <Card
                   sx={{
@@ -322,20 +306,18 @@ export default function SendMoney({ send }) {
                         CBU: {obtenerCuenta(tipoCuenta.currency).cbu}
                       </Typography>
                       <Typography variant="p" color="textSecondary">
-                        Balance: $ {obtenerCuenta(tipoCuenta.currency).balance}
+                        Balance: {tipoCuenta.currency == "ARS" ? "AR$" : "USD"} {obtenerCuenta(tipoCuenta.currency).balance}
                       </Typography>
                     </Box>
                   </CardContent>
                 </Card>
-              )
-            )}
+              )}
           </Grid>
           <Grid item size={12}>
             <Grid
               container
               justifyContent="space-between"
               p="10px"
-
             >
               <Grid item size={send ? 6 : 12}>
                 <TextField
@@ -374,7 +356,6 @@ export default function SendMoney({ send }) {
             </Grid>
           </Grid>
           
-
           <Grid
             container
             justifyContent="center"
@@ -414,7 +395,7 @@ export default function SendMoney({ send }) {
               }}
               size="small"
               variant="standard"
-              placeholder="$0"
+              placeholder= "$0"
             />
           </Grid>
 

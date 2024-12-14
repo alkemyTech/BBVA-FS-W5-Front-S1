@@ -12,7 +12,7 @@ export default function Footer() {
         mt: 'auto',                   // Empuja hacia abajo si el contenido es escaso
         background: 'linear-gradient(180deg, rgba(147,92,201,1) 0%, rgba(36,8,70,1) 100%)',
         color: 'white',
-        py: 4,
+        py: 4.95,
       }}
     >
       <Container>
@@ -30,7 +30,14 @@ export default function Footer() {
               Developed by Dimo Team
             </Typography>
           </Box>
-
+          <Box display="flex" alignItems="center" gap={1}>
+            <MailIcon sx={{ fontSize: 16 }} />
+            <Typography variant="body2">Dimo@DigitalMoney.com</Typography>
+          </Box>
+          <Box display="flex" alignItems="center" gap={1}>
+            <PhoneIcon sx={{ fontSize: 16 }} />
+            <Typography variant="body2">+54 9 11 5656-0980</Typography>
+          </Box>
           <Stack direction="row" spacing={2} alignItems="center">
             <IconButton color="inherit" href="https://facebook.com" target="_blank">
               <Facebook />
@@ -47,24 +54,8 @@ export default function Footer() {
           </Stack>
         </Box>
 
-        <Divider sx={{ my: 3, bgcolor: '#dfdfdf' }} />
-        <Box
-          display="flex"
-          flexDirection={{ xs: 'column', md: 'row' }}
-          justifyContent="center"
-          alignItems="center"
-          gap={3}
-        >
-          <Box display="flex" alignItems="center" gap={1}>
-            <MailIcon sx={{ fontSize: 16 }} />
-            <Typography variant="body2">Dimo@DigitalMoney.com</Typography>
-          </Box>
-          <Box display="flex" alignItems="center" gap={1}>
-            <PhoneIcon sx={{ fontSize: 16 }} />
-            <Typography variant="body2">+54 9 11 5656-0980</Typography>
-          </Box>
+        </Container>
         </Box>
-      </Container>
-    </Box>
+     
   );
 }

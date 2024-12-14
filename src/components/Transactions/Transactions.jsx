@@ -54,11 +54,11 @@ export default function Transactions() {
                             <Divider />
                             <CardContent sx={{ alignContent: "center" }}>
                                 {transactions.length > 0 ? (
-                                    <>
+                                    
                                         <List>
                                             {transactions.map((transaction) => (
                                                 <>
-                                                    {console.log(transaction)}
+
                                                     <ListItem sx={{ padding: 0 }} key={transaction.cuenta}>
                                                         <MuiLink component={Link} to="/#" sx={{ textDecoration: "none", width: "100%", color: "black" }}>
                                                             <CardContent sx={{ width: "100%", '&:hover': { backgroundColor: '#f0f0f0' } }}>
@@ -93,7 +93,7 @@ export default function Transactions() {
                                                                             {transaction.type == "payment" ? "-" : "+"}
                                                                             {transaction.amount.toLocaleString("es-AR", { minimumFractionDigits: 0 })}
                                                                             <Typography variant="body1" color="grey" fontWeight="bold">
-                                                                                {transaction.currency == "ARS" ? " ARS" : " USD"}
+                                                                                {transaction.currencyType == "ARS" ? " ARS" : " USD"}
                                                                             </Typography>
                                                                         </Typography>
                                                                     </Box>
@@ -104,7 +104,6 @@ export default function Transactions() {
                                                     <Divider />
                                                 </>
                                             ))}
-                                        </List>
                                         <Pagination
                                             count={totalPages}  // Utilizamos el estado totalPages para la paginación
                                             page={page}
@@ -112,7 +111,8 @@ export default function Transactions() {
                                             color="primary"
                                             sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}
                                         />
-                                    </>
+                                        </List>
+                                
                                 ) :
                                     <Typography variant="body1" color="grey" fontWeight="bold" sx={{ textAlign: "center" }}>Aún no tienes movimientos</Typography>
                                 }

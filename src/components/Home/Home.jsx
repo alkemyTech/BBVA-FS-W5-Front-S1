@@ -1,6 +1,6 @@
 import Grid from '@mui/material/Grid2';
 import SendIcon from '@mui/icons-material/Send';
-import { Card, CardContent, Typography, Link as MuiLink, List, ListItem, Divider, Box } from '@mui/material';
+import { Card, CardContent, Typography, Link as MuiLink, List, ListItem, Divider, Box, Button } from '@mui/material';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
 import { Link, useNavigate } from 'react-router-dom';
@@ -15,6 +15,13 @@ import { IconButton } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { GrTransaction } from "react-icons/gr";
 import { FaArrowDown } from "react-icons/fa";
+import Swal from "sweetalert2";
+import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
+import GenericSnackbar from "../UI/Snackbar/Snackbar";
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import axios from "axios"
 
 
 export default function Home() {
@@ -26,8 +33,83 @@ export default function Home() {
     const changeBalanceVisibility = () => {
         setBalanceVisibility(!balanceVisibility);
     };
+    const [isLoading, setIsLoading] = useState(false);
+    const [loadingScreen, setLoadingScreen] = useState({
+        message: "",
+        duration: null,
+    });
+    const [snackbar, setSnackbar] = useState({
+        status: "",
+        message: "",
+    });
+    const [snackbarVisibility, setSnackbarVisibility] = useState(false);
+    const [cargaFinalizada, setCargaFinalizada] = useState(false);
+    const [infoDolar, setInfoDolar] = useState({
+        compra: "",
+        venta: "",
+        fechaActualizacion: ""
+    });
+    
     const navigate = useNavigate();
 
+    const formatearFecha = (fechaOriginal) => {
+
+        const fechaFormateada = format(new Date(fechaOriginal), "dd, MMM, HH:mm", {
+          locale: es,
+        }).toUpperCase();
+      
+        return fechaFormateada;
+      };
+    
+    const handleNavegar = (ruta) => {
+        navigate(ruta);
+    }
+
+    const crearCuentaUsdAlerta = () => {
+        Swal.fire({
+            title: "Vas a crear una cuenta en USD",
+            text: "Estas seguro? No va a ser posible revertir la operación.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#6655D9",
+            cancelButtonColor: "#228B22",
+            cancelButtonText:"Crear cuenta",
+            confirmButtonText: "Cancelar",
+            allowOutsideClick: false
+          }).then((result) => {
+            if (result.isDismissed) {
+                crearCuentaUsd ();
+            }
+          });
+    }
+
+    const infoDolarAlerta = () => {
+
+        Swal.fire({
+            title:'<span style="color: #6655D9;">Cotización del Dólar</span>',
+            html: `
+            <Div style="display: flex; flex-direction:column; gap:10px; align-items:center;">
+                <h3 style="display: flex; flex-direction: row; gap: 10px">Valor de Compra: <p style="font-weight:bold; color: #228B22">$${infoDolar.compra}</p></h3>
+                <h3 style="display: flex; flex-direction: row; gap: 10px">Valor de Venta: <p style="font-weight:bold; color: #228B22">$${infoDolar.venta}</p></h3>
+                <h3 style="display: flex; flex-direction: row; gap: 10px">Fecha de Actualización: <p style="font-weight:bold; color:00aae4">${formatearFecha(infoDolar.fechaActualizacion)}</p></h3>
+            </Div>
+            `
+        })
+    }
+
+    const cotizacionDolar = async () => {
+        try {
+            const response = await axios.get("https://dolarapi.com/v1/dolares/oficial")
+            setInfoDolar ({
+
+                compra: response.data.compra,
+                venta: response.data.venta,
+                fechaActualizacion: response.data.fechaActualizacion
+            })
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     useEffect(() => {
         const fetchAccounts = async () => {
@@ -51,9 +133,10 @@ export default function Home() {
             }
         };
 
+        cotizacionDolar();
         fetchAccounts();
         fetchTransactions();
-    }, []);
+    }, [cargaFinalizada]);
 
     useEffect(() => {
         const fetchFavList = async () => {
@@ -68,20 +151,46 @@ export default function Home() {
         fetchFavList();
     }, []);
 
-    const handleNavegar = (ruta) => {
-        navigate(ruta);
+    const crearCuentaUsd = async () => {
+        try {
+            await apiConfig.post("/accounts/", {
+                tipoDeCuenta: "USD",      
+                }
+            )
+            setLoadingScreen({
+                message: "Creando cuenta en USD...",
+                duration: "3000",
+            });
+        
+            setIsLoading(true);
+        
+            setTimeout(() => {
+                setSnackbar({
+                  status:"success",
+                  message: "Cuenta en USD creada con éxito!"
+                })
+                setSnackbarVisibility(true);
+                setCargaFinalizada(true);
+            }, 3000)
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     return (
-
         <Grid container sx={{ p: 2, m: 5, alignItems: "start" }} spacing={5}>
             {accounts.map((account) => (
-                <Grid item size={5}>
-                    <Card variant="elevation" elevation={3}>
-                        <CardContent sx={{ background: account.currency == "ARS" ? "#00aae4" : "#228B22" }}>
-                            <Typography sx={{ textAlign: "left", fontWeight: "bold", fontSize: "20px" }}>
-                                Cuenta en {account.currency}
+                <Grid item size={5} key={account.cbu}>
+                    <Card variant="elevation" elevation={5}>
+                        <CardContent sx={{ background: account.currency == "ARS" ? "#00aae4" : "#228B22", display:"flex", flexDirection:"row", 
+                            justifyContent:"space-between" }}>
+                            <Typography variant="h4" color="#e8e8e8" sx={{ textAlign: "left", fontWeight: "bold", display:"flex", alignItems:"center", gap:"10px"}}>
+                                <img src= {account.currency == "ARS" ? "assets/argentina.png" : "assets/estadosUnidos.png"} alt="" style={{height:"40px"}} />
+                                {account.currency}
                             </Typography>
+                            <Button endIcon={<KeyboardArrowRightIcon />} sx={{backgroundColor:"none", color:"white", fontWeight:"bold", fontSize:"12px"}}>
+                                Ver mi cuenta
+                            </Button>
                         </CardContent>
                         <CardContent>
                             <Grid container >
@@ -117,26 +226,43 @@ export default function Home() {
 
                                 </Grid>
                                 <Grid item size={12}>
-                                    <Typography sx={{ color: "gray" }}>
+                                    <Typography color="gray" sx={{display:"flex", alignItems:"center", gap:"5px" }}>
                                         CBU:
-                                    </Typography>
-                                    <Typography sx={{ fontWeight: "bold", fontSize: "20px" }}>
-                                        {account.cbu}
+                                        <Typography color="black" sx={{ fontWeight: "bold", fontSize: "16px", fontStyle:"italic" }}>
+                                            {account.cbu}
+                                        </Typography>
                                     </Typography>
                                 </Grid>
                             </Grid>
-
-
                         </CardContent>
                     </Card>
                 </Grid>
-
             ))}
+            {accounts.length == 1 && (
+                <Grid item size={5}>
+                <Card variant="elevation" elevation={5}>
+                    <CardContent sx={{ background: "#E0E0E0" }}>
+                        <Typography variant="h4" color="inital" sx={{ textAlign: "left", fontWeight: "bold", display:"flex", alignItems:"center", gap:"10px"}}>
+                            <img src="assets/estadosUnidos.png" alt="" style={{height:"40px"}} />
+                            USD
+                        </Typography>
+                    </CardContent>
+                    <CardContent sx={{display:"flex", flexDirection:"column", alignItems:"center", height:""}}>
+                        <IconButton aria-label="" onClick={crearCuentaUsdAlerta}>
+                            <AddCircleOutlineIcon sx={{fontSize:"40px", color:"#6655D9"}}/>
+                        </IconButton>
+                        <Typography variant="p">Crear Cuenta</Typography>
+                    </CardContent>
+                </Card>
+            </Grid>
+            )}
+            
             <Grid item size={2} sx={{ display:"flex",alignSelf:"center"}}>
-                <Card variant="elevation" elevation={3}>
+                <Card variant="elevation" elevation={5} sx={{borderRadius:"20%"}}>
                     <CardContent sx={{display:"flex", flexDirection:"row"}}>
                         <Box flexDirection="column" justifyContent="center" alignItems="center">
-                            <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", textAlign: "center" }} onClick={() => handleNavegar("/payment")}>
+                            <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", textAlign: "center" }} 
+                            onClick={() => infoDolarAlerta()}>
                                 <AttachMoneyIcon sx={{ fontSize: "40px", color: "#6655D9" }} />
                                 Cotizacion Dolar
                             </IconButton>
@@ -162,25 +288,28 @@ export default function Home() {
             </Grid>
 
             <Grid item size={6}>
-                <Card variant="elevation" elevation={5} sx={{height:"37.5vh"}}>
-                    <CardContent sx={{ background: "#A599F2" }}>
-                        <Typography variant='h6' sx={{ fontWeight: "bold", display: "flex", flexDirection: "row", alignItems: "center", gap: "5px" }}>
+                <Card variant="elevation" elevation={5} sx={{height:"100%"}}>
+                    <CardContent sx={{ background: "#6655D9", display:"flex", flexDirection:"row", 
+                            justifyContent:"space-between" }}>
+                        <Typography variant='h6' color="#e8e8e8" sx={{ fontWeight: "bold", display: "flex", flexDirection: "row", alignItems: "center", gap: "5px" }}>
                             <MovingIcon sx={{ fontSize: "25px", color: "red" }} />
                             Movimientos
                         </Typography>
+                        <Button endIcon={<KeyboardArrowRightIcon />} sx={{backgroundColor:"none", color:"white", fontWeight:"bold", fontSize:"12px"}}>
+                            Ver todos
+                        </Button>
                     </CardContent>
                     <Divider />
-                    <CardContent sx={{ alignContent: "center" }}>
-                        {console.log(transactions)}
+                    <CardContent>
                         {transactions.length > 0 ? (
                             <List>
                                 {transactions.map((transaction) => (
                                     <>
-                                        <ListItem sx={{ padding: 0 }} key={transaction.id}>
+                                        <ListItem sx={{ padding: 0, margin: 0 }} key={transaction.id}>
                                             <MuiLink component={Link} to="/Transactions" sx={{ textDecoration: "none", width: "100%", color: "black" }}>
-                                                <CardContent sx={{ width: "100%", '&:hover': { backgroundColor: '#f0f0f0' } }}>
-                                                    <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "240px" }}>
-                                                        <Box sx={{ display: "flex", flexDirection: "row", gap: "10px", alignItems: "center" }}>
+                                                <CardContent sx={{ width: "100%", '&:hover': { backgroundColor: '#f0f0f0' }}}>
+                                                    <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent:"space-between" }}>
+                                                        <Box sx={{ display: "flex", flexDirection: "row", gap: "10px", alignItems: "start" }}>
                                                             <Box>
                                                                 {transaction.type === "payment" ?
 
@@ -195,12 +324,15 @@ export default function Home() {
                                                                     }} />
                                                                 }
                                                             </Box>
-                                                            <Box sx={{ display: "flex", flexDirection: "column" }}>
-                                                                <Typography variant='p'>
-                                                                    {(transaction.type).toUpperCase()}
+                                                            <Box sx={{ display: "flex", flexDirection: "column", gap:"3px" }}>
+                                                                <Typography variant='p' sx={{display:"flex", gap:"10px", alignItems:"center"}}>
+                                                                    {transaction.type == "deposit" ? "DEPÓSITO" : "PAGO"}
+                                                                    <Typography variant="p" color="grey">
+                                                                        {formatearFecha(transaction.transactionDate)}
+                                                                    </Typography>
                                                                 </Typography>
-                                                                <Typography variant='p'>
-                                                                    {transaction.transactionDate}
+                                                                <Typography variant='p' color='#A599F2'>
+                                                                    {transaction.description}
                                                                 </Typography>
                                                             </Box>
                                                         </Box>
@@ -231,12 +363,16 @@ export default function Home() {
                 </Card>
             </Grid>
             <Grid item size={6} >
-                <Card variant="elevation" elevation={5} sx={{height:"37.5vh"}}>
-                    <CardContent sx={{ background: "#A599F2" }}>
-                        <Typography variant='h6' sx={{ fontWeight: "bold", display: "flex", flexDirection: "row", alignItems: "center", gap: "5px" }}>
+                <Card variant="elevation" elevation={5} sx={{height:"100%"}}>
+                    <CardContent sx={{ background: "#6655D9",  display:"flex", flexDirection:"row", 
+                            justifyContent:"space-between" }}>
+                        <Typography variant='h6' color="#e8e8e8" sx={{ fontWeight: "bold", display: "flex", flexDirection: "row", alignItems: "center", gap: "5px" }}>
                             <GradeIcon sx={{ fontSize: "25px", color: "gold" }} />
                             Mis favoritos
                         </Typography>
+                        <Button endIcon={<KeyboardArrowRightIcon />} sx={{backgroundColor:"none", color:"white", fontWeight:"bold", fontSize:"12px"}}>
+                            Ver todos
+                        </Button>
                     </CardContent>
                     <Divider />
                     <CardContent> 
@@ -269,7 +405,19 @@ export default function Home() {
                     </CardContent>
                 </Card>
             </Grid>
-
+            {isLoading && (
+                <LoadingScreen
+                    message={loadingScreen.message}
+                    duration={loadingScreen.duration}
+                />
+            )}
+            {snackbarVisibility && (
+                <GenericSnackbar
+                    status={snackbar.status}
+                    message={snackbar.message}
+                    visibility={snackbarVisibility}
+                />
+            )}
         </Grid>
     );
 }

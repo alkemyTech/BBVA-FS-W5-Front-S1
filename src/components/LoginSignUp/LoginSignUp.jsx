@@ -164,14 +164,19 @@ export default function LoginSignUp({ isLogin }) {
           duration: "2000",
         });
         setIsLoading(true);
+
         setTimeout(() => {
           navigate("/")
+        } , duration)
+
+        setTimeout(() => {
           setSnackbar({
-            status: "success",
-            message: "Te has registrado con éxito!",
-          });
+            status:"success",
+            message: "Cuenta creada con éxito!"
+          })
           setSnackbarVisibility(true);
-        }, duration)
+        } , duration + 100)
+
       } catch (e) {
         console.log(e);
       }
@@ -234,25 +239,13 @@ export default function LoginSignUp({ isLogin }) {
           }}
         >
           <Grid item>
-            <Typography
-              variant="h3"
-              color="#e8e8e8"
-              sx={{
-                fontWeight: "bold",
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-              }}
-            >
               <img
-                src="/assets/iconoPaginaVioleta.png"
+                src="/assets/prueba1.png"
                 alt=""
                 style={{ height: "50px" }}
               />
-              DiMo
-            </Typography>
           </Grid>
-
+          
           <Grid
             container
             spacing={1}

@@ -30,7 +30,7 @@ const LoadingPage = ({message, duration }) => {
           zIndex: 9999,
         }}
       >
-        <img src="/assets/iconoPaginaVioleta.png" alt="" style={{height:"50px"}}/>
+        <img src="/assets/iconoPaginaVioleta.png" alt="" style={{height:"80px"}}/>
         <LinearProgress color="secondary" sx={{width:"30%"}} />
         <Typography variant="p" color="initial" sx={{fontWeight:"bold"}}>{message}...</Typography>
       </Box>

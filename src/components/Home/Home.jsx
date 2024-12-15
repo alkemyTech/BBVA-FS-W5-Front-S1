@@ -54,12 +54,12 @@ export default function Home() {
 
     const formatearFecha = (fechaOriginal) => {
 
-        const fechaFormateada = format(new Date(fechaOriginal), "dd, MMM, HH:mm", {
+        const fechaFormateada = format(new Date(fechaOriginal), "dd, MMM, HH:mm:ss", {
           locale: es,
         }).toUpperCase();
       
         return fechaFormateada;
-      };
+    };
     
     const handleNavegar = (ruta) => {
         navigate(ruta);
@@ -86,7 +86,10 @@ export default function Home() {
     const infoDolarAlerta = () => {
 
         Swal.fire({
-            title:'<span style="color: #6655D9;">Cotización del Dólar</span>',
+            title:`<div style="display: flex; align-items: center; gap: 2px; justify-content:center">
+                        <img src="assets/iconoPaginaVioleta.png" alt="Icono" style="height: 60px;">
+                        <span style="color: #6655D9;">Cotización del Dólar</span>
+                    </div>`,
             html: `
             <Div style="display: flex; flex-direction:column; gap:10px; align-items:center;">
                 <h3 style="display: flex; flex-direction: row; gap: 10px">Valor de Compra: <p style="font-weight:bold; color: #228B22">$${infoDolar.compra}</p></h3>
@@ -122,11 +125,14 @@ export default function Home() {
         };
         const fetchTransactions = async () => {
             try {
-                const response = await apiConfig.get("/transactions");
+                const response = await apiConfig.get("/transactions?page=0&size=100");
 
                 const sortedTransactions = response.data.content
                     .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate))
                     .slice(0, 3);
+
+                console.log(response.data.content);
+                
                 setTransactions(sortedTransactions);
             } catch (error) {
                 console.error('Error fetching accounts:', error);

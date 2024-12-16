@@ -47,6 +47,8 @@ export default function PlazosFijos() {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const [cargaFinalizada, setCargaFinalizada] = useState(false);
+
   const [loadingScreen, setLoadingScreen] = useState({
     message: "",
     duration: null,
@@ -70,7 +72,40 @@ export default function PlazosFijos() {
     navigate(`/fixedTerm/${fixedTermId}`);
   } 
 
-  const datosLlenos = plazoFijo.amount != "" && plazoFijo.cantidadDias != "";
+  const [errores, setErrores] = useState({});
+
+  const presenciaDeErrores = Object.values(errores).some(
+    (valor) => valor != null
+  );
+
+  const validarCampo = (campo, valor) => {
+
+    if (campo === "monto") {
+      
+      const montoAInvertir = parseFloat(
+        valor.replace(/\./g, "").replace(",", ".")
+      );
+
+      if (montoAInvertir < 1000) {
+        setErrores((errores) => ({
+          ...errores,
+          monto:
+            "El monto a invertir no puede estar vacío y debe ser mayor o igual a 1000.",
+        }));
+      } else {
+        setErrores((errores) => ({
+          ...errores,
+          monto: null,
+        }));
+      }
+    }
+  }
+
+  const datosCompletos = (objeto, atributos) => {
+    return atributos.every(
+      (clave) => objeto[clave] !== null && objeto[clave] !== undefined && objeto[clave] !== ""
+    );
+  };
 
   const fechaActual = new Date ();
 
@@ -106,7 +141,12 @@ export default function PlazosFijos() {
     }
   };
 
+  console.log(plazoFijo);
+
   const realizarInversion = async () => {
+    setSnackbarVisibility(false);
+    setCargaFinalizada(false);
+    setIsLoading(false);
     try {
       await apiConfig.post("/fixedTerm", {
         amount: plazoFijo.amount,
@@ -119,7 +159,6 @@ export default function PlazosFijos() {
       });
 
       setIsLoading(true);
-
       setCotizacionCompleta(false);
 
       setTimeout(() => {
@@ -127,29 +166,36 @@ export default function PlazosFijos() {
           status: "success",
           message: "Plazo Fijo creado con éxito!",
         });
+        setCargaFinalizada(true);
         setSnackbarVisibility(true);
       }, 3000);
-    } catch (error) {
-      console.log(error);
-    }
 
-    setPlazoFijo({
-      amount: "",
-      cantidadDias: "",
-      interest: "",
-      creationDate: "",
-      closingDate: "",
-      settled: "",
-      interestEarned: "",
-      finalAmount: "",
-    });
+      setPlazoFijo({
+        amount: "",
+        cantidadDias: "",
+        interest: "",
+        creationDate: "",
+        closingDate: "",
+        settled: "",
+        interestEarned: "",
+        finalAmount: "",
+      });
+
+    } catch (error) {
+      console.log(error)
+        setSnackbar({
+          status: "error",
+          message: "No tenes el balance suficiente para poder crear el Plazo Fijo!",
+        });
+        setCotizacionCompleta(false);
+        setSnackbarVisibility(true);
+    }
   };
 
   useEffect(() => {
     const fetchFixedTermDeposits = async () => {
         try {
-            const response = await apiConfig.get(`/fixedTerm?page=${page - 1}&size=${itemsPerPage}`);  // Parámetro page y size
-            
+            const response = await apiConfig.get(`/fixedTerm?page=${page - 1}&size=${itemsPerPage}`);
             const sortedFixedTerms = response.data.content
             .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate));
             setFixedTerms(sortedFixedTerms);
@@ -159,28 +205,62 @@ export default function PlazosFijos() {
         }
     };
     fetchFixedTermDeposits();
-}, [page]);
+  }, [page, cargaFinalizada]);
+
+  const textFieldStyle = {
+    width: "50%",
+    "& .MuiOutlinedInput-root": {
+      "&.Mui-focused fieldset": {
+        borderColor: "#6655D9",
+      },
+      "& .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#505050",
+      },
+    },
+    "& .MuiInputLabel-root": {
+      color: "black",
+    },
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: "#6655D9",
+    },
+    "& .MuiOutlinedInput-root.Mui-error fieldset": {
+      borderColor: "red",
+    },
+    "& .MuiInputBase-input": {
+      color: "black",
+      "&:focus": {
+        color: "black",
+      },
+    },
+    "& .MuiInputLabel-root.Mui-error": {
+      color: "red",
+    },
+  };
 
   return (
     <Grid container flexDirection="row" sx={{ p: 3 }} spacing={4}>
-      <Grid item size={7} sx={{ display: "flex", justifyContent: "center" }}>
+      <Grid item size={6} sx={{ display: "flex", justifyContent: "center" }}>
         <Typography variant="h5" sx={{ fontWeight: "bold", color: "#6655D9" }}>
           CALCULAR PLAZO FIJO
         </Typography>
       </Grid>
-      <Grid item size={5} sx={{ display: "flex", justifyContent: "center" }}>
+      <Grid item size={6} sx={{ display: "flex", justifyContent: "center" }}>
         <Typography variant="h5" sx={{ fontWeight: "bold", color: "#6655D9" }}>
           TUS PLAZOS FIJOS
         </Typography>
       </Grid>
-      <Grid item size={3} sx={{ display: "flex", flexDirection: "column", gap:"18px" }}>
-        <Typography variant="body1" color="initial">
-          Ingresá cuanto te gustaría invertir:
+      <Grid item size={6} sx={{ display: "flex", flexDirection: "column", gap:"18px", alignItems:"center" }}>
+        <Typography variant="body1" color="initial" sx={{fontWeight:"bold"}}>
+          Ingresá el monto que te gustaría invertir:
         </Typography>
         <NumericFormat
           thousandSeparator="."
           customInput={TextField}
           label="Monto"
+          name="monto"
+          value={plazoFijo.amount}
+          error={Boolean(errores.monto)}
+          helperText={errores.monto}
           decimalSeparator=","
           decimalScale={0}
           fixedDecimalScale
@@ -190,11 +270,11 @@ export default function PlazosFijos() {
             const { value } = values;
             setPlazoFijo({ ...plazoFijo, amount: value });
           }}
+          onBlur={(e) => validarCampo("monto", e.target.value)}
           size="small"
-          sx={{ width: "75%" }}
-          disabled={cotizacionCompleta || cotizando}
-        />
-         <Typography variant="body1" color="initial">
+          sx={textFieldStyle}
+          disabled={cotizacionCompleta || cotizando}        />
+         <Typography variant="body1" color="initial" sx={{fontWeight:"bold"}}>
             Ingresá la cantidad de días:
           </Typography>
           <ToggleButtonGroup
@@ -217,6 +297,7 @@ export default function PlazosFijos() {
                 ? "#6655D9"
                 : "#A599F2",
                 color: "white",
+                fontWeight:"bold",
                 "&:hover": {
                   backgroundColor:
                   plazoFijo.cantidadDias == "30"
@@ -235,6 +316,7 @@ export default function PlazosFijos() {
                 ? "#6655D9"
                 : "#A599F2",
                 color: "white",
+                fontWeight:"bold",
                 "&:hover": {
                   backgroundColor:
                   plazoFijo.cantidadDias == "60"
@@ -253,6 +335,7 @@ export default function PlazosFijos() {
                 ? "#6655D9"
                 : "#A599F2",
                 color: "white",
+                fontWeight:"bold",
                 "&:hover": {
                   backgroundColor:
                   plazoFijo.cantidadDias == "90"
@@ -264,7 +347,7 @@ export default function PlazosFijos() {
               90 días
             </ToggleButton>
           </ToggleButtonGroup>
-          {datosLlenos && (
+          {(datosCompletos(plazoFijo, ["amount", "cantidadDias"]) && !presenciaDeErrores) && (
             <Card variant="elevation" elevation={2} sx={{width:"75%"}}>
               <CardContent sx={{color:"gray", display:"flex", flexDirection:"column", gap:"5px"}}>
                 <Typography variant="p" color="gray">
@@ -280,10 +363,8 @@ export default function PlazosFijos() {
               </CardContent>
             </Card>
           )}
-      </Grid>
-      <Grid item size={4} sx={{ display: "flex", flexDirection: "column"}}>
-        <Button variant="contained" disabled={!datosLlenos || cotizando || cotizacionCompleta} onClick={cotizarPlazo} 
-        sx={{backgroundColor:"#6655D9", cursor:"pointer"}}>Calcular Plazo</Button>
+          <Button variant="contained" disabled={presenciaDeErrores || !datosCompletos(plazoFijo, ["amount", "cantidadDias"]) || cotizando || cotizacionCompleta} onClick={cotizarPlazo} 
+        sx={{backgroundColor:"#6655D9", cursor:"pointer", width: "60%"}}>Calcular Plazo</Button>
         {cotizando && (
           <Box sx={{display:"flex", flexDirection:"column", alignItems:"center", gap:"15px", pt:5}}>
             <img src="/assets/iconoPaginaVioleta.png" alt="" style={{height:"45px"}}/>
@@ -292,7 +373,7 @@ export default function PlazosFijos() {
           </Box>
         )}
         {cotizacionCompleta && (
-        <Card variant="elevation" elevation={20}> 
+        <Card variant="elevation" elevation={20} sx={{width: "75%"}}> 
           <CardContent sx={{display:"flex", justifyContent:"center"}}>
             <Typography variant="h7" color="#6655D9" fontWeight="bold">COTIZACIÓN DEL PLAZO FIJO</Typography>
           </CardContent>
@@ -314,7 +395,7 @@ export default function PlazosFijos() {
               <Typography variant="body1" color="#6655D9" fontWeight="bold">${plazoFijo.finalAmount}</Typography>
             </Typography>
             <Typography variant="p" color="black" sx={{display:"flex", flexDirection:"row", alignItems:"center", gap:"5px"}}>- Fecha de cierre: 
-              <Typography variant="body1" color="#6655D9" fontWeight="bold">{plazoFijo.closingDate}</Typography>
+              <Typography variant="body1" color="#6655D9" fontWeight="bold">{formatearFecha(plazoFijo.closingDate)}</Typography>
             </Typography>
             <Box sx={{display:"flex", flexDirection:"row", gap:"10px", alignItems:"center", justifyContent:"space-around", pt:1}}>
               <Button variant="contained" size="small" onClick={()=> setCotizacionCompleta(false)} sx={{backgroundColor:"#6655D9", cursor:"pointer", 
@@ -326,7 +407,7 @@ export default function PlazosFijos() {
         </Card>
         )}
       </Grid>
-      <Grid item size={5}>
+      <Grid item size={6}>
         <Card variant="elevation" elevation={5}>
           <CardContent sx={{ background: "#6655D9" }}>
               <Typography variant='h6' color="white" sx={{ fontWeight: "bold", display: "flex", flexDirection: "row", alignItems: "center", gap: "10px" }}>
@@ -390,11 +471,11 @@ export default function PlazosFijos() {
         </Card>
       </Grid>
       {isLoading && (
-        <LoadingScreen
-          message={loadingScreen.message}
-          duration={loadingScreen.duration}
-        />
-      )}
+          <LoadingScreen
+            message={loadingScreen.message}
+            duration={loadingScreen.duration}
+          />
+        )}
       {snackbarVisibility && (
         <GenericSnackbar
           status={snackbar.status}

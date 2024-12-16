@@ -11,8 +11,6 @@ import {
   Box,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import Chip from "@mui/material/Chip";
 import Avatar from "@mui/material/Avatar";
 import { NumericFormat } from "react-number-format";
 import { useSelector } from "react-redux";
@@ -31,7 +29,7 @@ export default function SendMoney({ send }) {
   });
   const [tipoCuenta, setTipoCuenta] = useState({
     currency: "ARS",
-  });  
+  });
   const [transaction, setTransaction] = useState({
     amount: "",
     description: "",
@@ -52,43 +50,41 @@ export default function SendMoney({ send }) {
         console.error("Error fetching accounts:", error);
       }
     };
-    fetchAccounts()
+    fetchAccounts();
   }, []);
 
-  
   useEffect(() => {
-    if(transaction.cbu.length == 20){
-      buscarCuentaCbu()
+    if (transaction.cbu.length == 20) {
+      buscarCuentaCbu();
     }
-  }, [transaction.cbu || deposit.currencyType])
+  }, [transaction.cbu || deposit.currencyType ]);
 
   const handleGoHome = () => {
     navigate("/home");
   };
 
-  const buscarCuentaCbu = async() => {
+  const buscarCuentaCbu = async () => {
     let response;
     try {
-      response = await apiConfig.get(`/accounts/${transaction.cbu}`, {
-      });
+      response = await apiConfig.get(`/accounts/${transaction.cbu}`, {});
       setUserChip({
         firstName: response.data.user.firstName,
         lastName: response.data.user.lastName,
         currency: response.data.currency,
-        transactionLimit: response.data.transactionLimit
-      })
-      setCbuValido(true)
+        transactionLimit: response.data.transactionLimit,
+      });
+      setCbuValido(true);
     } catch (e) {
       console.log(e);
-      setCbuValido(false)
+      setCbuValido(false);
       setUserChip({
         firstName: "",
         lastName: "",
         currency: "",
         transactionLimit: "",
-      })
+      });
     }
-  }
+  };
 
   const manejarTransferencia = async () => {
     let response;
@@ -140,7 +136,7 @@ export default function SendMoney({ send }) {
       }
     } else {
       try {
-        response = await apiConfig.post("/transactions/deposit",{
+        response = await apiConfig.post("/transactions/deposit", {
           amount: deposit.amount,
           description: deposit.description,
           currencyType: tipoCuenta.currency,
@@ -154,7 +150,7 @@ export default function SendMoney({ send }) {
           description: "",
           currencyType: "",
         });
-          alert("ERROR! El deposito no pudo realizarse");
+        alert("ERROR! El deposito no pudo realizarse");
       }
     }
   };
@@ -183,11 +179,11 @@ export default function SendMoney({ send }) {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "100vh",
+        height: "90vh",
         margin: "auto",
       }}
     >
-      <Card sx={{ width: "60%" }}>
+      <Card variant="elevation" elevation={10} sx={{ width: "60%" }}>
         <Grid
           container
           flexDirection="column"
@@ -197,128 +193,94 @@ export default function SendMoney({ send }) {
         >
           <Grid item size={12}>
             <Grid container>
-              <Grid item size={2}>
+              <Grid item size={12}>
                 <Typography
-                  onClick={handleGoHome}
+                  variant="h4"
                   sx={{
-                    cursor: "pointer",
-                    color: "#646cff",
-                    fontSize: "20px",
-                    margin: 2,
+                    p: 2,
+                    mb: "30px",
+                    background: "#646cff",
+                    color: " white",
                   }}
                 >
-                  ← Volver
-                </Typography>
-              </Grid>
-              <Grid item size={8}>
-                <Typography variant="h4" sx={{ p: 2, pb:"30px" }}>
                   {send ? "Transferencia" : "Deposito"}
                 </Typography>
               </Grid>
             </Grid>
           </Grid>
           <Grid item size={12}>
-            {send ? 
-              (cbuCompleto && cbuValido &&(
-              <Box sx={{p:3}}>
-                <Chip
-                  avatar={
-                    <Avatar
-                      sx={{
-                        backgroundColor: "#646cff",
-                        color: "#ffffff !important",
-                        fontWeight: "bold",
-                        fontSize: "14px",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        height: "56px",
-                        width: "56px",
-                        padding: "4px",
-                      }}
+            {console.log(send && cbuCompleto && cbuValido)}
+            {((send && cbuCompleto && cbuValido) ||
+              (!send && obtenerCuenta(tipoCuenta.currency) != null)) && (
+              <Card
+                sx={{
+                  border: "1px solid #646cff",
+                  borderRadius: "10px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "40%",
+                  margin: "auto",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  marginBottom: "30px",
+                }}
+              >
+                <CardContent sx={{ display: "flex", alignItems: "center" }}>
+                  <Avatar
+                    sx={{
+                      backgroundColor: "#646cff",
+                      color: "#ffffff !important",
+                      fontWeight: "bold",
+                      fontSize: "20px",
+                      height: "56px",
+                      width: "56px",
+                    }}
+                  >
+                    {obtenerIniciales(
+                      send
+                        ? userChip.firstName + " " + userChip.lastName
+                        : userAuthenticated.firstName +
+                            " " +
+                            userAuthenticated.lastName
+                    )}
+                  </Avatar>
+                  <Box
+                    sx={{
+                      textAlign: "center",
+                      display: "flex",
+                      flexDirection: "column",
+                      p: 1,
+                      gap: 0.5,
+                    }}
+                  >
+                    <Typography
+                      variant="h6"
+                      component="div"
+                      sx={{ fontSize: "16px", color: "#646cff" }}
                     >
-                      {obtenerIniciales(userChip.firstName + " " + userChip.lastName)}
-                    </Avatar>
-                  }
-                  label={userChip.firstName+" "+userChip.lastName}
-                  variant="outlined"
-                  sx={{
-                    fontSize: "20px",
-                    color: "#646cff",
-                    borderColor: "#646cff",
-                    "&:hover": { backgroundColor: "#f3eaff" },
-                  }}
-                />
-              </Box>
-              ))
-              : 
-              obtenerCuenta(tipoCuenta.currency) != null && (
-                <Card
-                  sx={{
-                    border: "1px solid #646cff",
-                    borderRadius: "10px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: "30%",
-                    margin: "auto",
-                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                    marginBottom: "30px"
-                  }}
-                >
-                  <CardContent sx={{ display: "flex", alignItems: "center" }}>
-                    <Avatar
-                      sx={{
-                        backgroundColor: "#646cff",
-                        color: "#ffffff !important",
-                        fontWeight: "bold",
-                        fontSize: "20px",
-                        height: "56px",
-                        width: "56px",
-                      }}
-                    >
-                      {obtenerIniciales(
-                        userAuthenticated.firstName +
-                          " " +
-                          userAuthenticated.lastName
-                      )}
-                    </Avatar>
-                    <Box
-                      sx={{
-                        textAlign: "center",
-                        display: "flex",
-                        flexDirection: "column",
-                        p: 1,
-                        gap: 0.5,
-                      }}
-                    >
-                      <Typography
-                        variant="h6"
-                        component="div"
-                        sx={{ fontSize: "16px", color: "#646cff" }}
-                      >
-                        {userAuthenticated.firstName +
+                      {send? 
+                      userChip.firstName + " " + userChip.lastName
+                        : userAuthenticated.firstName +
                           " " +
                           userAuthenticated.lastName}
-                      </Typography>
-                      <Typography variant="p" color="textSecondary">
-                        CBU: {obtenerCuenta(tipoCuenta.currency).cbu}
-                      </Typography>
-                      <Typography variant="p" color="textSecondary">
-                        Balance: {tipoCuenta.currency == "ARS" ? "AR$" : "USD"} {obtenerCuenta(tipoCuenta.currency).balance}
-                      </Typography>
-                    </Box>
-                  </CardContent>
-                </Card>
-              )}
+                    </Typography>
+                    <Typography variant="p" color="textSecondary">
+                    CBU: {send? transaction.cbu : obtenerCuenta(tipoCuenta.currency).cbu }
+                    </Typography>
+                    <Typography variant="p" color="textSecondary">
+                      {send?"Transaction Limit: " +userChip.transactionLimit :"Balance: "+ 
+                      obtenerCuenta(tipoCuenta.currency).balance}
+                    </Typography>
+                    <Typography variant="p" color="textSecondary">
+                      Currency: {send? userChip.currency: tipoCuenta.currency}
+                    </Typography>
+                  </Box>
+                </CardContent>
+              </Card>
+            )}
           </Grid>
           <Grid item size={12}>
-            <Grid
-              container
-              justifyContent="space-between"
-              p="10px"
-            >
+            <Grid container justifyContent="space-between" p="10px">
               <Grid item size={send ? 6 : 12}>
                 <TextField
                   id="tipo-cuenta"
@@ -332,7 +294,7 @@ export default function SendMoney({ send }) {
                   variant="outlined"
                 >
                   <MenuItem value="ARS">ARS</MenuItem>
-                  <MenuItem value="USD">USD</MenuItem>
+                  {accounts.length > 1 && (<MenuItem value="USD">USD</MenuItem>)}  
                 </TextField>
               </Grid>
               {send && (
@@ -355,7 +317,7 @@ export default function SendMoney({ send }) {
               )}
             </Grid>
           </Grid>
-          
+
           <Grid
             container
             justifyContent="center"
@@ -365,14 +327,19 @@ export default function SendMoney({ send }) {
             paddingBottom="20px"
           >
             <NumericFormat
-              sx={{ width: "50%" }}
+              sx={{
+                width: "50%",
+                "& input::placeholder": {
+                  color: "black",
+                  opacity: 1,
+                },
+              }}
               value={send ? transaction.amount : deposit.amount}
               onValueChange={(values) => {
                 const { value } = values;
-                send ? 
-                setTransaction({ ...transaction, amount: value }) :
-                setDeposit({...deposit, amount: value})
-
+                send
+                  ? setTransaction({ ...transaction, amount: value })
+                  : setDeposit({ ...deposit, amount: value });
               }}
               prefix="$"
               customInput={TextField}
@@ -389,13 +356,13 @@ export default function SendMoney({ send }) {
                   style: {
                     textAlign: "center",
                     fontSize: "50px",
-                    color: transaction.amount || deposit.amount ? "#646cff" : "#000000",
+                    color: "#646cff",
                   },
                 },
               }}
               size="small"
               variant="standard"
-              placeholder= "$0"
+              placeholder="$0"
             />
           </Grid>
 
@@ -404,18 +371,18 @@ export default function SendMoney({ send }) {
               id=""
               label="Descripcion"
               value={send ? transaction.description : deposit.description}
-              
               onChange={(e) =>
-                send ? 
-                setTransaction({
-                  ...transaction,
-                  description: e.target.value,
-                }) : 
-                setDeposit ({
-                  ...deposit, 
-                  description: e.target.value,
-                })
+                send
+                  ? setTransaction({
+                      ...transaction,
+                      description: e.target.value,
+                    })
+                  : setDeposit({
+                      ...deposit,
+                      description: e.target.value,
+                    })
               }
+              
               sx={{ width: "30%" }}
             />
           </Grid>

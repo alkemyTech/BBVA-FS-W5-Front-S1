@@ -56,8 +56,9 @@ export default function SendMoney({ send }) {
   useEffect(() => {
     if (transaction.cbu.length == 20) {
       buscarCuentaCbu();
+      setCbuCompleto(true);
     }
-  }, [transaction.cbu || deposit.currencyType ]);
+  }, [transaction.cbu || deposit.currencyType]);
 
   const handleGoHome = () => {
     navigate("/home");
@@ -77,6 +78,7 @@ export default function SendMoney({ send }) {
     } catch (e) {
       console.log(e);
       setCbuValido(false);
+      setCbuCompleto(false);
       setUserChip({
         firstName: "",
         lastName: "",
@@ -174,19 +176,18 @@ export default function SendMoney({ send }) {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "90vh",
-        margin: "auto",
-      }}
-    >
-      <Card variant="elevation" elevation={10} sx={{ width: "60%" }}>
+      <Card variant="elevation" elevation={20} sx={{  
+        width: "65%",
+        m: "auto", // Centra horizontalmente y verticalmente
+        position: "absolute", // Posición absoluta
+        top: "50%", // Lo coloca al 50% desde arriba
+        left: "50%", // Lo coloca al 50% desde la izquierda
+        transform: "translate(-50%, -50%)", // Centra completamente
+        borderRadius: "20px"
+        }}>
         <Grid
           container
-          flexDirection="column"
+          flexDirection= {send ? "" :"column"}
           justifyContent="center"
           alignItems="center"
           textAlign="center"
@@ -209,23 +210,24 @@ export default function SendMoney({ send }) {
             </Grid>
           </Grid>
           <Grid item size={12}>
-            {console.log(send && cbuCompleto && cbuValido)}
             {((send && cbuCompleto && cbuValido) ||
               (!send && obtenerCuenta(tipoCuenta.currency) != null)) && (
-              <Card
+              <Grid container
                 sx={{
                   border: "1px solid #646cff",
                   borderRadius: "10px",
                   display: "flex",
+                  justifyContent:"space-between",
+                  textAlign:"center",
                   alignItems: "center",
-                  justifyContent: "center",
-                  width: "40%",
+                  width: "56%",
                   margin: "auto",
-                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
                   marginBottom: "30px",
+                  p:2.2
                 }}
               >
-                <CardContent sx={{ display: "flex", alignItems: "center" }}>
+                <Grid item size={2} >
                   <Avatar
                     sx={{
                       backgroundColor: "#646cff",
@@ -244,61 +246,45 @@ export default function SendMoney({ send }) {
                             userAuthenticated.lastName
                     )}
                   </Avatar>
-                  <Box
-                    sx={{
-                      textAlign: "center",
-                      display: "flex",
-                      flexDirection: "column",
-                      p: 1,
-                      gap: 0.5,
-                    }}
+                </Grid>
+                <Grid item size={5}>
+                  <Typography
+                    variant="h6"
+                    component="div"
+                    sx={{ fontSize: "16px", color: "#646cff" }}
                   >
-                    <Typography
-                      variant="h6"
-                      component="div"
-                      sx={{ fontSize: "16px", color: "#646cff" }}
-                    >
-                      {send? 
-                      userChip.firstName + " " + userChip.lastName
-                        : userAuthenticated.firstName +
-                          " " +
-                          userAuthenticated.lastName}
-                    </Typography>
-                    <Typography variant="p" color="textSecondary">
-                    CBU: {send? transaction.cbu : obtenerCuenta(tipoCuenta.currency).cbu }
-                    </Typography>
-                    <Typography variant="p" color="textSecondary">
-                      {send?"Transaction Limit: " +userChip.transactionLimit :"Balance: "+ 
-                      obtenerCuenta(tipoCuenta.currency).balance}
-                    </Typography>
-                    <Typography variant="p" color="textSecondary">
-                      Currency: {send? userChip.currency: tipoCuenta.currency}
-                    </Typography>
-                  </Box>
-                </CardContent>
-              </Card>
+                    {send
+                      ? userChip.firstName + " " + userChip.lastName
+                      : userAuthenticated.firstName +
+                        " " +
+                        userAuthenticated.lastName}
+                  </Typography>
+                  <Typography variant="p" color="textSecondary">
+                    CBU: {send
+                      ? transaction.cbu
+                      : obtenerCuenta(tipoCuenta.currency).cbu}
+                  </Typography>
+                </Grid>
+                <Grid item size={5}>
+                  <Grid container>
+                    <Grid item size={12}><Typography variant="p" color="textSecondary">
+                    {send
+                      ? "Limite de transaccion: $" + userChip.transactionLimit
+                      : "Balance: $" +
+                        obtenerCuenta(tipoCuenta.currency).balance}
+                  </Typography></Grid>
+                    <Grid item size={12}><Typography variant="p" color="textSecondary">
+                    Tipo de cuenta: {send ? userChip.currency : tipoCuenta.currency}
+                  </Typography></Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
             )}
           </Grid>
-          <Grid item size={12}>
-            <Grid container justifyContent="space-between" p="10px">
-              <Grid item size={send ? 6 : 12}>
-                <TextField
-                  id="tipo-cuenta"
-                  label="Tipo de cuenta"
-                  value={tipoCuenta.currency}
-                  onChange={(e) =>
-                    setTipoCuenta({ ...tipoCuenta, currency: e.target.value })
-                  }
-                  select
-                  sx={{ width: send ? "70%" : "30%" }}
-                  variant="outlined"
-                >
-                  <MenuItem value="ARS">ARS</MenuItem>
-                  {accounts.length > 1 && (<MenuItem value="USD">USD</MenuItem>)}  
-                </TextField>
-              </Grid>
+          <Grid item size={6}>
+            <Grid container p="10px" flexDirection="column" spacing={7}>
               {send && (
-                <Grid item size={6}>
+                <Grid item size={12}>
                   <TextField
                     id=""
                     label="CBU"
@@ -311,24 +297,42 @@ export default function SendMoney({ send }) {
                       });
                       setCbuCompleto(nuevoCbu.length === 20);
                     }}
-                    sx={{ width: "70%" }}
+                    sx={{ width: "90%",textAlign:"center"}}
                   />
                 </Grid>
               )}
+              <Grid item size={12}>
+                <TextField
+                  id="tipo-cuenta"
+                  label="Tipo de cuenta"
+                  value={tipoCuenta.currency}
+                  onChange={(e) =>
+                    setTipoCuenta({ ...tipoCuenta, currency: e.target.value })
+                  }
+                  select
+                  sx={{ width: send ? "90%" : "40%" }}
+                  variant="outlined"
+                >
+                  <MenuItem value="ARS">ARS</MenuItem>
+                  {accounts.length > 1 && <MenuItem value="USD">USD</MenuItem>}
+                </TextField>
+              </Grid>
+              
             </Grid>
           </Grid>
-
-          <Grid
+          <Grid item size={6}>
+            <Grid
             container
+            flexDirection="column"
             justifyContent="center"
             alignItems="center"
             textAlign="center"
-            paddingTop="10px"
-            paddingBottom="20px"
+            spacing={5}
           >
+            <Grid item={12}>
             <NumericFormat
               sx={{
-                width: "50%",
+                width: "100%",
                 "& input::placeholder": {
                   color: "black",
                   opacity: 1,
@@ -365,8 +369,7 @@ export default function SendMoney({ send }) {
               placeholder="$0"
             />
           </Grid>
-
-          <Grid item size={12}>
+            <Grid item size={12}>
             <TextField
               id=""
               label="Descripcion"
@@ -382,10 +385,15 @@ export default function SendMoney({ send }) {
                       description: e.target.value,
                     })
               }
-              
-              sx={{ width: "30%" }}
+              sx={{ width: "80%" }}
             />
           </Grid>
+          </Grid>
+          
+          </Grid>
+          
+
+          
           <Grid item size={12}>
             <Grid container justifyContent="end" alignItems="end">
               <Button
@@ -400,12 +408,12 @@ export default function SendMoney({ send }) {
                 }}
                 onClick={manejarTransferencia}
               >
-                continuar
+                {send ? "Transferir" : "Depositar"}
               </Button>
             </Grid>
           </Grid>
         </Grid>
       </Card>
-    </div>
+    
   );
 }

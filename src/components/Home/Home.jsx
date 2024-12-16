@@ -100,7 +100,7 @@ export default function Home() {
         })
     }
 
-    const infoTransactionsDetail = (amount,currencyType,type,description,transactionDate,cuenta,titular,cuentaDestino) => {
+    const infoTransactionsDetail = (id, amount, currencyType, type, description, transactionDate, cuenta, titular, cuentaDestino) => {
         Swal.fire({
             title: `<div style="display: flex; align-items: center; gap: 2px; justify-content:center">
                         <img src="assets/iconoPaginaVioleta.png" alt="Icono" style="height: 60px;">
@@ -219,7 +219,10 @@ export default function Home() {
                                 <img src={account.currency == "ARS" ? "assets/argentina.png" : "assets/estadosUnidos.png"} alt="" style={{ height: "40px" }} />
                                 {account.currency}
                             </Typography>
-                            <Button endIcon={<KeyboardArrowRightIcon />} sx={{ backgroundColor: "none", color: "white", fontWeight: "bold", fontSize: "12px" }}>
+                            <Button endIcon={<KeyboardArrowRightIcon />}
+                                sx={{ backgroundColor: "none", color: "white", fontWeight: "bold", fontSize: "12px" }}
+                                onClick={() => handleNavegar(`/accounts/${account.cbu}`)}
+                            >
                                 Ver mi cuenta
                             </Button>
                         </CardContent>
@@ -328,7 +331,7 @@ export default function Home() {
                             <MovingIcon sx={{ fontSize: "25px", color: "red" }} />
                             Movimientos
                         </Typography>
-                        <Button endIcon={<KeyboardArrowRightIcon />} sx={{ backgroundColor: "none", color: "white", fontWeight: "bold", fontSize: "12px" }} onClick={()=>navigate("/transactions")}>
+                        <Button endIcon={<KeyboardArrowRightIcon />} sx={{ backgroundColor: "none", color: "white", fontWeight: "bold", fontSize: "12px" }} onClick={() => navigate("/transactions")}>
                             Ver todos
                         </Button>
                     </CardContent>
@@ -339,51 +342,54 @@ export default function Home() {
                                 {transactions.map((transaction) => (
                                     <>
                                         <ListItem sx={{ padding: 0, margin: 0 }} key={transaction.id}>
+                                            {/* <MuiLink component={Link} to="/Transactions" sx={{ textDecoration: "none", width: "100%", color: "black" }}> */}
                                             <CardContent sx={{ width: "100%", '&:hover': { backgroundColor: '#f0f0f0' } }}>
                                                 <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                                                     <Box sx={{ display: "flex", flexDirection: "row", gap: "10px", alignItems: "start" }}>
                                                         <Box>
                                                             {transaction.type === "payment" ?
+
                                                                 <GrTransaction style={{
-                                                                    color: "white", background: "red", fontSize: "30px",
+                                                                    color: "white", background: "grey", fontSize: "30px",
                                                                     borderRadius: "15px", padding: "5px"
                                                                 }} /> :
+
                                                                 <FaArrowDown style={{
-                                                                    color: "white", background: "green", fontSize: "30px",
+                                                                    color: "white", background: "grey", fontSize: "30px",
                                                                     borderRadius: "15px", padding: "5px"
                                                                 }} />
-                                                                }
-                                                            </Box>
-                                                            <Box sx={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-                                                                <Typography variant='p' sx={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                                                            }
+                                                        </Box>
+                                                        <Box sx={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                                                            <Typography variant='p' sx={{ display: "flex", gap: "10px", alignItems: "center" }}>
                                                                 {transaction.type == "deposit" ? "DEPÓSITO" : "PAGO"}
                                                                 <Typography variant="p" color="grey">
                                                                     {formatearFecha(transaction.transactionDate)}
                                                                 </Typography>
-                                                                </Typography>
-                                                                <Typography variant='p' color='#A599F2'>
-                                                                    {transaction.description}
-                                                                </Typography>
-                                                            </Box>
-                                                        </Box>
-                                                        <Box sx={{ display: "flex", flexDirection: "row", gap:"10px"}}>
-                                                            <Typography variant='p' sx={{
-                                                                color: transaction.type == "payment" ? "red" : "green", display: "flex",
-                                                                flexDirection: "row", alignItems: "center", gap: "10px"
-                                                            }}>
-                                                                {transaction.type == "payment" ? "-$" : "+$"}
-                                                                {transaction.amount.toLocaleString("es-AR", { minimumFractionDigits: 0 })}
-                                                                <Typography variant="body1" color="grey" fontWeight="bold">
-                                                                    {transaction.currencyType == "ARS" ? " ARS" : " USD"}
-                                                                </Typography>
                                                             </Typography>
-                                                            <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", alignItems: "center" }} 
-                                                            onClick={()=> infoTransactionsDetail(transaction.amount,transaction.currencyType,transaction.type,transaction.description,transaction.transactionDate,transaction.cuenta,transaction.titular,transaction.cuentaDestino)}>
-                                                                <ReceiptIcon sx={{ fontSize: "30px", color: "#6655D9" }} />
-                                                            </IconButton>
+                                                            <Typography variant='p' color='#A599F2'>
+                                                                {transaction.description}
+                                                            </Typography>
                                                         </Box>
                                                     </Box>
-                                                </CardContent>
+                                                    <Box sx={{ display: "flex", flexDirection: "column" }}>
+                                                        <Typography variant='p' sx={{
+                                                            color: transaction.type == "payment" ? "red" : "green", display: "flex",
+                                                            flexDirection: "row", alignItems: "center", gap: "10px"
+                                                        }}>
+                                                            {transaction.type == "payment" ? "-" : "+"}
+                                                            {transaction.amount.toLocaleString("es-AR", { minimumFractionDigits: 0 })}
+                                                            <Typography variant="body1" color="grey" fontWeight="bold">
+                                                                {transaction.currencyType == "ARS" ? " ARS" : " USD"}
+                                                            </Typography>
+                                                        </Typography>
+                                                    </Box>
+                                                </Box>
+                                                <Button onClick={() => infoTransactionsDetail(transaction.id, transaction.amount, transaction.currencyType, transaction.type, transaction.description, transaction.transactionDate, transaction.cuenta, transaction.titular, transaction.cuentaDestino)}>
+                                                    detalle
+                                                </Button>
+                                            </CardContent>
+                                            {/* </MuiLink> */}
                                         </ListItem>
                                         <Divider />
                                     </>

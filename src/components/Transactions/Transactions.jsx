@@ -68,7 +68,7 @@ export default function Transactions() {
             }
         };
         fetchTransactions();
-    }, [page]);
+    }, [page,typeFilter,currencyFilter]);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -76,12 +76,10 @@ export default function Transactions() {
 
     const handleCurrencyChange = (event) => {
         setCurrencyFilter(event.target.value);
-        setPage(1);
     };
 
     const handleTypeChange = (event)=>{
         setTypeFilter(event.target.value);
-        setPage(1);
     };
 
     return (
@@ -97,7 +95,7 @@ export default function Transactions() {
                     label="Filtrar por Moneda"
                     value={currencyFilter}
                     onChange={handleCurrencyChange}
-                    sx={{ marginBottom: 3 }}
+                    sx={{ marginBottom: 3, minWidth:"125px" }}
                 >
                     <MenuItem value="ALL">Todas</MenuItem>
                     <MenuItem value="ARS">ARS</MenuItem>
@@ -105,10 +103,10 @@ export default function Transactions() {
                 </TextField>
                 <TextField
                     select
-                    label="Filtrar por Tipo de transaccion"
+                    label="Filtrar por Tipo"
                     value={typeFilter}
                     onChange={handleTypeChange}
-                    sx={{ marginBottom: 3 }}
+                    sx={{ marginBottom: 3,minWidth:"125px" }}
                 >
                     <MenuItem value="ALL">Todas</MenuItem>
                     <MenuItem value="deposit">Depositos</MenuItem>

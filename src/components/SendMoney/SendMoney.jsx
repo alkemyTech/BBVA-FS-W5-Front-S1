@@ -174,15 +174,6 @@ export default function SendMoney({ send }) {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "90vh",
-        margin: "auto",
-      }}
-    >
       <Card variant="elevation" elevation={10} sx={{ width: "60%" }}>
         <Grid
           container
@@ -406,6 +397,6 @@ export default function SendMoney({ send }) {
           </Grid>
         </Grid>
       </Card>
-    </div>
+
   );
 }

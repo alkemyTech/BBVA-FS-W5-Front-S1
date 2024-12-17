@@ -1,6 +1,8 @@
 import Grid from '@mui/material/Grid2';
-import { Card, CardContent, Typography, Box, Pagination, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, MenuItem , 
-    TextField, IconButton} from '@mui/material';
+import {
+  Typography, Pagination, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, MenuItem,
+  IconButton, Select
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import apiConfig from '../../Config/axiosConfig';
 import MovingIcon from '@mui/icons-material/Moving';
@@ -16,24 +18,20 @@ export default function Transactions() {
     const [totalPages, setTotalPages] = useState(0);  // Estado para manejar el total de páginas
     const [page, setPage] = useState(1);
     const itemsPerPage = 10;  // Número de elementos por página
-    const [currencyFilter, setCurrencyFilter] = useState("ALL");
-    const [typeFilter, setTypeFilter] = useState("ALL");
+    const [currencyFilter,setCurrencyFilter]=useState("ALL");
+    const [typeFilter,setTypeFilter]=useState("ALL");
 
-    const filteredTransactions = transactions.filter(transaction => 
-        (currencyFilter === "ALL" || transaction.currencyType === currencyFilter) &&
-        (typeFilter==="ALL" || transaction.type ===typeFilter)
-    );
 
-     const formatearFecha = (fechaOriginal) => {
-        
+    const formatearFecha = (fechaOriginal) => {
+
         const fechaFormateada = format(new Date(fechaOriginal), "dd, MMM, HH:mm:ss", {
             locale: es,
         }).toUpperCase();
-    
+
         return fechaFormateada;
     };
 
-    const infoTransactionsDetail = (amount,currencyType,type,description,transactionDate,cuenta,titular,cuentaDestino) => {
+    const infoTransactionsDetail = (amount, currencyType, type, description, transactionDate, cuenta, titular, cuentaDestino) => {
         Swal.fire({
             title: `<div style="display: flex; align-items: center; gap: 2px; justify-content:center">
                         <img src="assets/iconoPaginaVioleta.png" alt="Icono" style="height: 60px;">
@@ -55,20 +53,28 @@ export default function Transactions() {
     }
 
     useEffect(() => {
-        const fetchTransactions = async () => {
-            try {
-                const response = await apiConfig.get(`/transactions?page=${page - 1}&size=${itemsPerPage}`);  // Parámetro page y size
-
-                const sortedTransactions = response.data.content
-                    .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate));
-                setTransactions(sortedTransactions);
-                setTotalPages(response.data.totalPages);  // Ajuste para manejar el total de páginas
-            } catch (error) {
-                console.error('Error fetching accounts:', error);
-            }
-        };
         fetchTransactions();
-    }, [page,typeFilter,currencyFilter]);
+    }, [page, typeFilter]);
+
+    const fetchTransactions = async () => {
+        try {
+            const endpoint = typeFilter === "deposit"
+                ? `/transactions/deposits?page=${page - 1}&size=${itemsPerPage}`
+                : typeFilter === "payment" 
+                ? `/transactions/payments?page=${page - 1}&size=${itemsPerPage}`
+                :`/transactions?page=${page - 1}&size=${itemsPerPage}`;
+            
+            const response = await apiConfig.get(endpoint);
+            const sortedTransactions = response.data.content
+                .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate));
+
+            setTransactions(sortedTransactions);
+            setTotalPages(response.data.totalPages);
+        } catch (error) {
+            console.error('Error fetching accounts:', error);
+        }
+    };
+
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -78,127 +84,124 @@ export default function Transactions() {
         setCurrencyFilter(event.target.value);
     };
 
-    const handleTypeChange = (event)=>{
+    const handleTypeChange = (event) => {
         setTypeFilter(event.target.value);
+        setPage(1); 
     };
 
+    const filteredTransactions = transactions.filter(transaction =>
+        currencyFilter === "ALL" || transaction.currencyType === currencyFilter
+    );
+
     return (
-        <Grid container sx={{ height: "100vh", textAlign: "center", background: "#eee" }}>
+        <Grid container sx={{ width: "80vw",justifyContent:"center" }}>
             <Grid item size={12}>
-                <Typography variant='H1' fontSize={"4vh"}>
-                    Mis Transacciones
+                <Typography>
+                    Titulo
                 </Typography>
+
             </Grid>
-            <Grid item size={12}>
-            <TextField
-                    select
-                    label="Filtrar por Moneda"
-                    value={currencyFilter}
-                    onChange={handleCurrencyChange}
-                    sx={{ marginBottom: 3, minWidth:"125px" }}
-                >
-                    <MenuItem value="ALL">Todas</MenuItem>
-                    <MenuItem value="ARS">ARS</MenuItem>
-                    <MenuItem value="USD">USD</MenuItem>
-                </TextField>
-                <TextField
-                    select
+            <Grid item size={6} sx={{background:"red"}}> 
+            <Select
                     label="Filtrar por Tipo"
                     value={typeFilter}
                     onChange={handleTypeChange}
-                    sx={{ marginBottom: 3,minWidth:"125px" }}
+                    sx={{ marginBottom: 2 }}
                 >
-                    <MenuItem value="ALL">Todas</MenuItem>
-                    <MenuItem value="deposit">Depositos</MenuItem>
+                    <MenuItem value="ALL">Todos los tipos</MenuItem>
+                    <MenuItem value="deposit">Depósitos</MenuItem>
                     <MenuItem value="payment">Pagos</MenuItem>
-                </TextField>
+                </Select>
+             </Grid>
+            <Grid item size={6}>
+                <Select/>
             </Grid>
             <Grid item size={12}>
-                <Card variant="elevation" elevation={5} sx={{ width: "50%", margin: "auto" }}>
-                    <CardContent sx={{
-                        background: "#6655D9", display: "flex", flexDirection: "row",
-                        justifyContent: "space-between"
-                    }}>
-                        <Typography variant='h6' color="#e8e8e8" sx={{ fontWeight: "bold", display: "flex", flexDirection: "row", alignItems: "center", gap: "5px" }}>
-                            <MovingIcon sx={{ fontSize: "25px", color: "red" }} />
-                            Movimientos
-                        </Typography>
-                    </CardContent>
-                    <CardContent>
-                        {filteredTransactions.length > 0 ? (
-                            <>
-                                <TableContainer component={Paper}>
-                                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell sx={{ fontWeight: "bold", textAlign:"center" }}>Tipo</TableCell>
-                                                <TableCell sx={{ fontWeight: "bold", textAlign:"center" }}>Descripcion</TableCell>
-                                                <TableCell sx={{ fontWeight: "bold", textAlign:"center" }}>Monto</TableCell>
-                                                <TableCell sx={{ fontWeight: "bold", textAlign:"center" }}>Moneda</TableCell>
-                                                <TableCell sx={{ fontWeight: "bold", textAlign:"center" }}>Fecha</TableCell>
-                                                <TableCell sx={{ fontWeight: "bold", textAlign:"center" }}>Detalle</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {filteredTransactions.map((transaction) => (
-                                                <TableRow
-                                                    key={transaction.id}
-                                                >
-                                                    <TableCell sx={{textAlign:"center"}}>
-                                                        <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                                                            {transaction.type === "payment" ?
-                                                                <GrTransaction style={{
-                                                                    color: "white", background: "red", fontSize: "28px",
-                                                                    borderRadius: "15px", padding: "5px"
-                                                                }} /> :
-                                                                <FaArrowDown style={{
-                                                                    color: "white", background: "green", fontSize: "27px",
-                                                                    borderRadius: "15px", padding: "5px"
-                                                                }} />}
-                                                            <Typography variant='p'>
-                                                                {transaction.type == "deposit" ? "DEPÓSITO" : "PAGO"}
-                                                            </Typography>
-                                                        </Box>
-                                                    </TableCell>
-                                                    <TableCell sx={{textAlign:"center"}}>
-                                                        {transaction.description} 
-                                                    </TableCell>
+                    <Grid container>
+                        <Grid item size={12} sx={{ background: "#6655D9" }}>
+                            <Typography variant='h6' color="#e8e8e8" >
+                                <MovingIcon sx={{ fontSize: "25px", color: "black" }} />
+                                Movimientos
+                            </Typography>
+                        </Grid>
+                        <Grid item size={12}>
+                                {filteredTransactions.length > 0 ? (
+                                    <>
+                                        <TableContainer component={Paper}>
+                                            <Table aria-label="simple table">
+                                                <TableHead>
+                                                    <TableRow>
+                                                        <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Tipo</TableCell>
+                                                        <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Descripcion</TableCell>
+                                                        <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Monto</TableCell>
+                                                        <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Moneda</TableCell>
+                                                        <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Fecha</TableCell>
+                                                        <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Detalle</TableCell>
+                                                    </TableRow>
+                                                </TableHead>
+                                                <TableBody>
+                                                    {filteredTransactions.map((transaction) => (
+                                                        <TableRow
+                                                            key={transaction.id}
+                                                        >
+                                                            <TableCell align='center'>
+                                                                <Grid container>
+                                                                    <Grid item size={2}>
+                                                                        {transaction.type === "payment" ?
+                                                                            <GrTransaction style={{ color: "red", fontSize: "23PX" }} /> :
+                                                                            <FaArrowDown style={{ color: "green", fontSize: "20PX" }} />}
+                                                                    </Grid>
+                                                                    <Grid item size={9}>
+                                                                        <Typography variant='p'>
+                                                                            {transaction.type == "deposit" ? "DEPÓSITO" : "PAGO"}
+                                                                        </Typography>
+                                                                    </Grid>
+                                                                </Grid>
+                                                            </TableCell>
+                                                            <TableCell align='center'>
+                                                                <Typography>
+                                                                {transaction.description}
+                                                                </Typography>
+                                                            </TableCell>
 
-                                                    <TableCell sx={{ color: transaction.type === "payment" ? "red" : "green", fontWeight:"bold" , textAlign:"center" }}>
-                                                        {transaction.type === "payment" ? "-" : "+"}
-                                                        {transaction.amount.toLocaleString("es-AR", { minimumFractionDigits: 0 })}
-                                                    </TableCell>
-                                                    <TableCell sx={{textAlign:"center"}}>
-                                                        {transaction.currencyType === "ARS" ? "ARS" : "USD"}
-                                                    </TableCell>
-                                                    <TableCell sx={{textAlign:"center"}}>
-                                                        {formatearFecha(transaction.transactionDate)}
-                                                    </TableCell>
-                                                    <TableCell sx={{textAlign:"center"}}>
-                                                    <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", alignItems: "center" }} 
-                                                            onClick={()=> infoTransactionsDetail(transaction.amount,transaction.currencyType,transaction.type,transaction.description,transaction.transactionDate,transaction.cuenta,transaction.titular,transaction.cuentaDestino)}>
-                                                                <ReceiptIcon sx={{ fontSize: "30px", color: "#6655D9" }} />
-                                                            </IconButton>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                                <Pagination
-                                    count={totalPages}
-                                    page={page}
-                                    onChange={handleChangePage}
-                                    color="primary"
-                                    sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}
-                                />
-                            </>
-                        ) :
-                            <Typography variant="body1" color="grey" fontWeight="bold" sx={{ textAlign: "center" }}>Aún no tienes movimientos</Typography>
-                        }
-                    </CardContent>
-                </Card>
+                                                            <TableCell sx={{ color: transaction.type === "payment" ? "red" : "green", fontWeight: "bold", textAlign: "center" }}>
+                                                                {transaction.type === "payment" ? "-" : "+"}
+                                                                {transaction.amount.toLocaleString("es-AR", { minimumFractionDigits: 0 })}
+                                                            </TableCell>
+                                                            <TableCell sx={{ textAlign: "center" }}>
+                                                                {transaction.currencyType === "ARS" ? "ARS" : "USD"}
+                                                            </TableCell>
+                                                            <TableCell sx={{ textAlign: "center" }}>
+                                                                {formatearFecha(transaction.transactionDate)}
+                                                            </TableCell>
+                                                            <TableCell sx={{ textAlign: "center" }}>
+                                                                <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold" }}
+                                                                    onClick={() => infoTransactionsDetail(transaction.amount, transaction.currencyType, transaction.type, transaction.description, transaction.transactionDate, transaction.cuenta, transaction.titular, transaction.cuentaDestino)}>
+                                                                    <ReceiptIcon sx={{ fontSize: "30px", color: "#6655D9" }} />
+                                                                </IconButton>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ))}
+                                                </TableBody>
+                                            </Table>
+                                            <Pagination 
+                                            shape='rounded'
+                                            count={totalPages}
+                                            page={page}
+                                            onChange={handleChangePage}
+                                            color="primary"
+                                            sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}
+                                        />
+                                        </TableContainer>
+
+                                    </>
+                                ) :
+                                    <Typography variant="body1" color="grey" fontWeight="bold" sx={{ textAlign: "center" }}>Aún no tienes movimientos</Typography>
+                                }
+                        </Grid>
+                    </Grid>
+                
             </Grid>
         </Grid>
-    );
+    )
 }

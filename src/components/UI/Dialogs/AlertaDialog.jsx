@@ -5,13 +5,13 @@ import {Typography, Box, Button} from '@mui/material';
 import PropTypes from "prop-types";
 import { Dialog } from '@mui/material';
 
-function CrearCuentaEnDolaresDialog({mostrarDialogCrearCuentaDolares, crearCuentaDolar, closeDialogCrearCuentaDolares}) {
+function AlertaDialog({mostrarAlerta, accion, closeAlerta, mensajeAlerta}) {
 
   return (
     <Dialog
-    onClose={closeDialogCrearCuentaDolares}
+    onClose={closeAlerta}
     aria-labelledby="customized-dialog-title"
-    open={mostrarDialogCrearCuentaDolares}
+    open={mostrarAlerta}
     sx={{
       "& .MuiDialog-paper": {
         borderRadius: "16px",
@@ -23,7 +23,7 @@ function CrearCuentaEnDolaresDialog({mostrarDialogCrearCuentaDolares, crearCuent
   >
     <IconButton
       aria-label="close"
-      onClick={closeDialogCrearCuentaDolares}
+      onClick={closeAlerta}
       sx={{
         position: 'absolute',
         right: 8,
@@ -42,11 +42,11 @@ function CrearCuentaEnDolaresDialog({mostrarDialogCrearCuentaDolares, crearCuent
                 style={{height:"100px"}}/>
         </Box>
         <Typography variant="h4" color="error" sx={{fontWeight:"bold"}}>ATENCION!</Typography>
-        <Typography variant="h6" color="black" sx={{fontWeight:"bold"}}>Vas a crear una cuenta en USD</Typography>
+        <Typography variant="h6" color="black" sx={{fontWeight:"bold"}}>{mensajeAlerta}</Typography>
         <Typography variant="h6" color="black" sx={{fontWeight:"bold"}}>Estás seguro?</Typography>
         <Box sx={{display:"flex", gap:"20px", pt:2}}>
-            <Button variant='contained' sx={{backgroundColor:"#6655D9"}} onClick={closeDialogCrearCuentaDolares}>Cancelar</Button>
-            <Button variant='contained' sx={{backgroundColor:"#228B22"}} onClick={crearCuentaDolar}>Crear cuenta</Button>
+            <Button variant='contained' sx={{backgroundColor:"#6655D9"}} onClick={closeAlerta}>Cancelar</Button>
+            <Button variant='contained' sx={{backgroundColor:"#228B22"}} onClick={accion}>Confirmar</Button>
         </Box>
     </DialogContent>
   </Dialog>
@@ -54,10 +54,11 @@ function CrearCuentaEnDolaresDialog({mostrarDialogCrearCuentaDolares, crearCuent
 }
 
 
-CrearCuentaEnDolaresDialog.propTypes = {
-    mostrarDialogCrearCuentaDolares: PropTypes.bool.isRequired,
-    crearCuentaDolar: PropTypes.func.isRequired,
-    closeDialogCrearCuentaDolares: PropTypes.func.isRequired
+AlertaDialog.propTypes = {
+    mostrarAlerta: PropTypes.bool.isRequired,
+    accion: PropTypes.func.isRequired,
+    closeAlerta: PropTypes.func.isRequired,
+    mensajeAlerta: PropTypes.string.isRequired
 };
 
-export default CrearCuentaEnDolaresDialog;
+export default AlertaDialog;

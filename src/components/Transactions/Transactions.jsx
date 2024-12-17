@@ -126,8 +126,8 @@ export default function Transactions() {
                     <InputLabel>Filtros por Monto</InputLabel>
 
                     <Select
-                        label="Filtrar por Moneda"
-                        value={currencyFilter}
+                        label="Filtrar por Monto"
+                        value={amountFilter}
                         onChange={handleAmountChange}
                         sx={{ marginBottom: 2 }}
                     >

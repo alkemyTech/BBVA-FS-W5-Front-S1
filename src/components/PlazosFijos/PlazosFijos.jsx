@@ -11,13 +11,13 @@ import {
   Card,
   CardContent,
   Divider,
-  Pagination, 
-  Table, 
-  TableHead, 
-  TableRow, 
-  TableCell, 
-  TableBody, 
-  TableContainer, 
+  Pagination,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  TableContainer,
   Paper
 } from "@mui/material";
 import { useState, useEffect } from "react";
@@ -68,9 +68,9 @@ export default function PlazosFijos() {
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
-  const handleRowClick = (fixedTermId)=>{
+  const handleRowClick = (fixedTermId) => {
     navigate(`/fixedTerm/${fixedTermId}`);
-  } 
+  }
 
   const [errores, setErrores] = useState({});
 
@@ -81,7 +81,7 @@ export default function PlazosFijos() {
   const validarCampo = (campo, valor) => {
 
     if (campo === "monto") {
-      
+
       const montoAInvertir = parseFloat(
         valor.replace(/\./g, "").replace(",", ".")
       );
@@ -101,22 +101,40 @@ export default function PlazosFijos() {
     }
   }
 
+  const calcularDatosTabla = (fixedTerms) => {
+    const porcentaje = 2; // Interés fijo del 2%
+
+    return fixedTerms.map((fixedTerm) => {
+      const interes = fixedTerm.amount * (porcentaje / 100);
+      const montoConInteres = fixedTerm.amount + interes;
+
+      return {
+        ...fixedTerm,
+        interes,
+        montoConInteres,
+      };
+    });
+  };
+
+  const fixedTermsWithData = calcularDatosTabla(fixedTerms);
+
+
   const datosCompletos = (objeto, atributos) => {
     return atributos.every(
       (clave) => objeto[clave] !== null && objeto[clave] !== undefined && objeto[clave] !== ""
     );
   };
 
-  const fechaActual = new Date ();
+  const fechaActual = new Date();
 
   const formatearFecha = (fechaOriginal) => {
 
     const fechaFormateada = format(new Date(fechaOriginal), "dd, MMM, HH:mm:ss", {
       locale: es,
     }).toUpperCase();
-  
+
     return fechaFormateada;
-};
+  };
 
   const cotizarPlazo = async () => {
     setCotizando(true);
@@ -140,6 +158,7 @@ export default function PlazosFijos() {
       console.log(error);
     }
   };
+
 
   console.log(plazoFijo);
 
@@ -183,26 +202,26 @@ export default function PlazosFijos() {
 
     } catch (error) {
       console.log(error)
-        setSnackbar({
-          status: "error",
-          message: "No tenes el balance suficiente para poder crear el Plazo Fijo!",
-        });
-        setCotizacionCompleta(false);
-        setSnackbarVisibility(true);
+      setSnackbar({
+        status: "error",
+        message: "No tenes el balance suficiente para poder crear el Plazo Fijo!",
+      });
+      setCotizacionCompleta(false);
+      setSnackbarVisibility(true);
     }
   };
 
   useEffect(() => {
     const fetchFixedTermDeposits = async () => {
-        try {
-            const response = await apiConfig.get(`/fixedTerm?page=${page - 1}&size=${itemsPerPage}`);
-            const sortedFixedTerms = response.data.content
-            .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate));
-            setFixedTerms(sortedFixedTerms);
-            setTotalPages(response.data.totalPages); 
-        } catch (error) {
-            console.error('Error fetching fixedTerms:', error);
-        }
+      try {
+        const response = await apiConfig.get(`/fixedTerm?page=${page - 1}&size=${itemsPerPage}`);
+        const sortedFixedTerms = response.data.content
+          .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate));
+        setFixedTerms(sortedFixedTerms);
+        setTotalPages(response.data.totalPages);
+      } catch (error) {
+        console.error('Error fetching fixedTerms:', error);
+      }
     };
     fetchFixedTermDeposits();
   }, [page, cargaFinalizada]);
@@ -237,6 +256,10 @@ export default function PlazosFijos() {
     },
   };
 
+
+
+
+
   return (
     <Grid container flexDirection="row" sx={{ p: 3 }} spacing={4}>
       <Grid item size={6} sx={{ display: "flex", justifyContent: "center" }}>
@@ -249,8 +272,8 @@ export default function PlazosFijos() {
           TUS PLAZOS FIJOS
         </Typography>
       </Grid>
-      <Grid item size={6} sx={{ display: "flex", flexDirection: "column", gap:"18px", alignItems:"center" }}>
-        <Typography variant="body1" color="initial" sx={{fontWeight:"bold"}}>
+      <Grid item size={6} sx={{ display: "flex", flexDirection: "column", gap: "18px", alignItems: "center" }}>
+        <Typography variant="body1" color="initial" sx={{ fontWeight: "bold" }}>
           Ingresá el monto que te gustaría invertir:
         </Typography>
         <NumericFormat
@@ -273,209 +296,282 @@ export default function PlazosFijos() {
           onBlur={(e) => validarCampo("monto", e.target.value)}
           size="small"
           sx={textFieldStyle}
-          disabled={cotizacionCompleta || cotizando}        />
-         <Typography variant="body1" color="initial" sx={{fontWeight:"bold"}}>
-            Ingresá la cantidad de días:
-          </Typography>
-          <ToggleButtonGroup
-            value={plazoFijo.cantidadDias}
-            exclusive
-            onChange={(e) =>
-              setPlazoFijo({
-                ...plazoFijo,
-                cantidadDias: e.target.value,
-              })
-            }
-            sx={{ gap: "10px" }}
-            disabled={cotizacionCompleta || cotizando}
-          >
-            <ToggleButton
-              value={30}
-              sx={{
-                backgroundColor:
+          disabled={cotizacionCompleta || cotizando} />
+        <Typography variant="body1" color="initial" sx={{ fontWeight: "bold" }}>
+          Ingresá la cantidad de días:
+        </Typography>
+        <ToggleButtonGroup
+          value={plazoFijo.cantidadDias}
+          exclusive
+          onChange={(e) =>
+            setPlazoFijo({
+              ...plazoFijo,
+              cantidadDias: e.target.value,
+            })
+          }
+          sx={{ gap: "10px" }}
+          disabled={cotizacionCompleta || cotizando}
+        >
+          <ToggleButton
+            value={30}
+            sx={{
+              backgroundColor:
                 plazoFijo.cantidadDias == "30"
-                ? "#6655D9"
-                : "#A599F2",
-                color: "white",
-                fontWeight:"bold",
-                "&:hover": {
-                  backgroundColor:
+                  ? "#6655D9"
+                  : "#A599F2",
+              color: "white",
+              fontWeight: "bold",
+              "&:hover": {
+                backgroundColor:
                   plazoFijo.cantidadDias == "30"
-                  ? "#6655D9"
-                  : "#A599F2",
-                },
-              }}
-            >
-              30 días
-            </ToggleButton>
-            <ToggleButton
-              value={60}
-              sx={{
-                backgroundColor:
+                    ? "#6655D9"
+                    : "#A599F2",
+              },
+            }}
+          >
+            30 días
+          </ToggleButton>
+          <ToggleButton
+            value={60}
+            sx={{
+              backgroundColor:
                 plazoFijo.cantidadDias == "60"
-                ? "#6655D9"
-                : "#A599F2",
-                color: "white",
-                fontWeight:"bold",
-                "&:hover": {
-                  backgroundColor:
-                  plazoFijo.cantidadDias == "60"
                   ? "#6655D9"
                   : "#A599F2",
-                },
-              }}
-            >
-              60 días
-            </ToggleButton>
-            <ToggleButton
-              value={90}
-              sx={{
+              color: "white",
+              fontWeight: "bold",
+              "&:hover": {
                 backgroundColor:
+                  plazoFijo.cantidadDias == "60"
+                    ? "#6655D9"
+                    : "#A599F2",
+              },
+            }}
+          >
+            60 días
+          </ToggleButton>
+          <ToggleButton
+            value={90}
+            sx={{
+              backgroundColor:
                 plazoFijo.cantidadDias == "90"
-                ? "#6655D9"
-                : "#A599F2",
-                color: "white",
-                fontWeight:"bold",
-                "&:hover": {
-                  backgroundColor:
-                  plazoFijo.cantidadDias == "90"
                   ? "#6655D9"
                   : "#A599F2",
-                },
-              }}
-            >
-              90 días
-            </ToggleButton>
-          </ToggleButtonGroup>
-          {(datosCompletos(plazoFijo, ["amount", "cantidadDias"]) && !presenciaDeErrores) && (
-            <Card variant="elevation" elevation={2} sx={{width:"75%"}}>
-              <CardContent sx={{color:"gray", display:"flex", flexDirection:"column", gap:"5px"}}>
-                <Typography variant="p" color="gray">
-                  Fecha de cierre estimada:
-                </Typography>
-                <Typography variant="p" color="#6655D9">
-                  {
-                    plazoFijo.cantidadDias == 30 ? formatearFecha(new Date(fechaActual.getTime() + 1 * 60 * 1000)) : 
+              color: "white",
+              fontWeight: "bold",
+              "&:hover": {
+                backgroundColor:
+                  plazoFijo.cantidadDias == "90"
+                    ? "#6655D9"
+                    : "#A599F2",
+              },
+            }}
+          >
+            90 días
+          </ToggleButton>
+        </ToggleButtonGroup>
+        {(datosCompletos(plazoFijo, ["amount", "cantidadDias"]) && !presenciaDeErrores) && (
+          <Card variant="elevation" elevation={2} sx={{ width: "75%" }}>
+            <CardContent sx={{ color: "gray", display: "flex", flexDirection: "column", gap: "5px" }}>
+              <Typography variant="p" color="gray">
+                Fecha de cierre estimada:
+              </Typography>
+              <Typography variant="p" color="#6655D9">
+                {
+                  plazoFijo.cantidadDias == 30 ? formatearFecha(new Date(fechaActual.getTime() + 1 * 60 * 1000)) :
                     plazoFijo.cantidadDias == 60 ? formatearFecha(new Date(fechaActual.getTime() + 2 * 60 * 1000)) :
-                    formatearFecha(new Date(fechaActual.getTime() + 3 * 60 * 1000)) 
-                  }
-                </Typography>
-              </CardContent>
-            </Card>
-          )}
-          <Button variant="contained" disabled={presenciaDeErrores || !datosCompletos(plazoFijo, ["amount", "cantidadDias"]) || cotizando || cotizacionCompleta} onClick={cotizarPlazo} 
-        sx={{backgroundColor:"#6655D9", cursor:"pointer", width: "60%"}}>Calcular Plazo</Button>
+                      formatearFecha(new Date(fechaActual.getTime() + 3 * 60 * 1000))
+                }
+              </Typography>
+            </CardContent>
+          </Card>
+        )}
+        <Button variant="contained" disabled={presenciaDeErrores || !datosCompletos(plazoFijo, ["amount", "cantidadDias"]) || cotizando || cotizacionCompleta} onClick={cotizarPlazo}
+          sx={{ backgroundColor: "#6655D9", cursor: "pointer", width: "60%" }}>Calcular Plazo</Button>
         {cotizando && (
-          <Box sx={{display:"flex", flexDirection:"column", alignItems:"center", gap:"15px", pt:5}}>
-            <img src="/assets/iconoPaginaVioleta.png" alt="" style={{height:"45px"}}/>
-            <LinearProgress color="secondary" sx={{width:"40%"}} />
-            <Typography variant="p" color="initial" sx={{fontWeight:"bold"}}>Calculando Plazo...</Typography>
+          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "15px", pt: 5 }}>
+            <img src="/assets/iconoPaginaVioleta.png" alt="" style={{ height: "45px" }} />
+            <LinearProgress color="secondary" sx={{ width: "40%" }} />
+            <Typography variant="p" color="initial" sx={{ fontWeight: "bold" }}>Calculando Plazo...</Typography>
           </Box>
         )}
         {cotizacionCompleta && (
-        <Card variant="elevation" elevation={20} sx={{width: "75%"}}> 
-          <CardContent sx={{display:"flex", justifyContent:"center"}}>
-            <Typography variant="h7" color="#6655D9" fontWeight="bold">COTIZACIÓN DEL PLAZO FIJO</Typography>
-          </CardContent>
-          <Divider />
-          <CardContent sx={{display:"flex", flexDirection:"column", gap:"10px"}}>
-            <Typography variant="p" color="black" sx={{display:"flex", flexDirection:"row", alignItems:"center", gap:"5px"}}>- Cantidad de días del Plazo: 
-              <Typography variant="body1" color="#6655D9" fontWeight="bold">{plazoFijo.cantidadDias}</Typography>
-            </Typography>
-            <Typography variant="p" color="black" sx={{display:"flex", flexDirection:"row", alignItems:"center", gap:"5px"}}>- Monto invertido: 
-              <Typography variant="body1" color="#6655D9" fontWeight="bold">${plazoFijo.amount}</Typography>
-            </Typography>
-            <Typography variant="p" color="black" sx={{display:"flex", flexDirection:"row", alignItems:"center", gap:"5px"}}>- Interes: 
-              <Typography variant="body1" color="#6655D9" fontWeight="bold">{plazoFijo.interest}</Typography>
-            </Typography>
-            <Typography variant="p" color="black" sx={{display:"flex", flexDirection:"row", alignItems:"center", gap:"5px"}}>- Interes ganado 
-              <Typography variant="body1" color="#6655D9" fontWeight="bold">${plazoFijo.interestEarned}</Typography>
-            </Typography>
-            <Typography variant="p" color="black" sx={{display:"flex", flexDirection:"row", alignItems:"center", gap:"5px"}}>- Monto final: 
-              <Typography variant="body1" color="#6655D9" fontWeight="bold">${plazoFijo.finalAmount}</Typography>
-            </Typography>
-            <Typography variant="p" color="black" sx={{display:"flex", flexDirection:"row", alignItems:"center", gap:"5px"}}>- Fecha de cierre: 
-              <Typography variant="body1" color="#6655D9" fontWeight="bold">{formatearFecha(plazoFijo.closingDate)}</Typography>
-            </Typography>
-            <Box sx={{display:"flex", flexDirection:"row", gap:"10px", alignItems:"center", justifyContent:"space-around", pt:1}}>
-              <Button variant="contained" size="small" onClick={()=> setCotizacionCompleta(false)} sx={{backgroundColor:"#6655D9", cursor:"pointer", 
-                fontWeight:"bold"}}>Cerrar cotización</Button>
-              <Button variant="contained" size="small" onClick={()=> realizarInversion()} sx={{backgroundColor:"#228B22", cursor:"pointer", 
-                fontWeight:"bold"}}>Realizar inversión</Button>
-            </Box>
-          </CardContent>
-        </Card>
+          <Card variant="elevation" elevation={20} sx={{ width: "75%" }}>
+            <CardContent sx={{ display: "flex", justifyContent: "center" }}>
+              <Typography variant="h7" color="#6655D9" fontWeight="bold">COTIZACIÓN DEL PLAZO FIJO</Typography>
+            </CardContent>
+            <Divider />
+            <CardContent sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <Typography variant="p" color="black" sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "5px" }}>- Cantidad de días del Plazo:
+                <Typography variant="body1" color="#6655D9" fontWeight="bold">{plazoFijo.cantidadDias}</Typography>
+              </Typography>
+              <Typography variant="p" color="black" sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "5px" }}>- Monto invertido:
+                <Typography variant="body1" color="#6655D9" fontWeight="bold">${plazoFijo.amount}</Typography>
+              </Typography>
+              <Typography variant="p" color="black" sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "5px" }}>- Interes:
+                <Typography variant="body1" color="#6655D9" fontWeight="bold">{plazoFijo.interest}</Typography>
+              </Typography>
+              <Typography variant="p" color="black" sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "5px" }}>- Interes ganado
+                <Typography variant="body1" color="#6655D9" fontWeight="bold">${plazoFijo.interestEarned}</Typography>
+              </Typography>
+              <Typography variant="p" color="black" sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "5px" }}>- Monto final:
+                <Typography variant="body1" color="#6655D9" fontWeight="bold">${plazoFijo.finalAmount}</Typography>
+              </Typography>
+              <Typography variant="p" color="black" sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "5px" }}>- Fecha de cierre:
+                <Typography variant="body1" color="#6655D9" fontWeight="bold">{formatearFecha(plazoFijo.closingDate)}</Typography>
+              </Typography>
+              <Box sx={{ display: "flex", flexDirection: "row", gap: "10px", alignItems: "center", justifyContent: "space-around", pt: 1 }}>
+                <Button variant="contained" size="small" onClick={() => setCotizacionCompleta(false)} sx={{
+                  backgroundColor: "#6655D9", cursor: "pointer",
+                  fontWeight: "bold"
+                }}>Cerrar cotización</Button>
+                <Button variant="contained" size="small" onClick={() => realizarInversion()} sx={{
+                  backgroundColor: "#228B22", cursor: "pointer",
+                  fontWeight: "bold"
+                }}>Realizar inversión</Button>
+              </Box>
+            </CardContent>
+          </Card>
         )}
       </Grid>
       <Grid item size={6}>
         <Card variant="elevation" elevation={5}>
           <CardContent sx={{ background: "#6655D9" }}>
-              <Typography variant='h6' color="white" sx={{ fontWeight: "bold", display: "flex", flexDirection: "row", alignItems: "center", gap: "10px" }}>
-                  <CurrencyExchangeIcon sx={{ fontSize: "25px", color: "orange" }} />
-                  Plazos Fijos
-              </Typography>
+            <Typography
+              variant="h6"
+              color="white"
+              sx={{
+                fontWeight: "bold",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: "10px",
+              }}
+            >
+              <CurrencyExchangeIcon sx={{ fontSize: "25px", color: "orange" }} />
+              Plazos Fijos
+            </Typography>
           </CardContent>
           <CardContent>
-          {fixedTerms.length > 0 ? (
-          <>
-          <TableContainer component={Paper}>
-              <Table aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                        <TableCell sx={{fontWeight:"bold", textAlign:"center"}}>Monto invertido</TableCell>
-                        <TableCell sx={{fontWeight:"bold", textAlign:"center"}}>Fecha de Creación</TableCell>
-                        <TableCell sx={{fontWeight:"bold", textAlign:"center"}}>Fecha de Vencimiento</TableCell>
-                        <TableCell sx={{fontWeight:"bold", textAlign:"center"}}>Estado</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {fixedTerms.map((fixedTerm) => (
-                        <TableRow 
-                          key={fixedTerm.id}
-                          sx={{cursor:"pointer"}}
-                          onClick={()=>handleRowClick(fixedTerm.id)}
-                        >
-                          <TableCell sx={{textAlign:"center", color:"green", fontWeight:"bold"}}>
+            {fixedTerms.length > 0 ? (
+              <>
+                {/* Tabla Principal */}
+                <TableContainer component={Paper}>
+                  <Table aria-label="main table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>
+                          Monto invertido
+                        </TableCell>
+                        <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>
+                          Fecha de Creación
+                        </TableCell>
+                        <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>
+                          Fecha de Vencimiento
+                        </TableCell>
+                        <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>
+                          Estado
+                        </TableCell>
+                        <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>
+                          Interés (2%)
+                        </TableCell>
+                        <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>
+                          Importe con Interés
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {fixedTermsWithData.map((fixedTerm) => (
+                        <TableRow key={fixedTerm.id} sx={{ cursor: "pointer" }} onClick={() => handleRowClick(fixedTerm.id)}>
+                          <TableCell sx={{ textAlign: "center", color: "green", fontWeight: "bold" }}>
                             ${fixedTerm.amount}
                           </TableCell>
-
-                          <TableCell sx={{textAlign:"center", color:"gray", fontWeight:"bold"}}>
+                          <TableCell sx={{ textAlign: "center", color: "gray", fontWeight: "bold" }}>
                             {formatearFecha(fixedTerm.creationDate)}
                           </TableCell>
-                          
-                          <TableCell sx={{textAlign:"center", color:"gray", fontWeight:"bold"}}>
+                          <TableCell sx={{ textAlign: "center", color: "gray", fontWeight: "bold" }}>
                             {formatearFecha(fixedTerm.closingDate)}
                           </TableCell>
-                          
-                          <TableCell sx={{textAlign:"center", color: fixedTerm.settled == 0 ? "red" : "#6655D9", fontWeight:"bold"}}>
-                            {fixedTerm.settled == 0 ? "En progreso..." : "Liquidado"}
+                          <TableCell sx={{ textAlign: "center", color: fixedTerm.settled === 0 ? "red" : "#6655D9", fontWeight: "bold" }}>
+                            {fixedTerm.settled === 0 ? "En progreso..." : "Liquidado"}
                           </TableCell>
-                                                           
+                          <TableCell sx={{ textAlign: "center", color: "blue", fontWeight: "bold" }}>
+                            ${fixedTerm.interes.toFixed(2)}
+                          </TableCell>
+                          <TableCell sx={{ textAlign: "center", color: "blue", fontWeight: "bold" }}>
+                            ${fixedTerm.montoConInteres.toFixed(2)}
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
-              </Table>
-          </TableContainer>
-            <Pagination
-                count={totalPages}
-                page={page}
-                onChange={handleChangePage}
-                color="primary"
-                sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}
-            />
-          </>
-          ) :
-            <Typography variant="body1" color="grey" fontWeight="bold" sx={{ textAlign: "center" }}>Aún no tienes Plazos Fijos</Typography>
-          }
-        </CardContent>
+                  </Table>
+                </TableContainer>
+
+                {/* Tabla de Totales */}
+                <TableContainer component={Paper} sx={{ marginTop: 2 }}>
+                  <Table aria-label="totals table">
+                    <TableBody>
+                      <TableRow>
+                        <TableCell sx={{ fontWeight: "bold", textAlign: "center", color: "#6655D9", }}>
+                          Total Invertido:{" "}
+                          <span style={{ color: "green", fontWeight: "bold" }}>
+                            ${fixedTermsWithData
+                              .reduce((acc, fixedTerm) => acc + fixedTerm.amount, 0)
+                              .toFixed(2)}
+                          </span>
+                        </TableCell>
+                        <TableCell sx={{ fontWeight: "bold", textAlign: "center", color: "#6655D9", }}>
+                          Total Interés (2%):{" "}
+                          <span style={{ color: "blue", fontWeight: "bold" }}>
+                            ${fixedTermsWithData
+                              .reduce((acc, fixedTerm) => acc + fixedTerm.amount * 0.02, 0)
+                              .toFixed(2)}
+                          </span>
+                        </TableCell>
+                        <TableCell sx={{ fontWeight: "bold", textAlign: "center", color: "#6655D9", }}>
+                          Total con Interés:{" "}
+                          <span style={{ color: "blue", fontWeight: "bold" }}>
+                            ${fixedTermsWithData
+                              .reduce((acc, fixedTerm) => acc + fixedTerm.amount + fixedTerm.amount * 0.02, 0)
+                              .toFixed(2)}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+
+
+
+                {/* Paginación */}
+                <Pagination
+                  count={totalPages}
+                  page={page}
+                  onChange={handleChangePage}
+                  color="primary"
+                  sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}
+                />
+              </>
+            ) : (
+              <Typography
+                variant="body1"
+                color="grey"
+                fontWeight="bold"
+                sx={{ textAlign: "center" }}
+              >
+                Aún no tienes Plazos Fijos
+              </Typography>
+            )}
+          </CardContent>
         </Card>
       </Grid>
+
       {isLoading && (
-          <LoadingScreen
-            message={loadingScreen.message}
-            duration={loadingScreen.duration}
-          />
-        )}
+        <LoadingScreen
+          message={loadingScreen.message}
+          duration={loadingScreen.duration}
+        />
+      )}
       {snackbarVisibility && (
         <GenericSnackbar
           status={snackbar.status}
@@ -486,3 +582,13 @@ export default function PlazosFijos() {
     </Grid>
   );
 }
+
+
+
+
+
+
+
+
+
+

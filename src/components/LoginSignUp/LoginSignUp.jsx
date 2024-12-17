@@ -240,9 +240,9 @@ export default function LoginSignUp({ isLogin }) {
         >
           <Grid item>
               <img
-                src="/assets/prueba1.png"
+                src="/assets/navidad1.png"
                 alt=""
-                style={{ height: "50px" }}
+                style={{ height: "170px" }}
               />
           </Grid>
           

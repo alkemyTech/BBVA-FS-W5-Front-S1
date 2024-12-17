@@ -8,7 +8,7 @@ import Fade from "@mui/material/Fade";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import { useState } from "react";
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Divider from "@mui/material/Divider";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -26,6 +26,8 @@ export default function Header() {
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
+
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -44,6 +46,7 @@ export default function Header() {
     
   };
 
+
   return (
     <Grid
       container
@@ -60,7 +63,7 @@ export default function Header() {
         <Grid container alignItems="center" flexDirection="row" spacing={3}>
           <Grid item>
             <img
-              src="/assets/prueba1.png"
+              src="/assets/navidad1.png"
               alt="Logo"
               style={{ height: "40px" }}
               onClick={handleNavigate}

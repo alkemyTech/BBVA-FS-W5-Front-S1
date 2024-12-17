@@ -46,6 +46,10 @@ export default function Header() {
     
   };
 
+  const handleNavegar = (ruta) => {
+    navigate(ruta);
+}
+
 
   return (
     <Grid
@@ -153,7 +157,7 @@ export default function Header() {
             onClose={handleClose}
             TransitionComponent={Fade}
           >
-            <MenuItem onClick={handleClose} sx={{ fontSize: "14px" }}>
+            <MenuItem onClick={handle} sx={{ fontSize: "14px" }}>
               <ListItemIcon>
                 <PersonIcon fontSize="small" sx={{ color: "#6655D9" }} />
               </ListItemIcon>

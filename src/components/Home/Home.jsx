@@ -11,24 +11,35 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import MovingIcon from '@mui/icons-material/Moving';
 import GradeIcon from '@mui/icons-material/Grade';
 import PersonIcon from "@mui/icons-material/Person";
+import ReceiptIcon from '@mui/icons-material/Receipt';
 import { IconButton } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { GrTransaction } from "react-icons/gr";
 import { FaArrowDown } from "react-icons/fa";
-import Swal from "sweetalert2";
 import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
 import GenericSnackbar from "../UI/Snackbar/Snackbar";
+import CotizacionDolarDialog from "../UI/Dialogs/CotizacionDolarDialog";
+import CrearCuentaEnDolaresDialog from "../UI/Dialogs/CrearCuentaEnDolaresDialog";
+import DetalleTransaccionDialog from "../UI/Dialogs/DetalleTransaccionDialog";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import axios from "axios"
-
+import { formatearFecha } from '../../utils/helpers';
 
 export default function Home() {
 
     const [accounts, setAccounts] = useState([]);
     const [favList, setFavList] = useState([]);
     const [transactions, setTransactions] = useState([]);
+    const [transaction, setTransaction] = useState({
+        amount: "",
+        currencyType: "",
+        type: "",
+        description: "",
+        transactionDate: "",
+        titular: "",
+        cuenta: "",
+        cuentaDestino: "",
+    });
     const [balanceVisibility, setBalanceVisibility] = useState(true);
     const changeBalanceVisibility = () => {
         setBalanceVisibility(!balanceVisibility);
@@ -42,92 +53,62 @@ export default function Home() {
         status: "",
         message: "",
     });
+    
     const [snackbarVisibility, setSnackbarVisibility] = useState(false);
     const [cargaFinalizada, setCargaFinalizada] = useState(false);
+    
     const [infoDolar, setInfoDolar] = useState({
         compra: "",
         venta: "",
         fechaActualizacion: ""
     });
+    
+    const [mostrarInfoDolar, setMostrarInfoDolar] = useState(false);
+    const closeInfoDolar = () => {
+        setMostrarInfoDolar(false);
+    }
+    const openInfoDolar = () => {
+        setMostrarInfoDolar(true);
+    }
+
+    const [mostrarDialogCrearCuentaDolar, setMostrarDialogCrearCuentaDolar] = useState(false);
+    const closeDialogCuentaDolar = () => {
+        setMostrarDialogCrearCuentaDolar(false);
+    }
+    const openDialogCuentaDolar = () => {
+        setMostrarDialogCrearCuentaDolar(true);
+    }
+
+    const [mostrarDetalleTransaccion, setMostrarDetalleTransaccion] = useState(false);
+    const closeDetalleTransaccion = () => {
+        setMostrarDetalleTransaccion(false);
+    }
+    const openDetalleTransaccion = (transaction) => {
+
+        setTransaction({
+            amount: transaction.amount,
+            currencyType: transaction.currencyType,
+            type: transaction.type,
+            description: transaction.description,
+            transactionDate: transaction.transactionDate,
+            titular: transaction.titular,
+            cuenta: transaction.cuenta,
+            cuentaDestino: transaction.cuentaDestino
+        })
+        
+        setMostrarDetalleTransaccion(true);
+    }
 
     const navigate = useNavigate();
-
-    const formatearFecha = (fechaOriginal) => {
-
-        const fechaFormateada = format(new Date(fechaOriginal), "dd, MMM, HH:mm:ss", {
-            locale: es,
-        }).toUpperCase();
-
-        return fechaFormateada;
-    };
 
     const handleNavegar = (ruta) => {
         navigate(ruta);
     }
 
-    const crearCuentaUsdAlerta = () => {
-        Swal.fire({
-            title: "Vas a crear una cuenta en USD",
-            text: "Estas seguro? No va a ser posible revertir la operación.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#6655D9",
-            cancelButtonColor: "#228B22",
-            cancelButtonText: "Crear cuenta",
-            confirmButtonText: "Cancelar",
-            allowOutsideClick: false
-        }).then((result) => {
-            if (result.isDismissed) {
-                crearCuentaUsd();
-            }
-        });
-    }
-
-    const infoDolarAlerta = () => {
-
-        Swal.fire({
-            title: `<div style="display: flex; align-items: center; gap: 2px; justify-content:center">
-                        <img src="assets/iconoPaginaVioleta.png" alt="Icono" style="height: 60px;">
-                        <span style="color: #6655D9;">Cotización del Dólar</span>
-                    </div>`,
-            html: `
-            <Div style="display: flex; flex-direction:column; gap:10px; align-items:center;">
-                <h3 style="display: flex; flex-direction: row; gap: 10px">Valor de Compra: <p style="font-weight:bold; color: #228B22">$${infoDolar.compra}</p></h3>
-                <h3 style="display: flex; flex-direction: row; gap: 10px">Valor de Venta: <p style="font-weight:bold; color: #228B22">$${infoDolar.venta}</p></h3>
-                <h3 style="display: flex; flex-direction: row; gap: 10px">Fecha de Actualización: <p style="font-weight:bold; color:00aae4">${formatearFecha(infoDolar.fechaActualizacion)}</p></h3>
-            </Div>
-            `
-        })
-    }
-
-    const infoTransactionsDetail = (id,amount,currencyType,type,description,transactionDate,cuenta,titular,cuentaDestino) => {
-        Swal.fire({
-            title: `<div style="display: flex; align-items: center; gap: 2px; justify-content:center">
-                        <img src="assets/iconoPaginaVioleta.png" alt="Icono" style="height: 60px;">
-                        <span style="color: #6655D9;">Detalles de la transaccion</span>
-                    </div>`,
-            html: `
-            <Div style="display: flex; flex-direction:column; gap:10px; align-items:center;">
-                <h3 style="display: flex; flex-direction: row; gap: 10px">id: <p style="font-weight:bold; color: #228B22">${id}</p></h3>
-                <h3 style="display: flex; flex-direction: row; gap: 10px">Monto: <p style="font-weight:bold; color: #228B22">${amount}</p></h3>
-                <h3 style="display: flex; flex-direction: row; gap: 10px">Tipo de moneda: <p style="font-weight:bold; color: #228B22">${currencyType}</p></h3>
-                <h3 style="display: flex; flex-direction: row; gap: 10px">Tipo de transaccion: <p style="font-weight:bold; color: #228B22">${type}</p></h3>
-                <h3 style="display: flex; flex-direction: row; gap: 10px">descripcion: <p style="font-weight:bold; color: #228B22">${description}</p></h3>
-                <h3 style="display: flex; flex-direction: row; gap: 10px">Fecha: <p style="font-weight:bold; color: #228B22">${transactionDate}</p></h3>
-                <h3 style="display: flex; flex-direction: row; gap: 10px">Cuenta: <p style="font-weight:bold; color: #228B22">${cuenta}</p></h3>
-                <h3 style="display: flex; flex-direction: row; gap: 10px">Titular: <p style="font-weight:bold; color: #228B22">${titular}</p></h3>
-                <h3 style="display: flex; flex-direction: row; gap: 10px">Cuenta destino: <p style="font-weight:bold; color:00aae4">${cuentaDestino}</p></h3>
-
-            </Div>
-            `
-        })
-    }
-
-    const cotizacionDolar = async () => {
+    const fetchCotizacionDolar = async () => {
         try {
             const response = await axios.get("https://dolarapi.com/v1/dolares/oficial")
             setInfoDolar({
-
                 compra: response.data.compra,
                 venta: response.data.venta,
                 fechaActualizacion: response.data.fechaActualizacion
@@ -135,9 +116,7 @@ export default function Home() {
         } catch (error) {
             console.log(error);
         }
-    }
-
-
+    };
 
     useEffect(() => {
         const fetchAccounts = async () => {
@@ -163,10 +142,10 @@ export default function Home() {
                 console.error('Error fetching accounts:', error);
             }
         };
-
-        cotizacionDolar();
+        fetchCotizacionDolar();   
         fetchAccounts();
         fetchTransactions();
+
     }, [cargaFinalizada]);
 
     useEffect(() => {
@@ -183,6 +162,7 @@ export default function Home() {
     }, []);
 
     const crearCuentaUsd = async () => {
+        setMostrarDialogCrearCuentaDolar(false);
         try {
             await apiConfig.post("/accounts/", {
                 tipoDeCuenta: "USD",
@@ -209,6 +189,7 @@ export default function Home() {
     }
 
     return (
+    <>
         <Grid container sx={{ p: 2, m: 5, alignItems: "start" }} spacing={5}>
             {accounts.map((account) => (
                 <Grid item size={5} key={account.cbu}>
@@ -229,7 +210,7 @@ export default function Home() {
                             </Button>
                         </CardContent>
                         <CardContent>
-                            <Grid container >
+                            <Grid container>
                                 <Grid item size={6}>
                                     <Typography sx={{ color: "gray", textAlign: "left" }}>
                                         Dinero disponible:
@@ -276,7 +257,7 @@ export default function Home() {
             ))}
             {accounts.length == 1 && (
                 <Grid item size={5}>
-                    <Card variant="elevation" elevation={5}>
+                    <Card variant="elevation" elevation={5} sx={{minHeight:"33vh"}}>
                         <CardContent sx={{ background: "#E0E0E0" }}>
                             <Typography variant="h4" color="inital" sx={{ textAlign: "left", fontWeight: "bold", display: "flex", alignItems: "center", gap: "10px" }}>
                                 <img src="assets/estadosUnidos.png" alt="" style={{ height: "40px" }} />
@@ -284,7 +265,7 @@ export default function Home() {
                             </Typography>
                         </CardContent>
                         <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "center", height: "" }}>
-                            <IconButton aria-label="" onClick={crearCuentaUsdAlerta}>
+                            <IconButton aria-label="" onClick={openDialogCuentaDolar}>
                                 <AddCircleOutlineIcon sx={{ fontSize: "40px", color: "#6655D9" }} />
                             </IconButton>
                             <Typography variant="p">Crear Cuenta</Typography>
@@ -298,7 +279,7 @@ export default function Home() {
                     <CardContent sx={{ display: "flex", flexDirection: "row" }}>
                         <Box flexDirection="column" justifyContent="center" alignItems="center">
                             <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", textAlign: "center" }}
-                                onClick={() => infoDolarAlerta()}>
+                                onClick={openInfoDolar}>
                                 <AttachMoneyIcon sx={{ fontSize: "40px", color: "#6655D9" }} />
                                 Cotizacion Dolar
                             </IconButton>
@@ -324,7 +305,7 @@ export default function Home() {
             </Grid>
 
             <Grid item size={6}>
-                <Card variant="elevation" elevation={5} sx={{ height: "100%" }}>
+                <Card variant="elevation" elevation={5}>
                     <CardContent sx={{
                         background: "#6655D9", display: "flex", flexDirection: "row",
                         justifyContent: "space-between"
@@ -333,7 +314,7 @@ export default function Home() {
                             <MovingIcon sx={{ fontSize: "25px", color: "red" }} />
                             Movimientos
                         </Typography>
-                        <Button endIcon={<KeyboardArrowRightIcon />} sx={{ backgroundColor: "none", color: "white", fontWeight: "bold", fontSize: "12px" }} onClick={()=>navigate("/transactions")}>
+                        <Button endIcon={<KeyboardArrowRightIcon />} sx={{ backgroundColor: "none", color: "white", fontWeight: "bold", fontSize: "12px" }} onClick={() => navigate("/transactions")}>
                             Ver todos
                         </Button>
                     </CardContent>
@@ -344,54 +325,53 @@ export default function Home() {
                                 {transactions.map((transaction) => (
                                     <>
                                         <ListItem sx={{ padding: 0, margin: 0 }} key={transaction.id}>
-                                            {/* <MuiLink component={Link} to="/Transactions" sx={{ textDecoration: "none", width: "100%", color: "black" }}> */}
-                                                <CardContent sx={{ width: "100%", '&:hover': { backgroundColor: '#f0f0f0' } }}>
-                                                    <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                                                        <Box sx={{ display: "flex", flexDirection: "row", gap: "10px", alignItems: "start" }}>
-                                                            <Box>
-                                                                {transaction.type === "payment" ?
+                                            <CardContent sx={{ width: "100%", '&:hover': { backgroundColor: '#f0f0f0' } }}>
+                                                <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                                                    <Box sx={{ display: "flex", flexDirection: "row", gap: "10px", alignItems: "start" }}>
+                                                        <Box>
+                                                            {transaction.type === "payment" ?
 
-                                                                    <GrTransaction style={{
-                                                                        color: "white", background: "grey", fontSize: "30px",
-                                                                        borderRadius: "15px", padding: "5px"
-                                                                    }} /> :
+                                                                <GrTransaction style={{
+                                                                    color: "white", background: "grey", fontSize: "30px",
+                                                                    borderRadius: "15px", padding: "5px"
+                                                                }} /> :
 
-                                                                    <FaArrowDown style={{
-                                                                        color: "white", background: "grey", fontSize: "30px",
-                                                                        borderRadius: "15px", padding: "5px"
-                                                                    }} />
-                                                                }
-                                                            </Box>
-                                                            <Box sx={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-                                                                <Typography variant='p' sx={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                                                                    {transaction.type == "deposit" ? "DEPÓSITO" : "PAGO"}
-                                                                    <Typography variant="p" color="grey">
-                                                                        {formatearFecha(transaction.transactionDate)}
-                                                                    </Typography>
+                                                                <FaArrowDown style={{
+                                                                    color: "white", background: "grey", fontSize: "30px",
+                                                                    borderRadius: "15px", padding: "5px"
+                                                                }} />
+                                                            }
+                                                        </Box>
+                                                        <Box sx={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                                                            <Typography variant='p' sx={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                                                                {transaction.type == "deposit" ? "DEPÓSITO" : "PAGO"}
+                                                                <Typography variant="p" color="grey">
+                                                                    {formatearFecha(transaction.transactionDate)}
+                                                                </Typography>
                                                                 </Typography>
                                                                 <Typography variant='p' color='#A599F2'>
                                                                     {transaction.description}
                                                                 </Typography>
                                                             </Box>
                                                         </Box>
-                                                        <Box sx={{ display: "flex", flexDirection: "column" }}>
+                                                        <Box sx={{ display: "flex", flexDirection: "row", gap:"10px"}}>
                                                             <Typography variant='p' sx={{
                                                                 color: transaction.type == "payment" ? "red" : "green", display: "flex",
                                                                 flexDirection: "row", alignItems: "center", gap: "10px"
                                                             }}>
-                                                                {transaction.type == "payment" ? "-" : "+"}
+                                                                {transaction.type == "payment" ? "-$" : "+$"}
                                                                 {transaction.amount.toLocaleString("es-AR", { minimumFractionDigits: 0 })}
                                                                 <Typography variant="body1" color="grey" fontWeight="bold">
                                                                     {transaction.currencyType == "ARS" ? " ARS" : " USD"}
                                                                 </Typography>
                                                             </Typography>
+                                                            <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", alignItems: "center" }} 
+                                                            onClick={()=> openDetalleTransaccion(transaction)}>
+                                                                <ReceiptIcon sx={{ fontSize: "30px", color: "#6655D9" }} />
+                                                            </IconButton>
                                                         </Box>
                                                     </Box>
-                                                    <Button onClick={()=> infoTransactionsDetail(transaction.id,transaction.amount,transaction.currencyType,transaction.type,transaction.description,transaction.transactionDate,transaction.cuenta,transaction.titular,transaction.cuentaDestino)}>
-                                                                    detalle
-                                                                </Button>
                                                 </CardContent>
-                                            {/* </MuiLink> */}
                                         </ListItem>
                                         <Divider />
                                     </>
@@ -461,6 +441,29 @@ export default function Home() {
                     visibility={snackbarVisibility}
                 />
             )}
+
+            {mostrarInfoDolar && (
+                <CotizacionDolarDialog
+                    mostrarCotizacion={mostrarInfoDolar}
+                    infoDolar={infoDolar}
+                    closeInfoDolar={closeInfoDolar}
+                />
+            )}
+
+            {mostrarDetalleTransaccion && (
+                <DetalleTransaccionDialog
+                    mostrarDetalleTransaccion={mostrarDetalleTransaccion}
+                    transaccion={transaction}
+                    closeDetalleTransaccion={closeDetalleTransaccion}
+                />
+            )}  
+            
+            <CrearCuentaEnDolaresDialog
+                mostrarDialogCrearCuentaDolares={mostrarDialogCrearCuentaDolar}
+                crearCuentaDolar={crearCuentaUsd}
+                closeDialogCrearCuentaDolares={closeDialogCuentaDolar}
+            />
         </Grid>
+    </>
     );
 }

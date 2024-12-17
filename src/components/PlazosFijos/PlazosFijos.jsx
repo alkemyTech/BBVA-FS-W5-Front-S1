@@ -512,7 +512,7 @@ export default function PlazosFijos() {
                   <Table aria-label="totals table">
                     <TableBody>
                       <TableRow>
-                        <TableCell sx={{   fontWeight: "bold",   textAlign: "center",   color: "#6655D9", }}>
+                        <TableCell sx={{ fontWeight: "bold", textAlign: "center", color: "#6655D9", }}>
                           Total Invertido:{" "}
                           <span style={{ color: "green", fontWeight: "bold" }}>
                             ${fixedTermsWithData
@@ -520,7 +520,7 @@ export default function PlazosFijos() {
                               .toFixed(2)}
                           </span>
                         </TableCell>
-                        <TableCell sx={{   fontWeight: "bold",   textAlign: "center",   color: "#6655D9", }}>
+                        <TableCell sx={{ fontWeight: "bold", textAlign: "center", color: "#6655D9", }}>
                           Total Interés (2%):{" "}
                           <span style={{ color: "blue", fontWeight: "bold" }}>
                             ${fixedTermsWithData
@@ -528,12 +528,12 @@ export default function PlazosFijos() {
                               .toFixed(2)}
                           </span>
                         </TableCell>
-                        <TableCell sx={{   fontWeight: "bold",   textAlign: "center",   color: "#6655D9", }}>
+                        <TableCell sx={{ fontWeight: "bold", textAlign: "center", color: "#6655D9", }}>
                           Total con Interés:{" "}
                           <span style={{ color: "blue", fontWeight: "bold" }}>
                             ${fixedTermsWithData
-                            .reduce(  (acc, fixedTerm) => acc + fixedTerm.amount + fixedTerm.amount * 0.02,  0)
-                            .toFixed(2)}
+                              .reduce((acc, fixedTerm) => acc + fixedTerm.amount + fixedTerm.amount * 0.02, 0)
+                              .toFixed(2)}
                           </span>
                         </TableCell>
                       </TableRow>

@@ -189,6 +189,7 @@ export default function Home() {
     }
 
     return (
+    <>
         <Grid container sx={{ p: 2, m: 5, alignItems: "start" }} spacing={5}>
             {accounts.map((account) => (
                 <Grid item size={5} key={account.cbu}>
@@ -201,12 +202,15 @@ export default function Home() {
                                 <img src={account.currency == "ARS" ? "assets/argentina.png" : "assets/estadosUnidos.png"} alt="" style={{ height: "40px" }} />
                                 {account.currency}
                             </Typography>
-                            <Button endIcon={<KeyboardArrowRightIcon />} sx={{ backgroundColor: "none", color: "white", fontWeight: "bold", fontSize: "12px" }}>
+                            <Button endIcon={<KeyboardArrowRightIcon />}
+                                sx={{ backgroundColor: "none", color: "white", fontWeight: "bold", fontSize: "12px" }}
+                                onClick={() => handleNavegar(`/accounts/${account.cbu}`)}
+                            >
                                 Ver mi cuenta
                             </Button>
                         </CardContent>
                         <CardContent>
-                            <Grid container >
+                            <Grid container>
                                 <Grid item size={6}>
                                     <Typography sx={{ color: "gray", textAlign: "left" }}>
                                         Dinero disponible:
@@ -310,7 +314,7 @@ export default function Home() {
                             <MovingIcon sx={{ fontSize: "25px", color: "red" }} />
                             Movimientos
                         </Typography>
-                        <Button endIcon={<KeyboardArrowRightIcon />} sx={{ backgroundColor: "none", color: "white", fontWeight: "bold", fontSize: "12px" }} onClick={()=>navigate("/transactions")}>
+                        <Button endIcon={<KeyboardArrowRightIcon />} sx={{ backgroundColor: "none", color: "white", fontWeight: "bold", fontSize: "12px" }} onClick={() => navigate("/transactions")}>
                             Ver todos
                         </Button>
                     </CardContent>
@@ -326,18 +330,20 @@ export default function Home() {
                                                     <Box sx={{ display: "flex", flexDirection: "row", gap: "10px", alignItems: "start" }}>
                                                         <Box>
                                                             {transaction.type === "payment" ?
+
                                                                 <GrTransaction style={{
-                                                                    color: "white", background: "red", fontSize: "30px",
+                                                                    color: "white", background: "grey", fontSize: "30px",
                                                                     borderRadius: "15px", padding: "5px"
                                                                 }} /> :
+
                                                                 <FaArrowDown style={{
-                                                                    color: "white", background: "green", fontSize: "30px",
+                                                                    color: "white", background: "grey", fontSize: "30px",
                                                                     borderRadius: "15px", padding: "5px"
                                                                 }} />
-                                                                }
-                                                            </Box>
-                                                            <Box sx={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-                                                                <Typography variant='p' sx={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                                                            }
+                                                        </Box>
+                                                        <Box sx={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                                                            <Typography variant='p' sx={{ display: "flex", gap: "10px", alignItems: "center" }}>
                                                                 {transaction.type == "deposit" ? "DEPÓSITO" : "PAGO"}
                                                                 <Typography variant="p" color="grey">
                                                                     {formatearFecha(transaction.transactionDate)}
@@ -458,5 +464,6 @@ export default function Home() {
                 closeDialogCrearCuentaDolares={closeDialogCuentaDolar}
             />
         </Grid>
+    </>
     );
 }

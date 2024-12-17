@@ -16,19 +16,30 @@ import { IconButton } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { GrTransaction } from "react-icons/gr";
 import { FaArrowDown } from "react-icons/fa";
-import Swal from "sweetalert2";
 import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
 import GenericSnackbar from "../UI/Snackbar/Snackbar";
+import CotizacionDolarDialog from "../UI/Dialogs/CotizacionDolarDialog";
+import CrearCuentaEnDolaresDialog from "../UI/Dialogs/CrearCuentaEnDolaresDialog";
+import DetalleTransaccionDialog from "../UI/Dialogs/DetalleTransaccionDialog";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import axios from "axios"
+import { formatearFecha } from '../../utils/helpers';
 
 export default function Home() {
 
     const [accounts, setAccounts] = useState([]);
     const [favList, setFavList] = useState([]);
     const [transactions, setTransactions] = useState([]);
+    const [transaction, setTransaction] = useState({
+        amount: "",
+        currencyType: "",
+        type: "",
+        description: "",
+        transactionDate: "",
+        titular: "",
+        cuenta: "",
+        cuentaDestino: "",
+    });
     const [balanceVisibility, setBalanceVisibility] = useState(true);
     const changeBalanceVisibility = () => {
         setBalanceVisibility(!balanceVisibility);
@@ -42,90 +53,62 @@ export default function Home() {
         status: "",
         message: "",
     });
+    
     const [snackbarVisibility, setSnackbarVisibility] = useState(false);
     const [cargaFinalizada, setCargaFinalizada] = useState(false);
+    
     const [infoDolar, setInfoDolar] = useState({
         compra: "",
         venta: "",
         fechaActualizacion: ""
     });
+    
+    const [mostrarInfoDolar, setMostrarInfoDolar] = useState(false);
+    const closeInfoDolar = () => {
+        setMostrarInfoDolar(false);
+    }
+    const openInfoDolar = () => {
+        setMostrarInfoDolar(true);
+    }
+
+    const [mostrarDialogCrearCuentaDolar, setMostrarDialogCrearCuentaDolar] = useState(false);
+    const closeDialogCuentaDolar = () => {
+        setMostrarDialogCrearCuentaDolar(false);
+    }
+    const openDialogCuentaDolar = () => {
+        setMostrarDialogCrearCuentaDolar(true);
+    }
+
+    const [mostrarDetalleTransaccion, setMostrarDetalleTransaccion] = useState(false);
+    const closeDetalleTransaccion = () => {
+        setMostrarDetalleTransaccion(false);
+    }
+    const openDetalleTransaccion = (transaction) => {
+
+        setTransaction({
+            amount: transaction.amount,
+            currencyType: transaction.currencyType,
+            type: transaction.type,
+            description: transaction.description,
+            transactionDate: transaction.transactionDate,
+            titular: transaction.titular,
+            cuenta: transaction.cuenta,
+            cuentaDestino: transaction.cuentaDestino
+        })
+        
+        setMostrarDetalleTransaccion(true);
+    }
 
     const navigate = useNavigate();
-
-    const formatearFecha = (fechaOriginal) => {
-
-        const fechaFormateada = format(new Date(fechaOriginal), "dd, MMM, HH:mm:ss", {
-            locale: es,
-        }).toUpperCase();
-
-        return fechaFormateada;
-    };
 
     const handleNavegar = (ruta) => {
         navigate(ruta);
     }
 
-    const crearCuentaUsdAlerta = () => {
-        Swal.fire({
-            title: "Vas a crear una cuenta en USD",
-            text: "Estas seguro? No va a ser posible revertir la operación.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#6655D9",
-            cancelButtonColor: "#228B22",
-            cancelButtonText: "Crear cuenta",
-            confirmButtonText: "Cancelar",
-            allowOutsideClick: false
-        }).then((result) => {
-            if (result.isDismissed) {
-                crearCuentaUsd();
-            }
-        });
-    }
-
-    const infoDolarAlerta = () => {
-
-        Swal.fire({
-            title: `<div style="display: flex; align-items: center; gap: 2px; justify-content:center">
-                        <img src="assets/iconoPaginaVioleta.png" alt="Icono" style="height: 60px;">
-                        <span style="color: #6655D9;">Cotización del Dólar</span>
-                    </div>`,
-            html: `
-            <Div style="display: flex; flex-direction:column; gap:10px; align-items:center;">
-                <h3 style="display: flex; flex-direction: row; gap: 10px">Valor de Compra: <p style="font-weight:bold; color: #228B22">$${infoDolar.compra}</p></h3>
-                <h3 style="display: flex; flex-direction: row; gap: 10px">Valor de Venta: <p style="font-weight:bold; color: #228B22">$${infoDolar.venta}</p></h3>
-                <h3 style="display: flex; flex-direction: row; gap: 10px">Fecha de Actualización: <p style="font-weight:bold; color:00aae4">${formatearFecha(infoDolar.fechaActualizacion)}</p></h3>
-            </Div>
-            `
-        })
-    }
-
-    const infoTransactionsDetail = (amount,currencyType,type,description,transactionDate,cuenta,titular,cuentaDestino) => {
-        Swal.fire({
-            title: `<div style="display: flex; align-items: center; gap: 2px; justify-content:center">
-                        <img src="assets/iconoPaginaVioleta.png" alt="Icono" style="height: 60px;">
-                        <span style="color: #6655D9;">Detalles de la transacción</span>
-                    </div>`,
-            html: `
-            <Div style="display: flex; flex-direction:column; gap:15px;">
-                <h3 style="display: flex; flex-direction: row; gap: 10px; align-items: center;">- Monto: <p style="font-weight:bold; color: #228B22; font-size: 20px;">$${amount}</p></h3>
-                <h3 style="display: flex; flex-direction: row; gap: 10px; align-items: center;">- Tipo de cuenta: <p style="font-weight:bold; color: ${currencyType == "USD" ? "green" : "#00aae4"}; font-size: 20px;">${currencyType}</p></h3>
-                <h3 style="display: flex; flex-direction: row; gap: 10px; align-items: center;">- Tipo de transaccion: <p style="font-weight:bold; color: black; font-size: 20px;">${type == "deposit" ? "Depósito" : "Pago"}</p></h3>
-                <h3 style="display: flex; flex-direction: row; gap: 10px; align-items: center;">- Descripcion: <p style="font-weight:bold; color: black; font-size: 20px;">${description}</p></h3>
-                <h3 style="display: flex; flex-direction: row; gap: 10px; align-items: center;">- Fecha: <p style="font-weight:bold; color: black; font-size: 20px;">${formatearFecha(transactionDate)}</p></h3>
-                <h3 style="display: flex; flex-direction: row; gap: 10px; align-items: center;">- CBU origen: <p style="font-weight:bold; color: black; font-size: 20px">${cuenta}</p></h3>
-                <h3 style="display: flex; flex-direction: row; gap: 10px; align-items: center;">- Titular cuenta: <p style="font-weight:bold; color: black; font-size: 20px;">${titular}</p></h3>
-                <h3 style="display: flex; flex-direction: row; gap: 10px; align-items: center;">- CBU destino: <p style="font-weight:bold; color: black; font-size: 20px">${type == "payment" ? cuentaDestino : "-------"}</p></h3>
-            </Div>
-            `
-        })
-    }
-
-    const cotizacionDolar = async () => {
+    const fetchCotizacionDolar = async () => {
         try {
             const response = await axios.get("https://dolarapi.com/v1/dolares/oficial")
             setInfoDolar({
-
                 compra: response.data.compra,
                 venta: response.data.venta,
                 fechaActualizacion: response.data.fechaActualizacion
@@ -133,9 +116,7 @@ export default function Home() {
         } catch (error) {
             console.log(error);
         }
-    }
-
-
+    };
 
     useEffect(() => {
         const fetchAccounts = async () => {
@@ -161,10 +142,10 @@ export default function Home() {
                 console.error('Error fetching accounts:', error);
             }
         };
-
-        cotizacionDolar();
+        fetchCotizacionDolar();   
         fetchAccounts();
         fetchTransactions();
+
     }, [cargaFinalizada]);
 
     useEffect(() => {
@@ -181,6 +162,7 @@ export default function Home() {
     }, []);
 
     const crearCuentaUsd = async () => {
+        setMostrarDialogCrearCuentaDolar(false);
         try {
             await apiConfig.post("/accounts/", {
                 tipoDeCuenta: "USD",
@@ -279,7 +261,7 @@ export default function Home() {
                             </Typography>
                         </CardContent>
                         <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "center", height: "" }}>
-                            <IconButton aria-label="" onClick={crearCuentaUsdAlerta}>
+                            <IconButton aria-label="" onClick={openDialogCuentaDolar}>
                                 <AddCircleOutlineIcon sx={{ fontSize: "40px", color: "#6655D9" }} />
                             </IconButton>
                             <Typography variant="p">Crear Cuenta</Typography>
@@ -293,7 +275,7 @@ export default function Home() {
                     <CardContent sx={{ display: "flex", flexDirection: "row" }}>
                         <Box flexDirection="column" justifyContent="center" alignItems="center">
                             <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", textAlign: "center" }}
-                                onClick={() => infoDolarAlerta()}>
+                                onClick={openInfoDolar}>
                                 <AttachMoneyIcon sx={{ fontSize: "40px", color: "#6655D9" }} />
                                 Cotizacion Dolar
                             </IconButton>
@@ -378,7 +360,7 @@ export default function Home() {
                                                                 </Typography>
                                                             </Typography>
                                                             <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", alignItems: "center" }} 
-                                                            onClick={()=> infoTransactionsDetail(transaction.amount,transaction.currencyType,transaction.type,transaction.description,transaction.transactionDate,transaction.cuenta,transaction.titular,transaction.cuentaDestino)}>
+                                                            onClick={()=> openDetalleTransaccion(transaction)}>
                                                                 <ReceiptIcon sx={{ fontSize: "30px", color: "#6655D9" }} />
                                                             </IconButton>
                                                         </Box>
@@ -453,6 +435,28 @@ export default function Home() {
                     visibility={snackbarVisibility}
                 />
             )}
+
+            {mostrarInfoDolar && (
+                <CotizacionDolarDialog
+                    mostrarCotizacion={mostrarInfoDolar}
+                    infoDolar={infoDolar}
+                    closeInfoDolar={closeInfoDolar}
+                />
+            )}
+
+            {mostrarDetalleTransaccion && (
+                <DetalleTransaccionDialog
+                    mostrarDetalleTransaccion={mostrarDetalleTransaccion}
+                    transaccion={transaction}
+                    closeDetalleTransaccion={closeDetalleTransaccion}
+                />
+            )}  
+            
+            <CrearCuentaEnDolaresDialog
+                mostrarDialogCrearCuentaDolares={mostrarDialogCrearCuentaDolar}
+                crearCuentaDolar={crearCuentaUsd}
+                closeDialogCrearCuentaDolares={closeDialogCuentaDolar}
+            />
         </Grid>
     );
 }

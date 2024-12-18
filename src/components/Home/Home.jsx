@@ -1,6 +1,6 @@
 import Grid from '@mui/material/Grid2';
 import SendIcon from '@mui/icons-material/Send';
-import { Card, CardContent, Typography,List, ListItem, Divider, Box, Button } from '@mui/material';
+import { Card, CardContent, Typography, List, ListItem, Divider, Box, Button } from '@mui/material';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
 import {useNavigate } from 'react-router-dom';
@@ -19,7 +19,7 @@ import { FaArrowDown } from "react-icons/fa";
 import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
 import GenericSnackbar from "../UI/Snackbar/Snackbar";
 import CotizacionDolarDialog from "../UI/Dialogs/CotizacionDolarDialog";
-import CrearCuentaEnDolaresDialog from "../UI/Dialogs/CrearCuentaEnDolaresDialog";
+import AlertaDialog from "../UI/Dialogs/AlertaDialog";
 import DetalleTransaccionDialog from "../UI/Dialogs/DetalleTransaccionDialog";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import axios from "axios"
@@ -461,10 +461,11 @@ export default function Home() {
                 />
             )}  
             
-            <CrearCuentaEnDolaresDialog
-                mostrarDialogCrearCuentaDolares={mostrarDialogCrearCuentaDolar}
-                crearCuentaDolar={crearCuentaUsd}
-                closeDialogCrearCuentaDolares={closeDialogCuentaDolar}
+            <AlertaDialog
+                mostrarAlerta={mostrarDialogCrearCuentaDolar}
+                accion={crearCuentaUsd}
+                closeAlerta={closeDialogCuentaDolar}
+                mensajeAlerta="Vas a crear una cuenta en USD"
             />
         </Grid>
     </>

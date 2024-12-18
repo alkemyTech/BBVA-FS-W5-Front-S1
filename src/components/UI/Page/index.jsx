@@ -7,7 +7,7 @@ export default function Page({ children }) {
   
   const location = useLocation();
 
-  const ocultarHeader = ["/", "/signUp"].includes(location.pathname);
+  const ocultarHeader = ["/", "/signUp", "/reactivate"].includes(location.pathname);
 
   return (
     <div >

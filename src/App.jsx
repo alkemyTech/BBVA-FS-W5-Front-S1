@@ -9,6 +9,7 @@ import PaymentsServices from "./components/Payment/PaymentsServices";
 import Prestamos from "./components/Prestamos/Prestamos"
 import PlazosFijos from "./components/PlazosFijos/PlazosFijos"
 import MiCuenta from "./components/MiCuenta/MiCuenta";
+import Favoritos from "./components/Favoritos/Favoritos";
 
 
 function App() {
@@ -19,14 +20,14 @@ function App() {
           <Route path="/" element={<LoginSignUp isLogin={true} />} />        
           <Route path="/home" element={<Home />} />
           <Route path="/signUp" element={<LoginSignUp isLogin={false} />} />
-          <Route path="/sendmoney" element={<SendMoney send={true}/>} />
+          <Route path="/sendmoney/:cbu" element={<SendMoney send={true}/>} />
           <Route path="/depositmoney" element={<SendMoney send={false}/>} />
           <Route path="/transactions" element={<Transactions/>} />
           <Route path="/payment" element={<PaymentsServices />} /> 
           <Route path="/prestamos" element={<Prestamos />} />
           <Route path="/plazosFijos" element={<PlazosFijos />} />
-          <Route path="/accounts/:accountCbu" element={<MiCuenta/>}></Route>
-
+          <Route path="/accounts/" element={<MiCuenta/>}></Route>
+          <Route path="/favoritos" element={<Favoritos/>}></Route>
         </Routes>
     </Page>
     </Router>

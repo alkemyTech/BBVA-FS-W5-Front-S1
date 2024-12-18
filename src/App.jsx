@@ -2,7 +2,7 @@ import Page from "./components/UI/Page";
 import "./App.css";
 import LoginSignUp from "./components/LoginSignUp/LoginSignUp";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./components/Home/home";
+import Home from "./components/Home/Home";
 import SendMoney from "./components/SendMoney/SendMoney"
 import Transactions from "./components/Transactions/Transactions";
 import PaymentsServices from "./components/Payment/PaymentsServices";

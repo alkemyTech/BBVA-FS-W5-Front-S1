@@ -48,8 +48,9 @@ export default function Favoritos() {
     );
 
     const navigate = useNavigate();
-    const handleRowClick = (fixedTermId)=>{
-        navigate(`/fixedTerm/${fixedTermId}`);
+
+    const handleNavigateSendMoney = (cbu, tipoCuenta) => {
+        navigate(`/sendmoney/${cbu}/${tipoCuenta}`);
     }
     
     const [page, setPage] = useState(1);
@@ -304,7 +305,7 @@ export default function Favoritos() {
                             </TableHead>
                             <TableBody>
                                 {favoritos.map((favorito) => (
-                                    <TableRow key={favorito.id} sx={{cursor:"pointer"}} onClick={()=>handleRowClick(favorito.id)}>
+                                    <TableRow key={favorito.id} sx={{cursor:"pointer"}}>
                                         <TableCell align="center" sx={{color:"black", verticalAlign:"top"}}>
                                             {favorito.firstName + "\n"}
                                             {favorito.lastName}
@@ -314,12 +315,14 @@ export default function Favoritos() {
                                         </TableCell>
                                         <TableCell align="center" sx={{color:"black", verticalAlign:"top"}}>
                                             {favorito.cuentaArs}
-                                            <Button size="small" variant="contained" sx={{fontWeight:"bold", backgroundColor:"#00aae4", m:1}}>Transferir</Button>
+                                            <Button size="small" variant="contained" sx={{fontWeight:"bold", 
+                                                backgroundColor:"#00aae4", m:1}} onClick={()=> handleNavigateSendMoney(favorito.cuentaArs, "ARS")}>Transferir</Button>
                                         </TableCell>
                                         <TableCell align="center" sx={{color:"black", verticalAlign:"top"}}>
                                             {favorito.cuentaUsd != null ? favorito.cuentaUsd : "No tiene"}
                                             {favorito.cuentaUsd != null && (
-                                                <Button size="small" variant="contained" sx={{fontWeight:"bold", backgroundColor:"#228B22", m:1}}>Transferir</Button>
+                                                <Button size="small" variant="contained" sx={{fontWeight:"bold", 
+                                                    backgroundColor:"#228B22", m:1}} onClick={()=> handleNavigateSendMoney(favorito.cuentaUsd, "USD")}>Transferir</Button>
                                             )}
                                         </TableCell>
                                     </TableRow>

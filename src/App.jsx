@@ -10,9 +10,45 @@ import Prestamos from "./components/Prestamos/Prestamos"
 import PlazosFijos from "./components/PlazosFijos/PlazosFijos"
 import MiCuenta from "./components/MiCuenta/MiCuenta";
 import Favoritos from "./components/Favoritos/Favoritos";
-
-
+import { jwtDecode } from "jwt-decode";
+import { useEffect, useState } from "react";
+import TokenExpiradoDialog from "./components/UI/Dialogs/TokenExpiradoDialog";
 function App() {
+  
+  const [alertaTokenExpirado, setAlertaTokenExpirado] = useState (false);
+  
+  const [token, setToken] = useState("");
+
+  const cerrarAlerta = () => {
+    setAlertaTokenExpirado(false);
+  }
+
+  useEffect(() => {
+    const verificarToken = () => {
+      setToken(localStorage.getItem("token"));
+
+      if (token) {
+        const decodedToken = jwtDecode(token);
+        const tiempoActual = Math.floor(Date.now() / 1000);
+        const tokenExpirado =  decodedToken.exp <= tiempoActual; 
+
+        console.log("Expiró el token? " + tokenExpirado);
+        console.log("Diferencia: " + (decodedToken.exp - tiempoActual));
+        console.log("Vencimiento: " + decodedToken.exp);
+        console.log("Tiempo actual: " + tiempoActual);
+        
+        if (tokenExpirado) {
+            localStorage.removeItem("token");
+            setAlertaTokenExpirado(true);
+            setToken("");
+        }
+      }
+    }
+    verificarToken();
+    const intervalId = setInterval(verificarToken, 3000);
+    return () => clearInterval(intervalId);
+  }, [token]);
+
   return (
     <Router>
     <Page>
@@ -20,7 +56,7 @@ function App() {
           <Route path="/" element={<LoginSignUp isLogin={true} />} />        
           <Route path="/home" element={<Home />} />
           <Route path="/signUp" element={<LoginSignUp isLogin={false} />} />
-          <Route path="/sendmoney/:cbu" element={<SendMoney send={true}/>} />
+          <Route path="/sendmoney/:cbuParam/:tipoCuentaParam" element={<SendMoney send={true}/>} />
           <Route path="/depositmoney" element={<SendMoney send={false}/>} />
           <Route path="/transactions" element={<Transactions/>} />
           <Route path="/payment" element={<PaymentsServices />} /> 
@@ -29,6 +65,12 @@ function App() {
           <Route path="/accounts/" element={<MiCuenta/>}></Route>
           <Route path="/favoritos" element={<Favoritos/>}></Route>
         </Routes>
+        {alertaTokenExpirado && (
+          <TokenExpiradoDialog
+              mostrarAlerta={alertaTokenExpirado} 
+              cerrarAlerta={cerrarAlerta}         
+          />
+        )}
     </Page>
     </Router>
   );

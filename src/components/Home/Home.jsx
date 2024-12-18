@@ -296,7 +296,7 @@ export default function Home() {
                             </IconButton>
 
                             <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", textAlign: "center", justifyContent: "center", alignItems: "center" }} 
-                            onClick={() => handleNavegar("/sendmoney/0")}>
+                            onClick={() => handleNavegar("/sendmoney/0/0")}>
                                 <SendIcon sx={{ fontSize: "40px", color: "#6655D9" }} />
                                 Enviar dinero
                             </IconButton>

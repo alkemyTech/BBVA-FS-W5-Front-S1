@@ -9,3 +9,15 @@ export const formatearFecha = (fechaOriginal) => {
 
     return fechaFormateada;
 };
+
+export const obtenerIniciales = (cadena) => {
+    return cadena
+      .split(" ")
+      .filter((palabra) => palabra)
+      .map((palabra) => palabra.charAt(0).toUpperCase())
+      .join("");
+  };
+
+export const abreviarCBU = (cbu) => {
+    return cbu.slice (0, 6) + "...";
+}

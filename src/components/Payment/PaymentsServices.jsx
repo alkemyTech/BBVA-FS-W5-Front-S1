@@ -132,7 +132,7 @@ const Payment = () => {
         </Grid>
       </Grid>
 
-      {/* SServicios */}
+      {/* Servicios */}
       <Grid item size={12} sx={{ paddingBottom: "50px" }}>
         <Grid container sx={{ display: "flex", justifyContent: "center", paddingBottom: "5px" }}>
           <CardContent sx={{ height:"140px", width:"100%", margin:" 0 5px 0 5px"}}>

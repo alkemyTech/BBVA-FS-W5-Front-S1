@@ -2,7 +2,7 @@ import Page from "./components/UI/Page";
 import "./App.css";
 import LoginSignUp from "./components/LoginSignUp/LoginSignUp";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./components/Home/Home";
+import Home from "./components/Home/home";
 import SendMoney from "./components/SendMoney/SendMoney"
 import Transactions from "./components/Transactions/Transactions";
 import PaymentsServices from "./components/Payment/PaymentsServices";
@@ -13,6 +13,9 @@ import Favoritos from "./components/Favoritos/Favoritos";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import TokenExpiradoDialog from "./components/UI/Dialogs/TokenExpiradoDialog";
+import MyAccount from "./components/MyAccount/MyAccount";
+
+
 function App() {
   
   const [alertaTokenExpirado, setAlertaTokenExpirado] = useState (false);
@@ -64,6 +67,7 @@ function App() {
           <Route path="/plazosFijos" element={<PlazosFijos />} />
           <Route path="/accounts/" element={<MiCuenta/>}></Route>
           <Route path="/favoritos" element={<Favoritos/>}></Route>
+          <Route path="/userProfile" element={<MyAccount/>}></Route>
         </Routes>
         {alertaTokenExpirado && (
           <TokenExpiradoDialog

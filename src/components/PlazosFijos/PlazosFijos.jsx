@@ -41,6 +41,14 @@ export default function PlazosFijos() {
     finalAmount: "",
   });
 
+  const [totals, setTotals] = useState({
+    totalInvertido: 0,
+    totalInteres: 0,
+    totalGeneral: 0,
+  });
+
+  const [loadingTotals, setLoadingTotals] = useState(false);
+
   const [cotizando, setCotizando] = useState(false);
 
   const [cotizacionCompleta, setCotizacionCompleta] = useState(false);
@@ -102,7 +110,7 @@ export default function PlazosFijos() {
   }
 
   const calcularDatosTabla = (fixedTerms) => {
-    const porcentaje = 2; // Interés fijo del 2%
+    const porcentaje = 2; // Interés del 2%
 
     return fixedTerms.map((fixedTerm) => {
       const interes = fixedTerm.amount * (porcentaje / 100);
@@ -187,6 +195,7 @@ export default function PlazosFijos() {
         });
         setCargaFinalizada(true);
         setSnackbarVisibility(true);
+        window.location.reload();
       }, 3000);
 
       setPlazoFijo({
@@ -219,12 +228,39 @@ export default function PlazosFijos() {
           .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate));
         setFixedTerms(sortedFixedTerms);
         setTotalPages(response.data.totalPages);
+        console.log(sortedFixedTerms);
       } catch (error) {
         console.error('Error fetching fixedTerms:', error);
       }
     };
     fetchFixedTermDeposits();
   }, [page, cargaFinalizada]);
+
+  useEffect(() => {
+    const fetchTotals = async () => {
+      setLoadingTotals(true);
+      try {
+        const response = await apiConfig.get("/fixedTerm/totals");
+        console.log("Respuesta del endpoint /totals:", response.data);
+
+        if (response.data) {
+          setTotals({
+            totalInvertido: response.data.totalInvertido || 0,
+            totalInteres: response.data.totalInteres || 0,
+            totalGeneral: response.data.totalGeneral || 0,
+          });
+        } else {
+          console.error("La respuesta no contiene datos válidos");
+        }
+      } catch (error) {
+        console.error("Error fetching totals:", error);
+      } finally {
+        setLoadingTotals(false);
+      }
+    };
+
+    fetchTotals();
+  }, []);
 
   const textFieldStyle = {
     width: "50%",
@@ -455,6 +491,40 @@ export default function PlazosFijos() {
           <CardContent>
             {fixedTerms.length > 0 ? (
               <>
+                {/* Tabla de Totales */}
+                {loadingTotals ? (
+                  <Typography variant="body2" align="center">
+                    Cargando totales...
+                  </Typography>
+                ) : (
+                  <TableContainer component={Paper}>
+                    <Table aria-label="totals table">
+                      <TableBody>
+                        <TableRow>
+                          <TableCell sx={{ fontWeight: "bold", textAlign: "center", color: "#6655D9" }}>
+                            Total Invertido:{" "}
+                            <span style={{ color: "green", fontWeight: "bold" }}>
+                              ${totals.totalInvertido.toFixed(2)}
+                            </span>
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: "bold", textAlign: "center", color: "#6655D9" }}>
+                            Total Interés:{" "}
+                            <span style={{ color: "blue", fontWeight: "bold" }}>
+                              ${totals.totalInteres.toFixed(2)}
+                            </span>
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: "bold", textAlign: "center", color: "#6655D9" }}>
+                            Total General:{" "}
+                            <span style={{ color: "blue", fontWeight: "bold" }}>
+                              ${totals.totalGeneral.toFixed(2)}
+                            </span>
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                )}
+                
                 {/* Tabla Principal */}
                 <TableContainer component={Paper}>
                   <Table aria-label="main table">
@@ -492,8 +562,8 @@ export default function PlazosFijos() {
                           <TableCell sx={{ textAlign: "center", color: "gray", fontWeight: "bold" }}>
                             {formatearFecha(fixedTerm.closingDate)}
                           </TableCell>
-                          <TableCell sx={{ textAlign: "center", color: fixedTerm.settled === 0 ? "red" : "#6655D9", fontWeight: "bold" }}>
-                            {fixedTerm.settled === 0 ? "En progreso..." : "Liquidado"}
+                          <TableCell sx={{ textAlign: "center", color: fixedTerm.settled == 0 ? "red" : "#6655D9", fontWeight: "bold" }}>
+                            {fixedTerm.settled == 0 ? "En progreso..." : "Liquidado"}
                           </TableCell>
                           <TableCell sx={{ textAlign: "center", color: "blue", fontWeight: "bold" }}>
                             ${fixedTerm.interes.toFixed(2)}
@@ -506,42 +576,6 @@ export default function PlazosFijos() {
                     </TableBody>
                   </Table>
                 </TableContainer>
-
-                {/* Tabla de Totales */}
-                <TableContainer component={Paper} sx={{ marginTop: 2 }}>
-                  <Table aria-label="totals table">
-                    <TableBody>
-                      <TableRow>
-                        <TableCell sx={{ fontWeight: "bold", textAlign: "center", color: "#6655D9", }}>
-                          Total Invertido:{" "}
-                          <span style={{ color: "green", fontWeight: "bold" }}>
-                            ${fixedTermsWithData
-                              .reduce((acc, fixedTerm) => acc + fixedTerm.amount, 0)
-                              .toFixed(2)}
-                          </span>
-                        </TableCell>
-                        <TableCell sx={{ fontWeight: "bold", textAlign: "center", color: "#6655D9", }}>
-                          Total Interés (2%):{" "}
-                          <span style={{ color: "blue", fontWeight: "bold" }}>
-                            ${fixedTermsWithData
-                              .reduce((acc, fixedTerm) => acc + fixedTerm.amount * 0.02, 0)
-                              .toFixed(2)}
-                          </span>
-                        </TableCell>
-                        <TableCell sx={{ fontWeight: "bold", textAlign: "center", color: "#6655D9", }}>
-                          Total con Interés:{" "}
-                          <span style={{ color: "blue", fontWeight: "bold" }}>
-                            ${fixedTermsWithData
-                              .reduce((acc, fixedTerm) => acc + fixedTerm.amount + fixedTerm.amount * 0.02, 0)
-                              .toFixed(2)}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-
-
 
                 {/* Paginación */}
                 <Pagination

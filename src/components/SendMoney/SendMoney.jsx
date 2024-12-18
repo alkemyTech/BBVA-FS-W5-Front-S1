@@ -4,18 +4,14 @@ import { useEffect, useState } from "react";
 import apiConfig from "../../Config/axiosConfig";
 import CallReceivedIcon from "@mui/icons-material/CallReceived";
 import CallMadeIcon from "@mui/icons-material/CallMade";
-import {
-  Card,
-  CardContent,
-  TextField,
-  Button,
-  MenuItem,
-  Box,
-} from "@mui/material";
+import GenericSnackbar from "../UI/Snackbar/Snackbar";
+import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
+import { Card, TextField, Button, MenuItem, duration } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import { NumericFormat } from "react-number-format";
 import { useSelector } from "react-redux";
+import AlertaDialog from "../UI/Dialogs/AlertaDialog";
 
 export default function SendMoney({ send }) {
   const navigate = useNavigate();
@@ -29,19 +25,40 @@ export default function SendMoney({ send }) {
     currency: "",
     transactionLimit: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingScreen, setLoadingScreen] = useState({
+    message: "",
+    duration: null,
+  });
   const [tipoCuenta, setTipoCuenta] = useState({
     currency: "ARS",
   });
   const [transaction, setTransaction] = useState({
     amount: "",
-    description: "",
+    description: "Varios",
     cbu: "",
   });
+
   const [deposit, setDeposit] = useState({
     amount: "",
-    description: "",
+    description: "Varios",
     currencyType: "",
   });
+
+  const [snackbar, setSnackbar] = useState({
+    status: "",
+    message: "",
+  });
+  const [snackbarVisibility, setSnackbarVisibility] = useState(false);
+  const [errores, setErrores] = useState({});
+
+  const [mostrarAlertaMovimiento, setMostrarAlertaMovimiento] = useState(false);
+  const closeAlertaMovimiento = () => {
+    setMostrarAlertaMovimiento(false);
+  };
+  const openAlertaMovimiento = () => {
+    setMostrarAlertaMovimiento(true);
+  };
 
   useEffect(() => {
     const fetchAccounts = async () => {
@@ -78,7 +95,6 @@ export default function SendMoney({ send }) {
       });
       setCbuValido(true);
     } catch (e) {
-      console.log(e);
       setCbuValido(false);
       setCbuCompleto(false);
       setUserChip({
@@ -92,28 +108,33 @@ export default function SendMoney({ send }) {
 
   const manejarTransferencia = async () => {
     let response;
+    setSnackbarVisibility(false);
+    setMostrarAlertaMovimiento(false)
     if (send == true) {
       if (tipoCuenta.currency == "ARS") {
         try {
+          if (transaction.description == "") {
+            transaction.description = "Varios";
+          }
           response = await apiConfig.post("/transactions/sendArs", {
             amount: transaction.amount,
             description: transaction.description,
             cbu: transaction.cbu,
           });
-          alert("Transferencia realizada con exito");
-          navigate("/home");
+          setIsLoading(true);
+          setLoadingScreen({
+            message: "Realizando Transferencia " ,
+            duration: 3000
+          })
+          setTimeout(() => {
+            navigate("/home")
+          },3000)
         } catch (e) {
-          console.log(e);
-          setTransaction({
-            amount: "",
-            description: "",
-            cbu: "",
+          setSnackbar({
+            status: "error",
+            message: e.response.data.Mensaje,
           });
-          if (e.response.status === 500) {
-            alert("ERROR! La transferencia no pudo realizarse");
-          } else {
-            alert(e.response.data.Mensaje);
-          }
+          setSnackbarVisibility(true);
         }
       } else {
         try {
@@ -122,20 +143,25 @@ export default function SendMoney({ send }) {
             description: transaction.description,
             cbu: transaction.cbu,
           });
-          alert("Transferencia realizada con exito");
-          navigate("/home");
+          setIsLoading(true);
+          setLoadingScreen({
+            message: "Realizando Transferencia " ,
+            duration: 3000
+          })
+          setTimeout(() => {
+            navigate("/home")
+          },3000)
         } catch (e) {
-          console.log(e);
           setTransaction({
             amount: "",
             description: "",
             cbu: "",
           });
-          if (e.response.status === 500) {
-            alert("ERROR! La transferencia no pudo realizarse");
-          } else {
-            alert(e.response.data.Mensaje);
-          }
+          setSnackbar({
+            status: "error",
+            message: e.response.data.Mensaje,
+          });
+          setSnackbarVisibility(true);
         }
       }
     } else {
@@ -145,16 +171,25 @@ export default function SendMoney({ send }) {
           description: deposit.description,
           currencyType: tipoCuenta.currency,
         });
-        alert("Deposito realizado con exito");
-        navigate("/home");
+        setIsLoading(true);
+          setLoadingScreen({
+            message:"Realizando Deposito",
+            duration: 3000
+          })
+          setTimeout(() => {
+            navigate("/home")
+          },3000)
       } catch (e) {
-        console.log(e);
         setTransaction({
           amount: "",
           description: "",
           currencyType: "",
         });
-        alert("ERROR! El deposito no pudo realizarse");
+        setSnackbar({
+          status: "error",
+          message: e.response.data.Mensaje,
+        });
+        setSnackbarVisibility(true);
       }
     }
   };
@@ -177,12 +212,49 @@ export default function SendMoney({ send }) {
     return accountBuscada;
   };
 
+  const presenciaDeErrores = Object.values(errores).some(
+    (valor) => valor != null
+  );
+
+  const validarCampo = (campo, valor) => {
+    if (campo === "cbu" && !cbuCompleto && valor != "") {
+      setErrores((errores) => ({
+        ...errores,
+        cbu: "El cbu debe contener 20 digitos",
+      }));
+    }
+
+    if (campo === "cbu" && (cbuCompleto || valor === "")) {
+      setErrores((errores) => ({
+        ...errores,
+        cbu: null,
+      }));
+    }
+
+    if (campo === "amount") {
+      if (campo === "amount" && valor == "$0") {
+        setErrores((errores) => ({
+          ...errores,
+          amount: "El monto no puede ser 0",
+        }));
+      }
+
+      if (campo === "amount" && valor != "" && valor != "$0") {
+        setErrores((errores) => ({
+          ...errores,
+          amount: null,
+        }));
+      }
+    }
+  };
+
   return (
+    <>
     <Card
       variant="elevation"
       elevation={20}
       sx={{
-        width: "65%",
+        width: "70%",
         flexDirection: "column",
         m: "auto",
         position: "absolute",
@@ -191,6 +263,7 @@ export default function SendMoney({ send }) {
         transform: "translate(-50%, -50%)",
         borderRadius: "20px",
         mt: send ? 0 : 4,
+        background: "#fafafa",
       }}
     >
       <Grid
@@ -207,7 +280,7 @@ export default function SendMoney({ send }) {
                 sx={{
                   p: 2,
                   mb: "30px",
-                  background: "#646cff",
+                  background: "#6655D9",
                   color: " white",
                 }}
               >
@@ -281,13 +354,21 @@ export default function SendMoney({ send }) {
           )}
         </Grid>
         <Grid item size={6}>
-          <Grid container p="10px" flexDirection="column" spacing={7}>
+          <Grid
+            container
+            p="10px"
+            flexDirection="column"
+            spacing={send ? 8 : 6}
+          >
             {send ? (
               <Grid item size={12}>
                 <TextField
                   id="cbu-input"
+                  name="cbu"
                   label="CBU"
                   value={transaction.cbu}
+                  error={Boolean(errores.cbu)}
+                  helperText={errores.cbu}
                   onChange={(e) => {
                     const nuevoCbu = e.target.value.replace(/[^0-9]/g, ""); // Filtra solo números
                     setTransaction({
@@ -296,8 +377,8 @@ export default function SendMoney({ send }) {
                     });
                     setCbuCompleto(nuevoCbu.length === 20);
                   }}
+                  onBlur={(e) => validarCampo("cbu", e.target.value)}
                   sx={{ width: "90%", textAlign: "center" }}
-                  
                 />
               </Grid>
             ) : (
@@ -399,6 +480,10 @@ export default function SendMoney({ send }) {
           >
             <Grid item={12}>
               <NumericFormat
+                name="amount"
+                error={Boolean(errores.amount)}
+                helperText={errores.amount}
+                onBlur={(e) => validarCampo("amount", e.target.value)}
                 sx={{
                   width: "100%",
                   "& input::placeholder": {
@@ -409,18 +494,24 @@ export default function SendMoney({ send }) {
                 value={send ? transaction.amount : deposit.amount}
                 onValueChange={(values) => {
                   const { value } = values;
+
+                  // Validar que no comience con 0
+                  if (value.startsWith("0") && value !== "") {
+                    return;
+                  }
+
                   send
                     ? setTransaction({ ...transaction, amount: value })
                     : setDeposit({ ...deposit, amount: value });
                 }}
                 prefix="$"
                 customInput={TextField}
-                maxLength={10}
                 decimalSeparator=","
                 thousandSeparator="."
                 decimalScale={0}
                 fixedDecimalScale
                 allowNegative={false}
+                allowLeadingZeros={false}
                 displayType="input"
                 InputProps={{
                   disableUnderline: true,
@@ -471,13 +562,46 @@ export default function SendMoney({ send }) {
                 fontWeight: "bold",
                 margin: 2,
               }}
-              onClick={manejarTransferencia}
+              onClick={() => openAlertaMovimiento()}
+              disabled={
+                send
+                  ? presenciaDeErrores ||
+                    transaction.amount == "" ||
+                    transaction.cbu == ""
+                  : presenciaDeErrores || deposit.amount == ""
+              }
             >
               {send ? "Transferir" : "Depositar"}
             </Button>
           </Grid>
         </Grid>
       </Grid>
+      
+      {snackbarVisibility && (
+        <GenericSnackbar
+          status={snackbar.status}
+          message={snackbar.message}
+          visibility={snackbarVisibility}
+        />
+      )}
+      <AlertaDialog
+        mostrarAlerta={mostrarAlertaMovimiento}
+        accion={manejarTransferencia}
+        closeAlerta={closeAlertaMovimiento}
+        mensajeAlerta={
+          send
+            ? "Estas a punto de realizar una transferencia"
+            : "Estas a punto de realizar un deposito"
+        }
+      />
     </Card>
+    
+    {isLoading && (
+        <LoadingScreen
+          message={loadingScreen.message}
+          duration={loadingScreen.duration}
+        />
+      )}
+    </>
   );
 }

@@ -110,7 +110,7 @@ export default function LoginSignUp({ isLogin }) {
   const manejarEnvio = async () => {
     let response;
     let tokenPayload;
-    const duration = 1500;
+    const duration = 2000;
     setSnackbarVisibility(false);
     setIsLoading(false);
 
@@ -159,15 +159,12 @@ export default function LoginSignUp({ isLogin }) {
           email: usuarioRegister.email,
           password: usuarioRegister.password,
         });
+        
         setLoadingScreen({
           message: "Creando cuenta...",
-          duration: "2000",
+          duration: duration,
         });
         setIsLoading(true);
-
-        setTimeout(() => {
-          navigate("/")
-        } , duration)
 
         setTimeout(() => {
           setSnackbar({
@@ -175,7 +172,8 @@ export default function LoginSignUp({ isLogin }) {
             message: "Cuenta creada con éxito!"
           })
           setSnackbarVisibility(true);
-        } , duration + 100)
+          navigate("/");
+        }, duration)
 
       } catch (e) {
         console.log(e);

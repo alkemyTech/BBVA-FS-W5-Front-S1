@@ -148,7 +148,7 @@ export default function Transactions() {
                     <Grid item size={12}>
                         {transactions.length > 0 ? (
                             <>
-                                <TableContainer component={Paper} sx={{ height: "88.9vh" }} >
+                                <TableContainer component={Paper}>
                                     <Table aria-label="simple table">
                                         <TableHead>
                                             <TableRow>

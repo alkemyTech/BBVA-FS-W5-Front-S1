@@ -1,6 +1,6 @@
 import Grid from "@mui/material/Grid2";
 import { Typography, Button, TextField, LinearProgress, Box, Avatar, Card, CardContent, Pagination, Table, TableHead, TableRow, TableCell, 
-    TableBody, TableContainer, Paper} from '@mui/material/'
+    TableBody, TableContainer, Paper, Tooltip} from '@mui/material/'
 import { useState, useEffect } from "react";
 import apiConfig from "../../Config/axiosConfig";
 import GenericSnackbar from "../UI/Snackbar/Snackbar";
@@ -8,8 +8,28 @@ import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
 import {obtenerIniciales } from "../../utils/helpers";
 import { useNavigate } from 'react-router-dom';
 import GradeIcon from '@mui/icons-material/Grade';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
+import AlertaDialog from "../UI/Dialogs/AlertaDialog";
 
 export default function Favoritos() {
+
+    const [mostrarDialogEliminarUsuarioFavorito, setMostrarDialogEliminarUsuarioFavorito] = useState(false);
+    const closeDialogEliminarUsuarioFavorito = () => {
+        setMostrarDialogEliminarUsuarioFavorito(false);
+    }
+    const openDialogEliminarUsuarioFavorito = (nombreUsuarioFavorito, idUsuarioFavorito) => {
+        setUsuarioEliminado({
+            id: idUsuarioFavorito,
+            name: nombreUsuarioFavorito
+        })
+        setMostrarDialogEliminarUsuarioFavorito(true);
+    }
+
+    const [usuarioEliminado, setUsuarioEliminado] = useState({
+        id: "",
+        name:""
+    });
     
     const [usuarioFavorito, setUsuarioFavorito] = useState({
         firstName: "",
@@ -116,7 +136,7 @@ export default function Favoritos() {
                 cuentaArs: response.data.cuentaArs
             })
             setLoadingScreen({
-                message:"Agregando usuario a Favoritos...",
+                message:"Agregando usuario a Favoritos",
                 duration:3000
             })
             setIsLoading(true);
@@ -145,6 +165,37 @@ export default function Favoritos() {
             cuentaUsd: "",
             cuentaArs: ""
         })
+    };
+
+    const eliminarUsuarioFavorito = async (idUser) => {
+        setSnackbarVisibility(false);
+        setCargaFinalizada(false);
+        setMostrarDialogEliminarUsuarioFavorito(false);  
+        try {    
+            const response = await apiConfig.delete(`/users/favUser/${idUser}`);
+            console.log(response);
+            setLoadingScreen({
+                message:"Eliminando usuario de Favoritos",
+                duration:3000
+            })
+            setIsLoading(true);
+            setSnackbar({
+                status:"success",
+                message:"Usuario eliminado de favoritos con éxito!"
+            })
+            setTimeout(() => {
+                setIsLoading(false);
+                setSnackbarVisibility(true);
+                setCargaFinalizada(true);
+            }, 3000);
+        } catch (error) {
+            console.log(error);
+            setSnackbar({
+                status: "error",
+                message: error.response.data.Mensaje,
+            })
+            setSnackbarVisibility(true);
+        }
     };
 
     useEffect(() => {
@@ -231,10 +282,10 @@ export default function Favoritos() {
                 </Box>
             )}
             {mostrarDatosUsuario && (
-                <Card variant="elevation" elevation={15} sx={{width:"80%", borderRadius:"10px"}}>
-                    <Grid container spacing={1} flexDirection="row" sx={{borderBottom:"solid 2px #6655D9"}}>
-                        <Grid item size={2} sx={{display:"flex", justifyContent:"center", alignItems:"center" , borderRight:"solid 2px #6655D9"}}>
-                            <Avatar sx={{backgroundColor:"#6655D9"}}>{obtenerIniciales(usuarioFavorito.firstName + " " + usuarioFavorito.lastName)}</Avatar>
+                <Card variant="elevation" elevation={5} sx={{width:"80%", borderRadius:"5px"}}>
+                    <Grid container spacing={0} flexDirection="row">
+                        <Grid item size={2} sx={{display:"flex", justifyContent:"right", alignItems:"center"}}>
+                            <Avatar sx={{backgroundColor:"#6655D9", height:"55px", width:"55px"}}>{obtenerIniciales(usuarioFavorito.firstName + " " + usuarioFavorito.lastName)}</Avatar>
                         </Grid>
                         <Grid item size={10}>
                             <Grid container spacing={1} flexDirection="column" sx={{p:3}}>
@@ -273,7 +324,7 @@ export default function Favoritos() {
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid container spacing={2} alignItems="center" sx={{p:3}}>
+                    <Grid container spacing={2} alignItems="center" sx={{pb:2}}>
                         <Grid item size={12} sx={{display:"flex", justifyContent:"center", gap:"30px"}}>
                             <Button variant="contained" size="small" sx={{fontWeight:"bold", backgroundColor:"#8B0000"}} onClick={()=> setMostrarDatosUsuario(false)}>Cancelar</Button>
                             <Button variant="contained" size="small" sx={{fontWeight:"bold", backgroundColor:"#008000"}} onClick={()=> agregarUsuarioFavorito()}>Agregar a Favoritos</Button>
@@ -301,29 +352,46 @@ export default function Favoritos() {
                                     <TableCell sx={{fontWeight:"bold", textAlign:"center"}}>Email</TableCell>
                                     <TableCell sx={{fontWeight:"bold", textAlign:"center"}}>CBU cuenta ARS</TableCell>
                                     <TableCell sx={{fontWeight:"bold", textAlign:"center"}}>CBU cuenta USD</TableCell>
+                                    <TableCell sx={{fontWeight:"bold", textAlign:"center"}}>Acciones</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {favoritos.map((favorito) => (
                                     <TableRow key={favorito.id} sx={{cursor:"pointer"}}>
-                                        <TableCell align="center" sx={{color:"black", verticalAlign:"top"}}>
+                                        <TableCell align="center" sx={{color:"black", verticalAlign:"center"}}>
                                             {favorito.firstName + "\n"}
                                             {favorito.lastName}
                                         </TableCell>
-                                        <TableCell align="center" sx={{color:"black", verticalAlign:"top"}}>
+                                        <TableCell align="center" sx={{color:"black", verticalAlign:"center"}}>
                                             {favorito.email}
                                         </TableCell>
-                                        <TableCell align="center" sx={{color:"black", verticalAlign:"top"}}>
-                                            {favorito.cuentaArs}
-                                            <Button size="small" variant="contained" sx={{fontWeight:"bold", 
-                                                backgroundColor:"#00aae4", m:1}} onClick={()=> handleNavigateSendMoney(favorito.cuentaArs, "ARS")}>Transferir</Button>
+                                        <TableCell align="center" sx={{color:"black", verticalAlign:"center", fontWeight:"bold"}}>
+                                            <Tooltip title="Enviar ARS" arrow placement="top"
+                                            slotProps={{popper: {modifiers:[{name: 'offset', options:{offset:[0,-9]}}]}}}>
+                                                <Button size="small" sx={{"&:hover":{fontWeight:"bold"}, color:"#00aae4"}}
+                                                onClick={()=> handleNavigateSendMoney(favorito.cuentaArs, "ARS")}>
+                                                    {favorito.cuentaArs}
+                                                </Button>
+                                            </Tooltip>
                                         </TableCell>
-                                        <TableCell align="center" sx={{color:"black", verticalAlign:"top"}}>
-                                            {favorito.cuentaUsd != null ? favorito.cuentaUsd : "No tiene"}
-                                            {favorito.cuentaUsd != null && (
-                                                <Button size="small" variant="contained" sx={{fontWeight:"bold", 
-                                                    backgroundColor:"#228B22", m:1}} onClick={()=> handleNavigateSendMoney(favorito.cuentaUsd, "USD")}>Transferir</Button>
+                                        <TableCell align="center" sx={{verticalAlign:"center"}}>
+                                            {favorito.cuentaUsd != null ? (
+                                                 <Tooltip title="Enviar USD" arrow placement="top"
+                                                 slotProps={{popper: {modifiers:[{name: 'offset', options:{offset:[0,-9]}}]}}}>
+                                                    <Button size="small" sx={{"&:hover":{fontWeight:"bold"}, color:"#228B22"}}
+                                                    onClick={()=> handleNavigateSendMoney(favorito.cuentaUsd, "USD")}>
+                                                        {favorito.cuentaUsd}
+                                                    </Button>
+                                                </Tooltip>
+                                            ) : (
+                                                "No tiene"
                                             )}
+                                        </TableCell>
+                                        <TableCell align="center" sx={{verticalAlign:"center"}}>
+                                            <IconButton aria-label="" onClick={() => 
+                                                openDialogEliminarUsuarioFavorito((favorito.firstName + " " + favorito.lastName), favorito.id)}>
+                                                <DeleteIcon sx={{color:"#6655D9"}}/>
+                                            </IconButton>
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -357,6 +425,12 @@ export default function Favoritos() {
                 duration={loadingScreen.duration}
             />
         )}
+        <AlertaDialog
+            mostrarAlerta={mostrarDialogEliminarUsuarioFavorito}
+            accion={() => eliminarUsuarioFavorito(usuarioEliminado.id)}
+            closeAlerta={closeDialogEliminarUsuarioFavorito}
+            mensajeAlerta={"Vas a eliminar a " + usuarioEliminado.name + " de tu lista de Favoritos"}
+        /> 
     </Grid>
   )
 }

@@ -25,8 +25,7 @@ import { useNavigate } from 'react-router-dom';
 import apiConfig from "../../Config/axiosConfig";
 import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
 import GenericSnackbar from "../UI/Snackbar/Snackbar";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatearFecha } from "../../utils/helpers";
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 
 export default function PlazosFijos() {
@@ -134,15 +133,6 @@ export default function PlazosFijos() {
   };
 
   const fechaActual = new Date();
-
-  const formatearFecha = (fechaOriginal) => {
-
-    const fechaFormateada = format(new Date(fechaOriginal), "dd, MMM, HH:mm:ss", {
-      locale: es,
-    }).toUpperCase();
-
-    return fechaFormateada;
-  };
 
   const cotizarPlazo = async () => {
     setCotizando(true);
@@ -291,10 +281,6 @@ export default function PlazosFijos() {
       color: "red",
     },
   };
-
-
-
-
 
   return (
     <Grid container flexDirection="row" sx={{ p: 3 }} spacing={4}>

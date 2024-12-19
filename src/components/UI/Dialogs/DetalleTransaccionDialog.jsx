@@ -9,8 +9,6 @@ import { Dialog } from '@mui/material';
 
 function detalleTransaccionDialog({mostrarDetalleTransaccion, transaccion, closeDetalleTransaccion}) {
 
-    console.log(mostrarDetalleTransaccion)
-
   return (
     <Dialog
     onClose={closeDetalleTransaccion}

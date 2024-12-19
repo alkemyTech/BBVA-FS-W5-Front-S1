@@ -9,6 +9,7 @@ import PaymentsServices from "./components/Payment/PaymentsServices";
 import Prestamos from "./components/Prestamos/Prestamos"
 import PlazosFijos from "./components/PlazosFijos/PlazosFijos"
 import MyAccount from "./components/MyAccount/MyAccount";
+import GestionUsuarios from "./components/GestionUsuarios/AdminGestionUsuarios";
 
 
 function App() {
@@ -26,7 +27,7 @@ function App() {
           <Route path="/prestamos" element={<Prestamos />} />
           <Route path="/plazosFijos" element={<PlazosFijos />} />
           <Route path="/userProfile" element={<MyAccount/>}></Route>
-
+          <Route path="/gestionUsuarios" element={<GestionUsuarios/>}></Route>
         </Routes>
     </Page>
     </Router>

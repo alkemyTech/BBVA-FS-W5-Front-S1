@@ -90,6 +90,12 @@ export default function Transactions() {
 
     return (
         <Grid container sx={{ justifyContent: "center", textAlign: "center", marginTop: "10px" }} spacing={2}>
+            <Grid item size ={12}>
+            <Typography variant='h6' color="black" >
+                            <MovingIcon sx={{ fontSize: "25px", color: "black" }} />
+                            Movimientos
+            </Typography>
+            </Grid>
             <Grid item size={3}>
                 <FormControl fullWidth>
                     <InputLabel>Filtros por tipo</InputLabel>
@@ -140,15 +146,12 @@ export default function Transactions() {
             <Grid item size={8} sx={{ width: "75vw" }}>
                 <Grid container>
                     <Grid item size={12} sx={{ background: "#6655D9" }}>
-                        <Typography variant='h6' color="#e8e8e8" >
-                            <MovingIcon sx={{ fontSize: "25px", color: "black" }} />
-                            Movimientos
-                        </Typography>
+
                     </Grid>
                     <Grid item size={12}>
                         {transactions.length > 0 ? (
                             <>
-                                <TableContainer component={Paper} sx={{ height: "88.9vh" }} >
+                                <TableContainer component={Paper} sx={{ height: "88.9vh" }} variant="elevation" elevation={5}>
                                     <Table aria-label="simple table">
                                         <TableHead>
                                             <TableRow>

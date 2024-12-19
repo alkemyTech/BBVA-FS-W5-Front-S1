@@ -26,6 +26,7 @@ export default function GestionUsuarios() {
     const itemsPerPage = 10;  // Número de elementos por página
     const [borradoExitoso, setBorradoExitoso] = useState(false);
     const [asignacionExitosa, setAsignacionExitosa] = useState(false);
+    const [verUser, setVerUser] = useState(false);
     const [role, setRole] = useState("");
 
     const handleRoleChange = (event) => {
@@ -62,7 +63,9 @@ export default function GestionUsuarios() {
                 creationDate: response.data.creationDate,
                 role: response.data.role
             })
-            
+            setVerUser(true);
+            setAsignacionExitosa(false)
+
         }
         catch (error) {
             console.error("Error buscando usuario", error);
@@ -71,11 +74,12 @@ export default function GestionUsuarios() {
 
     const asignarRol = async (idUsuario) => {
         try {
-            await apiConfig.patch(`/users/admin/updateRole/${idUsuario}`, { 
+            await apiConfig.patch(`/users/admin/updateRole/${idUsuario}`, {
                 role: role
-                
+
             });
             setAsignacionExitosa(true);
+            setVerUser(false);
         } catch (error) {
             console.error("error al asignar el rol", error);
         }
@@ -93,7 +97,7 @@ export default function GestionUsuarios() {
             }
         }
         listaUsers();
-    }, [page, borradoExitoso,asignacionExitosa]);
+    }, [page, borradoExitoso, asignacionExitosa]);
 
     const formatearFecha = (fechaOriginal) => {
 
@@ -111,79 +115,87 @@ export default function GestionUsuarios() {
     return (
         <Grid container sx={{ justifyContent: "center", textAlign: "center", marginTop: "10px" }} spacing={2}>
             <Grid item size={12}>
-                <Typography variant='h4'>
+                <Typography variant="h5" sx={{ fontWeight: "bold", color: "#6655D9" }}>
                     Gestor de usuarios
                 </Typography>
             </Grid>
 
             <Grid item size={3}>
-                <Card variant="elevation" elevation={5}>
-                    <Grid container spacing={2} sx={{ justifyContent: "center"}}>
-                        <Grid item size={12} sx={{background:"#6655D9"}}>
-                       
-                                <Typography variant='h5' sx={{fontWeight:"bold"}}>
-                                    ¿Como asignar un rol?
-                                    {/* <PersonAddIcon /> */}
-                                </Typography>
-                                <Divider/>
-                        </Grid>
-                       
-                        <Grid item size={12}>
-                            <Card>
-                                <CardContent>
-                                    <Typography>
-                                        1) Clickea el nombre del usuario para completar sus datos
-                                    </Typography>
-                                </CardContent>
-                                <CardContent>
-                                    <Typography>
-                                        2) Una vez chequeados los datos usa el desplegable para cambiar su rol
-                                    </Typography>
-                                </CardContent>
-                                <CardContent>
-                                <Typography>
-                                3) Para confirmar la operacion de click en asignar Rol y ya estaría listo el cambio
-                            </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        <Grid item size={7}>
-                            <Card sx={{textAlign:"left",padding:"10px"}} variant="elevation" elevation={3}>
-                                <Typography>
-                                    Email: {usuarioConRole.email}
-                                </Typography>
 
-                                <Typography>
-                                    Rol: {
-                                    usuarioConRole.role == 1 
-                                    ? "Admin" 
-                                    : usuarioConRole.role == 2
-                                    ? "Usuario" : ""}
+                <Grid container spacing={2} sx={{ justifyContent: "center" }}>
+
+                    <Grid item size={12}>
+                        <Card variant="elevation" elevation={5} sx={{textAlign: "left"}}>
+                            <CardContent sx={{ background: "#6655D9" }}>
+                                <Typography variant='h5' sx={{ fontWeight: "bold", color: "#e8e8e8" }}>
+                                    ¿Como asignar un rol?
                                 </Typography>
-                            </Card>
-                        </Grid>
-                        <Grid item size={7}>
-                            <FormControl variant="outlined" fullWidth>
-                                <InputLabel id="role-selector-label">Seleccione Rol</InputLabel>
-                                <Select
-                                    labelId="role-selector-label"
-                                    value={role}
-                                    onChange={handleRoleChange}
-                                    label="Seleccione Rol"
-                                >
-                                    {/* <MenuItem value=""><em>Ninguno</em></MenuItem> */}
-                                    <MenuItem value="1">Admin</MenuItem>
-                                    <MenuItem value="2">Usuario</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        <Grid item size={12} sx={{marginBottom:"6px"}}>
-                            <Button variant='contained' onClick={() => asignarRol(usuarioConRole.id)}>
-                                Asignar rol
-                            </Button>
-                        </Grid>
+                            </CardContent>
+                            <CardContent>
+                                <Typography>
+                                    1) Clickea el nombre del usuario para completar sus datos
+                                </Typography>
+                            </CardContent>
+                            <CardContent>
+                                <Typography>
+                                    2) Una vez chequeados los datos usa el desplegable para cambiar su rol
+                                </Typography>
+                            </CardContent>
+                            <CardContent>
+                                <Typography>
+                                    3) Para confirmar la operacion de click en asignar Rol y ya estaría listo el cambio
+                                </Typography>
+                            </CardContent>
+                        </Card>
                     </Grid>
-                </Card>
+                    <Grid item size={12}>
+
+
+                        {verUser == true ? (
+                            <Card sx={{ textAlign: "left"}} variant="elevation" elevation={3}>
+                                <CardContent sx={{ background: "#6655D9" }}>
+                                    <Typography variant='h5' sx={{ fontWeight: "bold", color: "#e8e8e8" }}>
+                                        Datos del usuario
+                                    </Typography>
+                                </CardContent>
+                                <CardContent>
+                                    <Typography>
+                                        Email: {usuarioConRole.email}
+                                    </Typography>
+
+                                    <Typography>
+                                        Rol: {
+                                            usuarioConRole.role == 1
+                                                ? "Admin"
+                                                : usuarioConRole.role == 2
+                                                    ? "Usuario" : ""}
+                                    </Typography>
+
+                                </CardContent>
+                                <CardContent>
+                                    <FormControl variant="outlined" fullWidth sx={{marginBottom:"5px"}}>
+                                        <InputLabel id="role-selector-label">Seleccione Rol</InputLabel>
+                                        <Select
+                                            labelId="role-selector-label"
+                                            value={role}
+                                            onChange={handleRoleChange}
+                                            label="Seleccione Rol"
+                                        >
+                                            <MenuItem value="1">Admin</MenuItem>
+                                            <MenuItem value="2">Usuario</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                    <Button variant='contained' onClick={() => asignarRol(usuarioConRole.id)}>
+                                        Asignar rol
+                                    </Button>
+                                </CardContent>
+                            </Card>
+
+                        ) : null
+                        }
+                    </Grid>
+                </Grid>
+
 
             </Grid>
             <Grid item size={9} sx={{ width: "70vw" }}>
@@ -191,7 +203,7 @@ export default function GestionUsuarios() {
                     <Grid item size={12}>
                         {users.length > 0 ? (
                             <>
-                                <TableContainer component={Paper} sx={{ height: "73vh"}} variant="elevation" elevation={5}>
+                                <TableContainer component={Paper} sx={{ height: "73vh" }} variant="elevation" elevation={5}>
                                     <Table aria-label="simple table">
                                         <TableHead>
                                             <TableRow>

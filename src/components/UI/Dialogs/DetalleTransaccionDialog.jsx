@@ -1,4 +1,4 @@
-import { formatearFecha } from '../../../utils/helpers';
+import {formatearFechaSimple } from '../../../utils/helpers';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
@@ -81,7 +81,7 @@ function detalleTransaccionDialog({mostrarDetalleTransaccion, transaccion, close
           - Fecha:
         </Typography>
         <Typography variant="h7" color="black">
-          {formatearFecha(transaccion.transactionDate)}
+          {formatearFechaSimple(transaccion.transactionDate)}
         </Typography>
       </Box>
       <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", gap:"7px"}}>

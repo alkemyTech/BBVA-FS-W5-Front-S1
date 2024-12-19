@@ -42,11 +42,11 @@ export default function Header() {
 
   const handleNavigate = () =>{
     navigate("/home")
-    
   };
 
-  const handleNavegar = (ruta) => {
+  const handleNavegarMiCuenta = (ruta) => {
     navigate(ruta);
+    setAnchorEl(null);
   }
 
 
@@ -156,7 +156,7 @@ export default function Header() {
             onClose={handleClose}
             TransitionComponent={Fade}
           >
-            <MenuItem onClick={() => navigate("/userProfile")} sx={{ fontSize: "14px" }}>
+            <MenuItem onClick={() => handleNavegarMiCuenta("/userProfile")} sx={{ fontSize: "14px" }}>
               <ListItemIcon>
                 <PersonIcon fontSize="small" sx={{ color: "#6655D9" }} />
               </ListItemIcon>
@@ -169,7 +169,6 @@ export default function Header() {
                   fontSize="small"
                   fontColor="#6655D9"
                   sx={{ color: "#6655D9" }}
-                  
                 />
               </ListItemIcon>
               Logout

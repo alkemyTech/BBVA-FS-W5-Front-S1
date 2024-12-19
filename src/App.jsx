@@ -34,12 +34,6 @@ function App() {
         const decodedToken = jwtDecode(token);
         const tiempoActual = Math.floor(Date.now() / 1000);
         const tokenExpirado =  decodedToken.exp <= tiempoActual; 
-
-        console.log("Expiró el token? " + tokenExpirado);
-        console.log("Diferencia: " + (decodedToken.exp - tiempoActual));
-        console.log("Vencimiento: " + decodedToken.exp);
-        console.log("Tiempo actual: " + tiempoActual);
-        
         if (tokenExpirado) {
             localStorage.removeItem("token");
             setAlertaTokenExpirado(true);

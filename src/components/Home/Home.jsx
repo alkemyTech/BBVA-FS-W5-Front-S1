@@ -24,7 +24,7 @@ import FavoritoDialog from "../UI/Dialogs/FavoritoDialog";
 import DetalleTransaccionDialog from "../UI/Dialogs/DetalleTransaccionDialog";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import axios from "axios"
-import { formatearFecha } from '../../utils/helpers';
+import { formatearFechaSimple } from '../../utils/helpers';
 import ContactsIcon from '@mui/icons-material/Contacts';
 
 export default function Home() {
@@ -375,7 +375,7 @@ export default function Home() {
                                                             <Typography variant='p' sx={{ display: "flex", gap: "10px", alignItems: "center" }}>
                                                                 {transaction.type == "deposit" ? "DEPÓSITO" : "PAGO"}
                                                                 <Typography variant="p" color="grey">
-                                                                    {formatearFecha(transaction.transactionDate)}
+                                                                    {formatearFechaSimple(transaction.transactionDate)}
                                                                 </Typography>
                                                                 </Typography>
                                                                 <Typography variant='p' color='#A599F2'>

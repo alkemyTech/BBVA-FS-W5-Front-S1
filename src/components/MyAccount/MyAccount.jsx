@@ -15,15 +15,78 @@ import {
     TableHead,
     TableRow,
     Button,
-    Box
+    Box,
+    CardActions,
+    IconButton,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import apiConfig from "../../Config/axiosConfig";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 export default function MyAccount() {
     const [userProfile, setUserProfile] = useState({});
+    const [staticUserProfile, setStaticUserProfile] = useState({});
     const [accounts, setAccounts] = useState([]);
     const [contacts, setContacts] = useState([]);
+    const [userUpdate, setUserUpdate] = useState({
+        firstName: "",
+        lastName: "",
+        password: "",
+    });
+    const [passwordVisibility, setPasswordVisibility] = useState(false);
+
+
+    const [habilitarEdicion, setHabilitarEdicion] = useState(false);
+    const [editando, setEditando] = useState(false)
+
+
+    const abrirEdicion = () => {
+        setHabilitarEdicion(true);
+        setEditando(true);
+
+    }
+
+    const cerrarEdicion = () => {
+        setHabilitarEdicion(false);
+        setEditando(false);
+        setUserUpdate({
+            firstName: "",
+            lastName: "",
+            password: "",
+        })
+
+    }
+
+    const changePasswordVisibility = () => {
+        setPasswordVisibility((prev) => !prev);
+    };
+
+    const [open, setOpen] = useState(false);
+    const [password, setPassword] = useState("");
+
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    const handleDeactivate = () => {
+        handleDelete();
+        console.log("Cuenta desactivada con la contraseña:", password);
+        setOpen(false);
+    };
+
+    const handleDelete = () => {
+        deleteAccount();
+    };
+
+
+
+
+    console.log(userProfile);
 
     useEffect(() => {
         const fetchUserProfile = async () => {
@@ -31,12 +94,25 @@ export default function MyAccount() {
                 const response = await apiConfig.get("/users/userProfile");
                 console.log("User Profile Response:", response.data);
                 setUserProfile(response.data);
+                setStaticUserProfile(response.data);
             } catch (error) {
                 console.error("Error fetching userProfile:", error);
             }
         };
         fetchUserProfile();
     }, []);
+
+    const deleteAccount = async () => {
+        try {
+            const response = await apiConfig.delete("/users");
+            console.log(response.data); // Muestra el mensaje de éxito del backend
+        } catch (error) {
+            console.error("Falla al eliminar", error.response?.data || error.message);
+        }
+    };
+
+
+    console.log(staticUserProfile)
 
     useEffect(() => {
         const fetchAccounts = async () => {
@@ -50,22 +126,29 @@ export default function MyAccount() {
         fetchAccounts();
     }, []);
 
-    useEffect(() => {
-        const fetchContacts = async () => {
-            try {
-                const response = await apiConfig.get("/contacts/");
-                setContacts(response.data);
-            } catch (error) {
-                console.error("Error fetching contacts:", error);
-            }
-        };
-        fetchContacts();
-    }, []);
+
+
+    const updateUser = async () => {
+        try {
+            const response = await apiConfig.patch("/users/update", {
+                firstName: userProfile.firstName,
+                lastName: userProfile.lastName,
+                password: userUpdate.password,
+            });
+
+            console.log(response.data)
+
+        } catch (error) {
+            console.error("Error fetching fechUpdate:", error);
+        }
+        window.location.reload();
+    };
+
 
 
 
     return (
-        <Grid container sx={{ p: 2, m: 5, alignItems: "start" }} spacing={5}>
+        <Grid container sx={{ p: 5, pb: 5, pl: 2, pr: 2, alignItems: "start" }} spacing={5}>
             {/* Columna izquierda */}
             <Grid item size={6}>
                 <Grid container spacing={3}>
@@ -73,27 +156,82 @@ export default function MyAccount() {
                     <Grid item size={6}>
                         <Card variant="elevation" elevation={5} sx={{ height: "100%" }}>
                             <CardHeader
-                            title={`${userProfile.firstName} ${userProfile.lastName}`}
-                            sx={{backgroundColor: "#6a0dad",color: "#ffffff",textAlign: "center",fontWeight: "bold", fontSize: "1.5rem"}}
+                                title={
+                                    staticUserProfile.firstName + " " + staticUserProfile.lastName
+                                }
+                                sx={{
+                                    backgroundColor: "#6a0dad",
+                                    color: "#ffffff",
+                                    textAlign: "center",
+                                    fontWeight: "bold",
+                                    fontSize: "1.5rem",
+                                }}
                             />
-                            <CardContent sx={{ textAlign: "center" }}>                              
-                                <Typography variant="body2" color="textSecondary" sx={{ mb: 2, fontSize: "1.3rem"}}>
-                                    {userProfile.email || "email@example.com"}
-                                </Typography>
-                                <Avatar
-                                    sx={{ width: 300, height: 300, margin: "0 auto", backgroundColor: "grey" }}
+                            <CardContent>
 
+                                <Avatar
+                                    sx={{ width: 200, height: 200, margin: "0 auto", backgroundColor: "grey" }}
                                 />
+                                <Button color="primary">
+                                    <EditIcon />
+                                </Button>
+
                                 <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
-                                    Miembro desde: {userProfile.creationDate || "01/01/2020"}
+                                    Miembro desde: {staticUserProfile.creationDate}
                                 </Typography>
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    sx={{ mt: 3 }}
+                                    onClick={handleOpen}
+                                >
+                                    Desactivar cuenta
+                                </Button>
                             </CardContent>
                         </Card>
+
+                        {/* Diálogo de confirmación */}
+                        <Dialog open={open} onClose={handleClose}>
+                            <DialogTitle>Desactivar cuenta</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText>
+                                    Por favor, ingresa tu contraseña para confirmar que deseas desactivar tu cuenta.
+                                </DialogContentText>
+                                <TextField
+                                    autoFocus
+                                    margin="dense"
+                                    label="Contraseña"
+                                    type="password"
+                                    fullWidth
+                                    variant="outlined"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleClose} color="primary">
+                                    Cancelar
+                                </Button>
+                                <Button
+                                    onClick={handleDeactivate}
+                                    color="error"
+                                    disabled={!password}
+                                >
+                                    Confirmar
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
                     </Grid>
 
-                    {/* Información del Usuario */}
+                    {/* informacion de usuario*/}
                     <Grid item size={6}>
-                        <Card variant="elevation" elevation={5} sx={{ height: "100%" }}>
+                        <Card
+                            variant="elevation"
+                            elevation={5}
+                            sx={{
+                                height: "100%",
+                            }}
+                        >
                             <CardHeader
                                 title="Información del Usuario"
                                 sx={{
@@ -104,43 +242,158 @@ export default function MyAccount() {
                                     fontSize: "1.5rem",
                                 }}
                             />
-                            <CardContent>
-                                {/* Nombre */}
-                                <TextField
-                                    label="Nombre"
-                                    value={userProfile.firstName || "Nombre"}
-                                    onChange={(e) => setUserProfile({ ...userProfile, firstName: e.target.value })}
-                                    fullWidth
-                                    margin="normal"
-                                />
-                                {/* Apellido */}
-                                <TextField
-                                    label="Apellido"
-                                    value={userProfile.lastName || "Apellido"}
-                                    onChange={(e) => setUserProfile({ ...userProfile, lastName: e.target.value })}
-                                    fullWidth
-                                    margin="normal"
-                                />
-                                {/* Email */}
-                                <TextField
-                                    label="Email"
-                                    value={userProfile.email || "email@example.com"}
-                                    onChange={(e) => setUserProfile({ ...userProfile, email: e.target.value })}
-                                    fullWidth
-                                    margin="normal"
-                                />
-                                {/* Contraseña */}
-                                <TextField
-                                    label="Contraseña"
-                                    type="password"
-                                    value={userProfile.password || "Contraseña"}
-                                    onChange={(e) => setUserProfile({ ...userProfile, password: e.target.value })}
-                                    fullWidth
-                                    margin="normal"
-                                />
+                            <CardContent sx={{ textAlign: "center", mt: 1 }}>
+                                <Typography variant="body2" color="textSecondary" sx={{ mb: 3, fontSize: "1.3rem" }}>
+                                    {staticUserProfile.email || "email@example.com"}
+                                </Typography>
+                                {/* Contenedor principal */}
+                                <Grid container spacing={2}>
+
+                                    {/* Nombre */}
+                                    <Grid item size={4} sx={{ textAlign: "right", display: "flex", alignItems: "center" }}>
+                                        <Typography
+                                            variant="subtitle1"
+                                            sx={{
+                                                fontWeight: "bold",
+                                                whiteSpace: "nowrap",
+                                            }}
+                                        >
+                                            Nombre:
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item size={8}>
+                                        <TextField
+                                            disabled={!habilitarEdicion}
+                                            placeholder="Ingrese su nombre"
+                                            value={userProfile.firstName}
+                                            onChange={(e) =>
+                                                setUserProfile({ ...userProfile, firstName: e.target.value })
+                                            }
+                                            fullWidth
+                                            sx={{
+                                                '& .MuiInputBase-root.Mui-disabled': {
+                                                    backgroundColor: "#ebebeb", // Fondo del campo deshabilitado
+                                                },
+                                            }}
+                                        />
+                                    </Grid>
+
+                                    {/* Apellido */}
+                                    <Grid item size={4} sx={{ textAlign: "right", display: "flex", alignItems: "center" }}>
+                                        <Typography
+                                            variant="subtitle1"
+                                            sx={{
+                                                fontWeight: "bold",
+                                                whiteSpace: "nowrap",
+                                            }}
+                                        >
+                                            Apellido:
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item size={8}>
+                                        <TextField
+                                            disabled={!habilitarEdicion}
+                                            placeholder="Ingrese su apellido"
+                                            value={userProfile.lastName}
+                                            onChange={(e) =>
+                                                setUserProfile({ ...userProfile, lastName: e.target.value })
+                                            }
+                                            fullWidth
+                                            sx={{
+                                                '& .MuiInputBase-root.Mui-disabled': {
+                                                    backgroundColor: "#ebebeb", // Fondo del campo deshabilitado
+                                                },
+                                            }}
+                                        />
+                                    </Grid>
+
+                                    {/* Contraseña */}
+                                    <Grid item size={4} sx={{ textAlign: "right", display: "flex", alignItems: "center" }}>
+                                        <Typography
+                                            variant="subtitle1"
+                                            sx={{
+                                                fontWeight: "bold",
+                                                whiteSpace: "nowrap",
+                                            }}
+                                        >
+                                            Contraseña:
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item size={8} sx={{ position: "relative" }}>
+                                        <TextField
+                                            disabled={!habilitarEdicion}
+                                            placeholder={habilitarEdicion ? "Nueva contraseña" : "*********"}
+                                            value={userUpdate.password || ""}
+                                            onChange={(e) =>
+                                                setUserUpdate({ ...userUpdate, password: e.target.value })
+                                            }
+                                            fullWidth
+                                            type={passwordVisibility ? "text" : "password"}
+                                            sx={{
+                                                '& .MuiInputBase-root.Mui-disabled': {
+                                                    backgroundColor: "#ebebeb", // Fondo del campo deshabilitado
+                                                },
+                                            }}
+                                        />
+                                        {habilitarEdicion && (
+                                            <IconButton
+                                                onClick={changePasswordVisibility}
+                                                sx={{
+                                                    position: "absolute",
+                                                    right: "8px",
+                                                    top: "50%",
+                                                    transform: "translateY(-50%)",
+                                                    color: "#5F49D7",
+                                                }}
+                                            >
+                                                {passwordVisibility ? <Visibility /> : <VisibilityOff />}
+                                            </IconButton>
+                                        )}
+                                    </Grid>
+                                </Grid>
                             </CardContent>
+                            <CardActions
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    gap: 2,
+                                    padding: "16px",
+                                }}
+                            >
+                                {!editando && (
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => abrirEdicion()}
+                                    >
+                                        Editar
+                                    </Button>
+                                )}
+                                {habilitarEdicion && (
+                                    <>
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={() => updateUser()}
+                                        >
+                                            Confirmar
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            color="secondary"
+                                            onClick={() => cerrarEdicion()}
+                                        >
+                                            Cancelar
+                                        </Button>
+                                    </>
+                                )}
+                            </CardActions>
                         </Card>
                     </Grid>
+
+
+
+
                 </Grid>
 
                 {/* Tabla de Cuentas */}
@@ -172,9 +425,6 @@ export default function MyAccount() {
                                         <TableCell align="center" sx={{ fontWeight: "bold", fontSize: "1rem" }}>
                                             Límite de Transacción
                                         </TableCell>
-                                        <TableCell align="center" sx={{ fontWeight: "bold", fontSize: "1rem" }}>
-                                            Acciones
-                                        </TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -192,19 +442,6 @@ export default function MyAccount() {
                                                         <EditIcon />
                                                     </Button>
                                                 </Box>
-                                            </TableCell>
-
-                                            {/* Columna Acciones separada */}
-                                            <TableCell align="center">
-                                                <Button
-                                                    variant="contained"
-                                                    color="secondary"
-                                                    size="small"
-                                                    startIcon={<DeleteIcon />}
-                                                    onClick={() => handleDeleteAccount(account.cbu)}
-                                                >
-                                                    Dar de Baja
-                                                </Button>
                                             </TableCell>
                                         </TableRow>
                                     ))}

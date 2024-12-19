@@ -18,6 +18,7 @@ import { setUserAuthenticated } from "../../Redux/Slices/userAuthenticatedSlice"
 import GenericSnackbar from "../UI/Snackbar/Snackbar";
 import apiConfig from "../../Config/axiosConfig";
 import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
+import CheckIcon from '@mui/icons-material/Check';
 
 export default function LoginSignUp({ isLogin }) {
   const [usuario, setUsuario] = useState({
@@ -29,6 +30,9 @@ export default function LoginSignUp({ isLogin }) {
     lastName: "",
     email: "",
     password: "",
+  });
+  const [usuarioReactivar, setUsuarioReactivar] = useState({
+    email: "",
   });
 
   const [errores, setErrores] = useState({});
@@ -61,6 +65,10 @@ export default function LoginSignUp({ isLogin }) {
     navigate("/signUp");
   };
 
+  const handleNavigateReactivate = () => {
+    navigate("/reactivate");
+  };
+
   const datosCompletos = (objeto) => {
     return Object.values(objeto).every(
       (valor) => valor !== null && valor !== undefined && valor !== ""
@@ -79,9 +87,9 @@ export default function LoginSignUp({ isLogin }) {
         ...errores,
         email: "El formato del email no es válido.",
       }));
-    } 
+    }
 
-    if(campo === "email" && (patronEmail.test(valor) || valor === "")) {
+    if (campo === "email" && (patronEmail.test(valor) || valor === "")) {
       setErrores((errores) => ({
         ...errores,
         email: null,
@@ -97,9 +105,12 @@ export default function LoginSignUp({ isLogin }) {
         ...errores,
         contraseña: "La contraseña debe ser de entre 6 y 20 caracteres.",
       }));
-    } 
-    
-    if(campo === "contraseña" && (valor.length >= 6 && valor.length <=20 || valor === "")) {
+    }
+
+    if (
+      campo === "contraseña" &&
+      ((valor.length >= 6 && valor.length <= 20) || valor === "")
+    ) {
       setErrores((errores) => ({
         ...errores,
         contraseña: null,
@@ -110,7 +121,7 @@ export default function LoginSignUp({ isLogin }) {
   const manejarEnvio = async () => {
     let response;
     let tokenPayload;
-    const duration = 1500;
+    const duration = 2000;
     setSnackbarVisibility(false);
     setIsLoading(false);
 
@@ -137,8 +148,8 @@ export default function LoginSignUp({ isLogin }) {
         });
         setIsLoading(true);
         setTimeout(() => {
-          navigate("/home")
-        }, duration)
+          navigate("/home");
+        }, duration);
       } catch (e) {
         console.log(e);
         setSnackbar({
@@ -151,7 +162,7 @@ export default function LoginSignUp({ isLogin }) {
         email: "",
         password: "",
       });
-    } else {
+    } if(isLogin == false){
       try {
         response = await apiConfig.post("/auth/register", {
           firstName: usuarioRegister.firstName,
@@ -159,23 +170,21 @@ export default function LoginSignUp({ isLogin }) {
           email: usuarioRegister.email,
           password: usuarioRegister.password,
         });
+        
         setLoadingScreen({
           message: "Creando cuenta...",
-          duration: "2000",
+          duration: duration,
         });
         setIsLoading(true);
 
         setTimeout(() => {
-          navigate("/")
-        } , duration)
-
-        setTimeout(() => {
           setSnackbar({
-            status:"success",
-            message: "Cuenta creada con éxito!"
-          })
+            status: "success",
+            message: "Cuenta creada con éxito!",
+          });
           setSnackbarVisibility(true);
-        } , duration + 100)
+          navigate("/");
+        }, duration)
 
       } catch (e) {
         console.log(e);
@@ -186,8 +195,43 @@ export default function LoginSignUp({ isLogin }) {
         email: "",
         password: "",
       });
+    } if(isLogin == "reactivate") {
+      try {
+        response = await apiConfig.post("/auth/reactivate", {
+          email: usuarioReactivar.email,
+        });
+        setLoadingScreen({
+          message: "Reactivando cuenta...",
+          duration: "2000",
+        });
+        setIsLoading(true);
+        
+        setTimeout(() => {
+          navigate("/");
+        }, duration);
+
+        setTimeout(() => {
+          setSnackbar({
+            status: "success",
+            message: "Cuenta reactivada con éxito!",
+          });
+          setSnackbarVisibility(true);
+        }, duration + 100);
+      } catch (e) {
+        console.log(e);
+        setSnackbar({
+          status: "error",
+          message: "Esta cuenta no esta dada de baja!",
+        });
+        setSnackbarVisibility(true);
+      }
+      setUsuarioReactivar({
+        email: "",
+      });
     }
   };
+
+
 
   const textFieldStyle = {
     "& .MuiOutlinedInput-root": {
@@ -239,13 +283,13 @@ export default function LoginSignUp({ isLogin }) {
           }}
         >
           <Grid item>
-              <img
-                src="/assets/navidad1.png"
-                alt=""
-                style={{ height: "170px" }}
-              />
+            <img
+              src="/assets/navidad1.png"
+              alt=""
+              style={{ height: "170px" }}
+            />
           </Grid>
-          
+
           <Grid
             container
             spacing={1}
@@ -371,7 +415,7 @@ export default function LoginSignUp({ isLogin }) {
                 color="#e8e8e8"
                 sx={{ fontWeight: "bold", textAlign: "center" }}
               >
-                {isLogin == true ? "Iniciar Sesión" : "Registrarse"}
+                {isLogin === true ? "Iniciar Sesión" : isLogin === false ?"Registrarse": "Reactivación"}
               </Typography>
               {!isLogin && (
                 <>
@@ -409,21 +453,25 @@ export default function LoginSignUp({ isLogin }) {
                 label="E-mail"
                 name="email"
                 size="small"
-                value={isLogin == true ? usuario.email : usuarioRegister.email}
+                value={isLogin === true ? usuario.email : isLogin === false ? usuarioRegister.email: usuarioReactivar.email}
                 error={Boolean(errores.email)}
                 helperText={errores.email}
                 onChange={(e) =>
-                  isLogin == true
+                  isLogin === true
                     ? setUsuario({ ...usuario, email: e.target.value })
-                    : setUsuarioRegister({
+                    : isLogin === false  ? setUsuarioRegister({
                         ...usuarioRegister,
                         email: e.target.value,
                       })
+                    : setUsuarioReactivar({
+                      ...usuarioReactivar,
+                      email: e.target.value,
+                    })
                 }
                 onBlur={(e) => validarCampo("email", e.target.value)}
                 sx={textFieldStyle}
               />
-              <TextField
+              {(isLogin == true || isLogin == false) && (<TextField
                 id=""
                 type={passwordVisibility ? "text" : "password"}
                 label="Contraseña"
@@ -435,7 +483,7 @@ export default function LoginSignUp({ isLogin }) {
                 helperText={errores.contraseña}
                 error={Boolean(errores.contraseña)}
                 onChange={(e) =>
-                  isLogin == true
+                  isLogin === true
                     ? setUsuario({ ...usuario, password: e.target.value })
                     : setUsuarioRegister({
                         ...usuarioRegister,
@@ -461,7 +509,8 @@ export default function LoginSignUp({ isLogin }) {
                 }}
                 onBlur={(e) => validarCampo("contraseña", e.target.value)}
                 sx={textFieldStyle}
-              />
+              />)}
+              
               <Button
                 variant="contained"
                 type="submit"
@@ -474,38 +523,75 @@ export default function LoginSignUp({ isLogin }) {
                 }}
                 disabled={
                   !datosCompletos(
-                    isLogin == true ? usuario : usuarioRegister
+                    isLogin === true ? usuario : isLogin === false ? usuarioRegister : usuarioReactivar 
                   ) || presenciaDeErrores
                 }
-                endIcon={isLogin == true ? <LoginIcon /> : <HowToRegIcon />}
+                endIcon={isLogin === true ? <LoginIcon /> : isLogin === false ? <HowToRegIcon /> : <CheckIcon/>}
                 onClick={manejarEnvio}
               >
-                {isLogin == true ? "Ingresar" : "Crear Cuenta"}
+                {isLogin === true
+                  ? "Ingresar"
+                  : isLogin === false
+                  ? "Crear Cuenta"
+                  : "Reactivar"}
               </Button>
-
-              {isLogin && (
-                <Grid
-                  container
-                  spacing={1.5}
-                  alignItems="center"
-                  flexDirection="column"
-                >
-                  <Typography
-                    variant="p"
-                    color="#e8e8e8"
-                    sx={{ fontSize: "medium" }}
+              {isLogin == true && (
+                <Grid item size={12}>
+                  <Grid
+                    container
+                    spacing={1.5}
+                    alignItems="center"
+                    textAlign="center"
                   >
-                    Todavía no tenes una cuenta?
-                  </Typography>
-                  <Typography
-                    variant="p"
-                    fontWeight="bold"
-                    color="#6655D9"
-                    sx={{ cursor: "pointer", textDecoration: "underline" }}
-                    onClick={handleNavigateSignUp}
-                  >
-                    Registrate acá
-                  </Typography>
+                    <Grid item size={12}>
+                      <Typography
+                        variant="p"
+                        color="#e8e8e8"
+                        sx={{
+                          fontSize: "medium",
+                          justifyContent: "center",
+                          textAlign: "center",
+                        }}
+                      >
+                        Todavía no tenes una cuenta?{"\n"}
+                      </Typography>
+                      <Typography
+                        variant="p"
+                        fontWeight="bold"
+                        color="#6655D9"
+                        sx={{ cursor: "pointer", textDecoration: "underline" }}
+                        onClick={handleNavigateSignUp}
+                      >
+                        Registrate acá
+                      </Typography>
+                    </Grid>
+                    <Grid item size={12}>
+                      <Typography
+                        variant="p"
+                        color="#e8e8e8"
+                        sx={{
+                          fontSize: "medium",
+                          justifyContent: "center",
+                          textAlign: "center",
+                        }}
+                      >
+                        Tu cuenta esta desactivada?{" "}
+                      </Typography>
+                      <Typography
+                        variant="p"
+                        fontWeight="bold"
+                        color="#6655D9"
+                        sx={{
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                          marginTop: "8px",
+                        }}
+                        onClick={handleNavigateReactivate}
+                      >
+                        Reactivate acá
+                      </Typography>
+                    </Grid>
+                  </Grid>
                 </Grid>
               )}
             </CardContent>

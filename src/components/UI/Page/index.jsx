@@ -7,12 +7,12 @@ export default function Page({ children }) {
   
   const location = useLocation();
 
-  const ocultarHeader = ["/", "/signUp"].includes(location.pathname);
+  const ocultarHeader = ["/", "/signUp", "/reactivate"].includes(location.pathname);
 
   return (
     <div >
       {!ocultarHeader && <Header />}
-      <main style={{ minHeight: "79.5vh" , textAlign:"center",background:"#eee"}}>{children}</main>
+      <main style={{ minHeight: "71.9vh", background:"#eee"}}>{children}</main>
       {!ocultarHeader && <Footer />}
     </div>
   );

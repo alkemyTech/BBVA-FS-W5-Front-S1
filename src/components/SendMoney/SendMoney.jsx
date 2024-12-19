@@ -6,14 +6,16 @@ import CallReceivedIcon from "@mui/icons-material/CallReceived";
 import CallMadeIcon from "@mui/icons-material/CallMade";
 import GenericSnackbar from "../UI/Snackbar/Snackbar";
 import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
-import { Card, TextField, Button, MenuItem, duration } from "@mui/material";
+import { Card, TextField, Button, MenuItem} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import { NumericFormat } from "react-number-format";
 import { useSelector } from "react-redux";
 import AlertaDialog from "../UI/Dialogs/AlertaDialog";
+import { useParams } from 'react-router-dom';
 
 export default function SendMoney({ send }) {
+  const { cbuParam, tipoCuentaParam } = useParams();
   const navigate = useNavigate();
   const userAuthenticated = useSelector((state) => state.userAuthenticated);
   const [accounts, setAccounts] = useState([]);
@@ -31,12 +33,12 @@ export default function SendMoney({ send }) {
     duration: null,
   });
   const [tipoCuenta, setTipoCuenta] = useState({
-    currency: "ARS",
+    currency: (tipoCuentaParam == 0 || tipoCuentaParam == "ARS") ? "ARS" : "USD",
   });
   const [transaction, setTransaction] = useState({
     amount: "",
     description: "Varios",
-    cbu: "",
+    cbu: send ? (cbuParam != 0 ? cbuParam : "") : "",
   });
 
   const [deposit, setDeposit] = useState({
@@ -285,7 +287,7 @@ export default function SendMoney({ send }) {
                 }}
               >
                 {send ? "Transferencia" : "Deposito"}{" "}
-                {send ? <CallMadeIcon /> : <CallReceivedIcon />}
+                {send ? <CallMadeIcon sx={{fontSize:"40px"}} /> : <CallReceivedIcon />}
               </Typography>
             </Grid>
           </Grid>

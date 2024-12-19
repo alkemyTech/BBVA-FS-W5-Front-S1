@@ -28,7 +28,6 @@ export default function Header() {
     setAnchorEl(event.currentTarget);
   };
 
-
   const handleClose = () => {
     setAnchorEl(null);
   };

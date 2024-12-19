@@ -14,6 +14,7 @@ import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import TokenExpiradoDialog from "./components/UI/Dialogs/TokenExpiradoDialog";
 import MyAccount from "./components/MyAccount/MyAccount";
+import GestionUsuarios from "./components/GestionUsuarios/AdminGestionUsuarios";
 
 
 function App() {
@@ -69,6 +70,7 @@ function App() {
           <Route path="/accounts/" element={<MiCuenta/>}></Route>
           <Route path="/favoritos" element={<Favoritos/>}></Route>
           <Route path="/userProfile" element={<MyAccount/>}></Route>
+          <Route path="/gestionUsuarios" element={<GestionUsuarios/>}></Route>
         </Routes>
         {alertaTokenExpirado && (
           <TokenExpiradoDialog

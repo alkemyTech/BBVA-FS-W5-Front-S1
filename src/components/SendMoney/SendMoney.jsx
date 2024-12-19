@@ -287,7 +287,7 @@ export default function SendMoney({ send }) {
                 }}
               >
                 {send ? "Transferencia" : "Deposito"}{" "}
-                {send ? <CallMadeIcon /> : <CallReceivedIcon />}
+                {send ? <CallMadeIcon sx={{fontSize:"40px"}} /> : <CallReceivedIcon />}
               </Typography>
             </Grid>
           </Grid>

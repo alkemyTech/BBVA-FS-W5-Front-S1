@@ -33,12 +33,12 @@ function AlertaDialog({mostrarAlerta, accion, closeAlerta, mensajeAlerta}) {
     >
       <CloseIcon />
     </IconButton>
-    <DialogContent sx={{display:"flex", flexDirection:"column", alignItems:"center"}}>
+    <DialogContent sx={{display:"flex", flexDirection:"column", alignItems:"center", textAlign:"center"}}>
         <Box sx={{textAlign:"center", display:"flex", alignItems:"center", justifyContent:"center", gap:"5px"}}>
-            <img src="assets/iconoPaginaVioleta.png" alt="" 
+            <img src="/assets/iconoPaginaVioleta.png" alt="" 
                 style={{height:"80px"}}
             />
-            <img src="assets/alerta.gif" alt="" 
+            <img src="/assets/alerta.gif" alt="" 
                 style={{height:"100px"}}/>
         </Box>
         <Typography variant="h4" color="error" sx={{fontWeight:"bold"}}>ATENCION!</Typography>

@@ -85,101 +85,104 @@ const Payment = () => {
     { name: "YouTube Premium", price: 200, image: "https://gagadget.com/media/cache/ce/91/ce91b0023268291238a231d2439c882c.jpg" },
     { name: "Apple TV+", price: 250, image: "https://www.apple.com/v/apple-tv-plus/ai/images/meta/apple-tv__e7aqjl2rqzau_og.png" },
     { name: "Paramount+", price: 220, image: "https://vocescriticas1.cdn.net.ar/252/vocescriticas1/images/90/31/903166_cd67f78df6b3b77bf98a13e2d1cffe049216f34dc82ae586c1d6c37bdb8e8edf/lg.webp" },
+    { name: "Direct TV", price: 450, image: "https://static2.pisapapeles.net/uploads/2024/08/Directv-logo-2024-HD.jpeg" },
+    { name: "Movistar+", price: 450, image: "https://i0.wp.com/imgs.hipertextual.com/wp-content/uploads/2023/07/movistar-logo-001.jpg?fit=1920%2C1200&quality=70&strip=all&ssl=1" },
+    { name: "Star+", price: 450, image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjWWcQyYoGF046D9j85Xijvdro9u1C3rsXpqTRgkTUn7euHgzbjixOG-D3OAUQNRjn44k6rVf_BJkl3EaEwyLa4rLK4y7vZ4GOYJPoQuZ07UKvYDx1mXfwuR4eGYbajsAJOIezQGDF4ZjXp/s16000/star-%252B-logo-official.png" },
+    { name: "Mercado Play", price: 450, image: "https://www.latvguia.com/wp-content/uploads/2024/07/mercado-libre-play.jpg" },
+
   ];
 
   return (
-    <Grid container sx={{ minHeightt: "100vh", background: "#f5f5f5", position: "relative" }}>
+    <Grid container sx={{ minHeight: "100vh", background: "#f5f5f5", position: "relative", overflow: "hidden" }}>
 
-      <Grid item size={12}>
-        <Grid container sx={{ height: "100%" }}>
-          {accountPesos.map(account => (
-            <Grid item size={4} key={account.currency} sx={{ margin: "40px" }}>
-              <Grid container sx={{ justifyContent: "center" }}>
-                <Card sx={{ width: "80%", height: "100%" }}>
-                  <CardContent sx={{ background: "#A599F2" }}>
-                    <Typography sx={{ textAlign: "center", fontWeight: "bold", fontSize: "30px" }}>
-                      Nombre de Usuario
-                    </Typography> </CardContent> <CardContent> <Grid container> <Grid item size={6}>
-                      <Typography sx={{ color: "gray", textAlign: "left", marginLeft: "2vh" }}>
-                        Dinero disponible:
+  <Grid item size={12}>
+    <CardContent sx={{ height: "140px", width: "100%", margin: " 0 5px 0 5px" }}>
+      <img
+        src="/public/assets/banner2.png"
+        alt="Logo"
+        style={{ width: "100%", height: "100%" }}
+      />
+    </CardContent>
+    <Grid container sx={{ height: "100%" }}>
+      {accountPesos.map(account => (
+        <Grid item size={4} key={account.currency} sx={{ margin: "40px 0" }}>
+          <Grid container sx={{ justifyContent: "center" }}>
+            <Card sx={{ width: "80%", height: "100%" }}>
+              <CardContent sx={{ background: "#A599F2" }}>
+                <Typography sx={{ textAlign: "center", fontWeight: "bold", fontSize: "30px" }}>
+                  Nombre de Usuario
+                </Typography>
+              </CardContent>
+              <CardContent>
+                <Grid container>
+                  <Grid item size={6}>
+                    <Typography sx={{ color: "gray", textAlign: "left", marginLeft: "2vh" }}>
+                      Dinero disponible:
+                    </Typography>
+                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "left" }}>
+                      <AttachMoneyIcon sx={{ fontSize: "50px" }} />
+                      <Typography sx={{ textAlign: "center", fontWeight: "bold", fontSize: "45px" }}>
+                        {account.balance}
                       </Typography>
-                      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "left" }}>
-                        <AttachMoneyIcon sx={{ fontSize: "50px" }} />
-                        <Typography sx={{ textAlign: "center", fontWeight: "bold", fontSize: "45px" }}>
-                          {account.balance}
-                        </Typography>
-                      </Box>
-                    </Grid>
-                      <Grid item size={6}>
-                        <Box sx={{ textAlign: "left", marginLeft: "2vh" }}>
-                          <Typography sx={{ color: "gray" }}>
-                            Moneda:
-                          </Typography>
-                          <Typography sx={{ fontWeight: "bold", fontSize: "25px" }}>
-                            {account.currency}
-                          </Typography>
-                        </Box>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                  <CardContent>
-                    {/* Falta agregar contenido */}
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
-          ))}
-        </Grid>
-      </Grid>
-
-      {/* SServicios */}
-      <Grid item size={12} sx={{ paddingBottom: "50px" }}>
-        <Grid container sx={{ display: "flex", justifyContent: "center", paddingBottom: "5px" }}>
-          <CardContent sx={{ height:"140px", width:"100%", margin:" 0 5px 0 5px"}}>
-          <img
-              src="/public/assets/banner2.png"
-              alt="Logo"
-              style={{ width: "100%", height:"100%" }}
-              
-            />
-          </CardContent>
-          <Grid container spacing={3} paddingLeft={5} paddingRight={5}>
-            {services.map((service) => (
-              <Grid item size={2} key={service.name}>
-                <Card sx={{ boxShadow: 4, borderRadius: 4 }}>
-                  <CardMedia
-                    component="img"
-                    height="140"
-                    image={service.image}
-                    alt={service.name}
-                  />
-                  <CardContent>
-                    <Typography variant="h6" sx={{ marginBottom: 1 }}>
-                      {service.name}
-                    </Typography>
-                    <Typography variant="body1" sx={{ marginBottom: 2 }}>
-                      ${service.price}
-                    </Typography>
-                    <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => alertaPagoServicio(service.price, service.name)}
-                      >
-                        Pagar
-                      </Button>
-                      <Button variant="outlined" color="secondary">
-                        Ver más
-                      </Button>
                     </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
+                  </Grid>
+                  <Grid item size={6}>
+                    <Box sx={{ textAlign: "left", marginLeft: "2vh" }}>
+                      <Typography sx={{ color: "gray" }}>
+                        Moneda:
+                      </Typography>
+                      <Typography sx={{ fontWeight: "bold", fontSize: "25px" }}>
+                        {account.currency}
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
           </Grid>
         </Grid>
-      </Grid>
+      ))}
     </Grid>
+  </Grid>
+
+  {/* Servicios */}
+  <Grid item size={12} sx={{ padding: "0px 50px 100px 50px" }}>   
+      <Grid container spacing={4} sx={{ width: "100%", justifyContent: "center"}}>
+        {services.map((service) => (
+          <Grid item size={2} key={service.name}>
+            <Card sx={{ boxShadow: 4, borderRadius: 4 }}>
+              <CardMedia
+                component="img"
+                height="140"
+                image={service.image}
+                alt={service.name}
+              />
+              <CardContent>
+                <Typography variant="h6" sx={{ marginBottom: 1 }}>
+                  {service.name}
+                </Typography>
+                <Typography variant="body1" sx={{ marginBottom: 2 }}>
+                  ${service.price}
+                </Typography>
+                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => alertaPagoServicio(service.price, service.name)}
+                  >
+                    Pagar
+                  </Button>
+                  <Button variant="outlined" color="secondary">
+                    Ver más
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+  </Grid>
+</Grid>
   );
 };
 

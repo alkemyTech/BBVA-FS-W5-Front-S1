@@ -13,9 +13,7 @@ import MovingIcon from '@mui/icons-material/Moving';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import { GrTransaction } from "react-icons/gr";
 import { FaArrowDown } from "react-icons/fa";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
-import Swal from "sweetalert2";
+import { formatearFechaSimple } from '../../utils/helpers';
 
 export default function Transactions() {
     const [transactions, setTransactions] = useState([]);
@@ -25,16 +23,6 @@ export default function Transactions() {
     const [currencyFilter, setCurrencyFilter] = useState("ALL");
     const [typeFilter, setTypeFilter] = useState("ALL");
     const [amountFilter, setAmountFilter] = useState("ALL");
-
-
-    const formatearFecha = (fechaOriginal) => {
-
-        const fechaFormateada = format(new Date(fechaOriginal), "dd, MMM, HH:mm:ss", {
-            locale: es,
-        }).toUpperCase();
-
-        return fechaFormateada;
-    };
 
     useEffect(() => {
         fetchTransactions();
@@ -212,11 +200,10 @@ export default function Transactions() {
                                                         {transaction.currencyType === "ARS" ? "ARS" : "USD"}
                                                     </TableCell>
                                                     <TableCell sx={{ textAlign: "center" }}>
-                                                        {formatearFecha(transaction.transactionDate)}
+                                                        {formatearFechaSimple(transaction.transactionDate)}
                                                     </TableCell>
                                                     <TableCell sx={{ textAlign: "center" }}>
-                                                        <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold" }}
-                                                            onClick={() => infoTransactionsDetail(transaction.amount, transaction.currencyType, transaction.type, transaction.description, transaction.transactionDate, transaction.cuenta, transaction.titular, transaction.cuentaDestino)}>
+                                                        <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold" }}>
                                                             <ReceiptIcon sx={{ fontSize: "30px", color: "#6655D9" }} />
                                                         </IconButton>
                                                     </TableCell>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid2";
 import EditIcon from "@mui/icons-material/Edit";
 import {
@@ -23,15 +23,25 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
+    Input,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { formatearFechaCompleta } from "../../utils/helpers";
 import apiConfig from "../../Config/axiosConfig";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import axios from "axios";
+import { use } from "react";
 
 export default function MyAccount() {
     const [userProfile, setUserProfile] = useState({});
-    const [staticUserProfile, setStaticUserProfile] = useState({});
+    const [staticUserProfile, setStaticUserProfile] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        creationDate: ""    
+    });
     const [accounts, setAccounts] = useState([]);
     const [contacts, setContacts] = useState([]);
     const [userUpdate, setUserUpdate] = useState({
@@ -40,7 +50,43 @@ export default function MyAccount() {
         password: "",
     });
     const [passwordVisibility, setPasswordVisibility] = useState(false);
+    
+    const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
+    const [imagenLocalUrl, setImagenLocalUrl] = useState('');
+    const [igmurImagenUrl, setIgmurImagenUrl] = useState('');
 
+
+    const manejarCambioDeImagen = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+            setImagenLocalUrl(reader.result); 
+            setImagenSeleccionada(file);
+        };
+        reader.readAsDataURL(file); 
+    }
+  };
+    
+  const cargarImagen = async () => {
+        
+    const formData = new FormData();
+    formData.append('image', imagenSeleccionada);
+
+    try {
+        const response = await axios.post('https://api.imgur.com/3/image', formData, {
+        headers: {
+            Authorization: 'Client-ID 78ace87ca84ed65', 
+        },
+    });
+        
+        setIgmurImagenUrl(response.data.data.link);
+        console.log(igmurImagenUrl);
+        
+    } catch (error) {
+      console.error('Error al subir la imagen:', error);
+    }
+  };
 
     const [habilitarEdicion, setHabilitarEdicion] = useState(false);
     const [editando, setEditando] = useState(false)
@@ -83,18 +129,18 @@ export default function MyAccount() {
         deleteAccount();
     };
 
-
-
-
-    console.log(userProfile);
-
     useEffect(() => {
         const fetchUserProfile = async () => {
             try {
                 const response = await apiConfig.get("/users/userProfile");
                 console.log("User Profile Response:", response.data);
                 setUserProfile(response.data);
-                setStaticUserProfile(response.data);
+                setStaticUserProfile({
+                    firstName: response.data.firstName,
+                    lastName: response.data.lastName,
+                    email: response.data.email,
+                    creationDate: formatearFechaCompleta(response.data.creationDate)
+                });
             } catch (error) {
                 console.error("Error fetching userProfile:", error);
             }
@@ -105,14 +151,11 @@ export default function MyAccount() {
     const deleteAccount = async () => {
         try {
             const response = await apiConfig.delete("/users");
-            console.log(response.data); // Muestra el mensaje de éxito del backend
+            console.log(response.data); 
         } catch (error) {
             console.error("Falla al eliminar", error.response?.data || error.message);
         }
     };
-
-
-    console.log(staticUserProfile)
 
     useEffect(() => {
         const fetchAccounts = async () => {
@@ -125,8 +168,6 @@ export default function MyAccount() {
         };
         fetchAccounts();
     }, []);
-
-
 
     const updateUser = async () => {
         try {
@@ -143,9 +184,6 @@ export default function MyAccount() {
         }
         window.location.reload();
     };
-
-
-
 
     return (
         <Grid container sx={{ p: 5, pb: 5, pl: 2, pr: 2, alignItems: "start" }} spacing={5}>
@@ -167,26 +205,35 @@ export default function MyAccount() {
                                     fontSize: "1.5rem",
                                 }}
                             />
-                            <CardContent>
-
-                                <Avatar
-                                    sx={{ width: 200, height: 200, margin: "0 auto", backgroundColor: "grey" }}
-                                />
-                                <Button color="primary">
-                                    <EditIcon />
-                                </Button>
-
-                                <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
-                                    Miembro desde: {staticUserProfile.creationDate}
-                                </Typography>
-                                <Button
-                                    variant="contained"
-                                    color="error"
-                                    sx={{ mt: 3 }}
-                                    onClick={handleOpen}
-                                >
-                                    Desactivar cuenta
-                                </Button>
+                            <CardContent sx={{textAlign:"center", display:"flex", justifyContent:"center", flexDirection:"column", alignItems:"center"}}>
+                                {imagenSeleccionada == null ? (
+                                    <>
+                                        <Input type="file" id="carga-de-archivo" style={{display:"none"}} onChange={manejarCambioDeImagen} />
+                                        <Button id="carga-de-archivo" sx={{p:5, color:"gray"}} onClick={() => document.getElementById('carga-de-archivo').click()}>
+                                            <AddAPhotoIcon sx={{fontSize:"80px"}} />
+                                        </Button>
+                                        <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
+                                            Miembro desde: {staticUserProfile.creationDate}
+                                        </Typography>
+                                        
+                                        <Button
+                                            variant="contained"
+                                            color="error"
+                                            sx={{ mt: 3 }}
+                                            onClick={handleOpen}
+                                        >
+                                            Desactivar cuenta
+                                        </Button>
+                                    </>
+                                ) 
+                                : 
+                                (
+                                    <>
+                                        <Avatar src={imagenLocalUrl} sx={{ width: 200, height: 200}}></Avatar>
+                                        <Button endIcon={<CloudUploadIcon />} variant="contained" sx={{width:"70%", m:2}} 
+                                        onClick={() => cargarImagen ()}>Cargar imagen</Button>
+                                    </>
+                                )}
                             </CardContent>
                         </Card>
 

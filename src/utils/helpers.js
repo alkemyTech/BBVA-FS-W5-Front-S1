@@ -10,6 +10,27 @@ export const formatearFecha = (fechaOriginal) => {
     return fechaFormateada;
 };
 
+export const formatearFechaPrestamo = (fechaOriginal) => {
+
+    const fechaFormateada = format(new Date(fechaOriginal), "dd, MMM, yyyy", {
+        locale: es,
+    }).toUpperCase();
+
+    return fechaFormateada;
+};
+
+export const sumarMeses = (fecha, meses) => {
+    const nuevaFecha = new Date(fecha);
+    const mesActual = nuevaFecha.getMonth();
+    const añoActual = nuevaFecha.getFullYear();
+    const nuevoMes = mesActual + parseInt(meses);
+    const nuevoAño = añoActual + Math.floor(nuevoMes / 12);
+    const mesAjustado = nuevoMes % 12;
+
+    nuevaFecha.setFullYear(nuevoAño, mesAjustado);
+    return nuevaFecha;
+};
+
 export const obtenerIniciales = (cadena) => {
     return cadena
       .split(" ")

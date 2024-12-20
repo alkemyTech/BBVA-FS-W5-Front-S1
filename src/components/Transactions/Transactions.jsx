@@ -3,7 +3,9 @@ import {
     Typography, Pagination, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, MenuItem,
     IconButton, Select,
     FormControl,
-    InputLabel
+    InputLabel,
+    Card,
+    CardContent
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import apiConfig from '../../Config/axiosConfig';
@@ -36,7 +38,7 @@ export default function Transactions() {
 
     useEffect(() => {
         fetchTransactions();
-    }, [page, typeFilter, currencyFilter,amountFilter]);
+    }, [page, typeFilter, currencyFilter, amountFilter]);
 
     const fetchTransactions = async () => {
         try {
@@ -49,10 +51,10 @@ export default function Transactions() {
                         : currencyFilter === "USD"
                             ? `/transactions/USD?page=${page - 1}&size=${itemsPerPage}`
                             : amountFilter === "OrderByAmountAsc"
-                            ? `/transactions/OrderByAmountAsc?page=${page - 1}&size=${itemsPerPage}`
-                            : amountFilter === "OrderByAmountDesc"
-                            ? `/transactions/OrderByAmountDesc?page=${page - 1}&size=${itemsPerPage}`
-                            : `/transactions?page=${page - 1}&size=${itemsPerPage}`;
+                                ? `/transactions/OrderByAmountAsc?page=${page - 1}&size=${itemsPerPage}`
+                                : amountFilter === "OrderByAmountDesc"
+                                    ? `/transactions/OrderByAmountDesc?page=${page - 1}&size=${itemsPerPage}`
+                                    : `/transactions?page=${page - 1}&size=${itemsPerPage}`;
 
             const response = await apiConfig.get(endpoint);
             setTransactions(response.data.content);
@@ -90,65 +92,82 @@ export default function Transactions() {
 
     return (
         <Grid container sx={{ justifyContent: "center", textAlign: "center", marginTop: "10px" }} spacing={2}>
-            <Grid item size={3}>
-                <FormControl fullWidth>
-                    <InputLabel>Filtros por tipo</InputLabel>
-                    <Select
-                        label="Filtrar por Tipo"
-                        value={typeFilter}
-                        onChange={handleTypeChange}
-                        sx={{ marginBottom: 2 }}
-                    >
-                        <MenuItem value="ALL">Todos los tipos</MenuItem>
-                        <MenuItem value="deposit">Depósitos</MenuItem>
-                        <MenuItem value="payment">Pagos</MenuItem>
-                    </Select>
-                </FormControl>
+            <Grid item size={12}>
+                <Typography variant="h5" sx={{ fontWeight: "bold", color: "#6655D9" }} >
+                    Movimientos
+                </Typography>
             </Grid>
-            <Grid item size={3}>
-                <FormControl fullWidth>
-                    <InputLabel>Filtros por Moneda</InputLabel>
-
-                    <Select
-                        label="Filtrar por Moneda"
-                        value={currencyFilter}
-                        onChange={handleCurrencyChange}
-                        sx={{ marginBottom: 2 }}
+            <Grid item size={9.1}>
+            <Paper 
+                    elevation={3} sx={{
+                        padding: '20px',
+                        borderRadius: '8px',
+                        backgroundColor: '#fff',
+                    }}
                     >
-                        <MenuItem value="ALL">Todas las monedas</MenuItem>
-                        <MenuItem value="ARS">ARS</MenuItem>
-                        <MenuItem value="USD">USD</MenuItem>
-                    </Select>
-                </FormControl>
-            </Grid>
-            <Grid item size={3}>
-                <FormControl fullWidth>
-                    <InputLabel>Filtros por Monto</InputLabel>
+                <Grid container sx={{justifyContent:"space-around"}} spacing={2}>
+   
 
-                    <Select
-                        label="Filtrar por Monto"
-                        value={amountFilter}
-                        onChange={handleAmountChange}
-                        sx={{ marginBottom: 2 }}
-                    >
-                        <MenuItem value="ALL">Sin orden de monto</MenuItem>
-                        <MenuItem value="OrderByAmountAsc">Orden ASC</MenuItem>
-                        <MenuItem value="OrderByAmountDesc">Orden Desc</MenuItem>
-                    </Select>
-                </FormControl>
+                    
+                    <Grid item size={2}>
+                        <FormControl fullWidth>
+                            <InputLabel>Filtros por tipo</InputLabel>
+                            <Select
+                                label="Filtrar por Tipo"
+                                value={typeFilter}
+                                onChange={handleTypeChange}
+                                sx={{ marginBottom: 2 }}
+                            >
+                                <MenuItem value="ALL">Todos los tipos</MenuItem>
+                                <MenuItem value="deposit">Depósitos</MenuItem>
+                                <MenuItem value="payment">Pagos</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    <Grid item size={2}>
+                        <FormControl fullWidth>
+                            <InputLabel>Filtros por Moneda</InputLabel>
+
+                            <Select
+                                label="Filtrar por Moneda"
+                                value={currencyFilter}
+                                onChange={handleCurrencyChange}
+                                sx={{ marginBottom: 2 }}
+                            >
+                                <MenuItem value="ALL">Todas las monedas</MenuItem>
+                                <MenuItem value="ARS">ARS</MenuItem>
+                                <MenuItem value="USD">USD</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    <Grid item size={2}>
+                        <FormControl fullWidth>
+                            <InputLabel>Filtros por Monto</InputLabel>
+
+                            <Select
+                                label="Filtrar por Monto"
+                                value={amountFilter}
+                                onChange={handleAmountChange}
+                                sx={{ marginBottom: 2 }}
+                            >
+                                <MenuItem value="ALL">Sin orden de monto</MenuItem>
+                                <MenuItem value="OrderByAmountAsc">Orden ASC</MenuItem>
+                                <MenuItem value="OrderByAmountDesc">Orden Desc</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                </Grid>
+                </Paper>
             </Grid>
             <Grid item size={8} sx={{ width: "75vw" }}>
                 <Grid container>
                     <Grid item size={12} sx={{ background: "#6655D9" }}>
-                        <Typography variant='h6' color="#e8e8e8" >
-                            <MovingIcon sx={{ fontSize: "25px", color: "black" }} />
-                            Movimientos
-                        </Typography>
+
                     </Grid>
                     <Grid item size={12}>
                         {transactions.length > 0 ? (
                             <>
-                                <TableContainer component={Paper} sx={{ height: "88.9vh" }} >
+                                <TableContainer component={Paper} sx={{ height: "88.9vh" }} variant="elevation" elevation={5}>
                                     <Table aria-label="simple table">
                                         <TableHead>
                                             <TableRow>

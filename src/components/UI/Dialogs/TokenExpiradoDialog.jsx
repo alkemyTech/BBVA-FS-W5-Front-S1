@@ -22,8 +22,10 @@ function TokenExpiradoDialog({mostrarAlerta, cerrarAlerta}) {
     <Dialog
     aria-labelledby="customized-dialog-title"
     open={mostrarAlerta}
-    onClose={cerrarAlerta}
-    disableBackdropClick 
+    onClose={(_, reason) => {
+      if (reason !== "backdropClick") cerrarAlerta();
+    }}
+    disableEscapeKeyDown
     sx={{
       "& .MuiDialog-paper": {
         borderRadius: "16px",

@@ -1,6 +1,6 @@
 import Grid from '@mui/material/Grid2';
 import SendIcon from '@mui/icons-material/Send';
-import { Card, CardContent, Typography, List, ListItem, Divider, Box, Button } from '@mui/material';
+import { Card, CardContent, Typography, List, ListItem, Divider, Box, Button, Tooltip } from '@mui/material';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
 import {useNavigate } from 'react-router-dom';
@@ -20,6 +20,7 @@ import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
 import GenericSnackbar from "../UI/Snackbar/Snackbar";
 import CotizacionDolarDialog from "../UI/Dialogs/CotizacionDolarDialog";
 import AlertaDialog from "../UI/Dialogs/AlertaDialog";
+import FavoritoDialog from "../UI/Dialogs/FavoritoDialog";
 import DetalleTransaccionDialog from "../UI/Dialogs/DetalleTransaccionDialog";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import axios from "axios"
@@ -30,6 +31,13 @@ export default function Home() {
 
     const [accounts, setAccounts] = useState([]);
     const [favList, setFavList] = useState([]);
+    const [favUser, setFavUser] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        cuentaArs: "",
+        cuentaUsd: ""
+    })
     const [transactions, setTransactions] = useState([]);
     const [transaction, setTransaction] = useState({
         amount: "",
@@ -100,6 +108,23 @@ export default function Home() {
         setMostrarDetalleTransaccion(true);
     }
 
+    const [mostrarDetalleFavorito, setMostrarDetalleFavorito] = useState(false);
+    const closeDetalleFavorito = () => {
+        setMostrarDetalleFavorito(false);
+    }
+    const openDetalleFavorito = (favorito) => {
+
+        setFavUser({
+            firstName: favorito.firstName,
+            lastName: favorito.lastName,
+            email: favorito.email,
+            cuentaArs: favorito.cuentaArs,
+            cuentaUsd: favorito.cuentaUsd
+        })
+        
+        setMostrarDetalleFavorito(true);
+    }
+
     const navigate = useNavigate();
 
     const handleNavegar = (ruta) => {
@@ -150,6 +175,11 @@ export default function Home() {
     }, [cargaFinalizada]);
 
     useEffect(() => {
+        let token = localStorage.getItem("token");
+        console.log(token); 
+        if (token == null) {
+            navigate("/")
+        }
         const fetchFavList = async () => {
             try {
                 const response = await apiConfig.get("/users/favList?page=0&size=3");
@@ -191,7 +221,7 @@ export default function Home() {
 
     return (
     <>
-        <Grid container sx={{ p: 2, m: 5, alignItems: "start" }} spacing={5}>
+        <Grid container sx={{ p: 4, alignItems: "start" }} spacing={5}>
             {accounts.map((account) => (
                 <Grid item size={5} key={account.cbu}>
                     <Card variant="elevation" elevation={5}>
@@ -203,12 +233,6 @@ export default function Home() {
                                 <img src={account.currency == "ARS" ? "assets/argentina.png" : "assets/estadosUnidos.png"} alt="" style={{ height: "40px" }} />
                                 {account.currency}
                             </Typography>
-                            <Button endIcon={<KeyboardArrowRightIcon />}
-                                sx={{ backgroundColor: "none", color: "white", fontWeight: "bold", fontSize: "12px" }}
-                                onClick={() => handleNavegar(`/accounts/${account.cbu}`)}
-                            >
-                                Ver mi cuenta
-                            </Button>
                         </CardContent>
                         <CardContent>
                             <Grid container>
@@ -275,27 +299,31 @@ export default function Home() {
                 </Grid>
             )}
             <Grid item size={2} sx={{ display: "flex", alignSelf: "center" }}>
-                <Card variant="elevation" elevation={5} sx={{ borderRadius: "20%" }}>
+                <Card variant="elevation" elevation={5} sx={{ borderRadius: "5%" }}>
                     <CardContent sx={{ display: "flex", flexDirection: "row" }}>
                         <Box flexDirection="column" justifyContent="center" alignItems="center">
-                            <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", textAlign: "center" }}
+                            <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", textAlign: "center", 
+                            "&:hover": {backgroundColor:"transparent"}}}
                                 onClick={openInfoDolar}>
                                 <AttachMoneyIcon sx={{ fontSize: "40px", color: "#6655D9" }} />
                                 Cotizacion Dolar
                             </IconButton>
 
-                            <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", textAlign: "center" }} onClick={() => handleNavegar("/depositmoney")}>
+                            <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", textAlign: "center", 
+                                "&:hover": {backgroundColor:"transparent"}} } onClick={() => handleNavegar("/depositmoney")}>
                                 <AssuredWorkloadIcon sx={{ fontSize: "40px", color: "#6655D9" }} />
                                 Ingresar dinero
                             </IconButton>
                         </Box>
                         <Box flexDirection="column" justifyContent="center" alignItems="center">
-                            <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", textAlign: "center" }} onClick={() => handleNavegar("/payment")}>
+                            <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", textAlign: "center", 
+                                "&:hover": {backgroundColor:"transparent"}}} onClick={() => handleNavegar("/payment")}>
                                 <RequestQuoteIcon sx={{ fontSize: "40px", color: "#6655D9" }} />
                                 Pagar servicios
                             </IconButton>
 
-                            <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", textAlign: "center", justifyContent: "center", alignItems: "center" }} 
+                            <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", textAlign: "center", justifyContent: "center", alignItems: "center", 
+                            "&:hover": {backgroundColor:"transparent"}}} 
                             onClick={() => handleNavegar("/sendmoney/0/0")}>
                                 <SendIcon sx={{ fontSize: "40px", color: "#6655D9" }} />
                                 Enviar dinero
@@ -333,12 +361,12 @@ export default function Home() {
                                                             {transaction.type === "payment" ?
 
                                                                 <GrTransaction style={{
-                                                                    color: "white", background: "grey", fontSize: "30px",
+                                                                    color: "white", background: "red", fontSize: "30px",
                                                                     borderRadius: "15px", padding: "5px"
                                                                 }} /> :
 
                                                                 <FaArrowDown style={{
-                                                                    color: "white", background: "grey", fontSize: "30px",
+                                                                    color: "white", background: "green", fontSize: "30px",
                                                                     borderRadius: "15px", padding: "5px"
                                                                 }} />
                                                             }
@@ -366,10 +394,13 @@ export default function Home() {
                                                                     {transaction.currencyType == "ARS" ? " ARS" : " USD"}
                                                                 </Typography>
                                                             </Typography>
-                                                            <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", alignItems: "center" }} 
-                                                            onClick={()=> openDetalleTransaccion(transaction)}>
-                                                                <ReceiptIcon sx={{ fontSize: "30px", color: "#6655D9" }} />
-                                                            </IconButton>
+                                                            <Tooltip title="Ver detalle" arrow placement="top"
+                                                                slotProps={{popper: {modifiers:[{name: 'offset', options:{offset:[0,-9]}}]}}}>
+                                                                <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", alignItems: "center" }} 
+                                                                    onClick={()=> openDetalleTransaccion(transaction)}>
+                                                                    <ReceiptIcon sx={{ fontSize: "30px", color: "#6655D9" }} />
+                                                                </IconButton>
+                                                            </Tooltip>
                                                         </Box>
                                                     </Box>
                                                 </CardContent>
@@ -416,9 +447,12 @@ export default function Home() {
                                                             {(favUser.firstName + " " + favUser.lastName).toUpperCase()}
                                                         </Typography>
                                                     </Box>
-                                                    <IconButton> 
-                                                        <ContactsIcon sx={{ fontSize: "30px", color: "#6655D9" }} />
-                                                    </IconButton>
+                                                    <Tooltip title="Informacion de Contacto" arrow placement="top"
+                                                                slotProps={{popper: {modifiers:[{name: 'offset', options:{offset:[0,-9]}}]}}}>
+                                                        <IconButton  onClick={()=> openDetalleFavorito(favUser)}> 
+                                                            <ContactsIcon sx={{ fontSize: "30px", color: "#6655D9" }} />
+                                                        </IconButton>
+                                                    </Tooltip>
                                                 </CardContent>
                                         </ListItem>
                                         <Divider />
@@ -459,13 +493,19 @@ export default function Home() {
                     transaccion={transaction}
                     closeDetalleTransaccion={closeDetalleTransaccion}
                 />
-            )}  
-            
+            )}
+
             <AlertaDialog
                 mostrarAlerta={mostrarDialogCrearCuentaDolar}
                 accion={crearCuentaUsd}
                 closeAlerta={closeDialogCuentaDolar}
                 mensajeAlerta="Vas a crear una cuenta en USD"
+            />  
+            
+            <FavoritoDialog
+                mostrarDetalleFavorito={mostrarDetalleFavorito}
+                favorito={favUser}
+                closeDetalleFavorito={closeDetalleFavorito}
             />
         </Grid>
     </>

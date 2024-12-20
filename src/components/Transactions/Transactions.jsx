@@ -125,7 +125,7 @@ export default function Transactions() {
         <Grid container sx={{ justifyContent: "center", textAlign: "center", marginTop: "10px" }} spacing={2}>
             <Grid item size={12}>
                 <Typography variant="h5" sx={{ fontWeight: "bold", color: "#6655D9" }} >
-                    Movimientos
+                    MIS MOVIMIENTOS
                 </Typography>
             </Grid>
             <Grid item size={9.1}>

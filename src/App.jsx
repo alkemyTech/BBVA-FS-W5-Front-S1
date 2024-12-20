@@ -8,12 +8,12 @@ import Transactions from "./components/Transactions/Transactions";
 import PaymentsServices from "./components/Payment/PaymentsServices";
 import Prestamos from "./components/Prestamos/Prestamos"
 import PlazosFijos from "./components/PlazosFijos/PlazosFijos"
-import MiCuenta from "./components/MiCuenta/MiCuenta";
 import Favoritos from "./components/Favoritos/Favoritos";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import TokenExpiradoDialog from "./components/UI/Dialogs/TokenExpiradoDialog";
 import MyAccount from "./components/MyAccount/MyAccount";
+import GestionUsuarios from "./components/GestionUsuarios/AdminGestionUsuarios";
 
 
 function App() {
@@ -34,7 +34,6 @@ function App() {
         const decodedToken = jwtDecode(token);
         const tiempoActual = Math.floor(Date.now() / 1000);
         const tokenExpirado =  decodedToken.exp <= tiempoActual; 
-        
         if (tokenExpirado) {
             localStorage.removeItem("token");
             setAlertaTokenExpirado(true);
@@ -61,9 +60,9 @@ function App() {
           <Route path="/payment" element={<PaymentsServices />} /> 
           <Route path="/prestamos" element={<Prestamos />} />
           <Route path="/plazosFijos" element={<PlazosFijos />} />
-          <Route path="/accounts/" element={<MiCuenta/>}></Route>
           <Route path="/favoritos" element={<Favoritos/>}></Route>
           <Route path="/userProfile" element={<MyAccount/>}></Route>
+          <Route path="/gestionUsuarios" element={<GestionUsuarios/>}></Route>
         </Routes>
         {alertaTokenExpirado && (
           <TokenExpiradoDialog

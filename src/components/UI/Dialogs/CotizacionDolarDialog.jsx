@@ -1,4 +1,4 @@
-import { formatearFecha } from '../../../utils/helpers';
+import { formatearFechaSimple } from '../../../utils/helpers';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
@@ -65,7 +65,7 @@ function CotizacionDolarDialog({mostrarCotizacion, infoDolar, closeInfoDolar}) {
           Fecha de Actualización:
         </Typography>
         <Typography variant="h6" color="#00aae4">
-          {formatearFecha(infoDolar.fechaActualizacion)}
+          {formatearFechaSimple(infoDolar.fechaActualizacion)}
         </Typography>
       </Box>
     </DialogContent>

@@ -16,6 +16,7 @@ import Logout from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import { useNavigate } from "react-router-dom";
 import {logout} from "../../Redux/Slices/userAuthenticatedSlice";
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 
 
 export default function Header() {
@@ -42,11 +43,11 @@ export default function Header() {
 
   const handleNavigate = () =>{
     navigate("/home")
-    
   };
 
-  const handleNavegar = (ruta) => {
+  const handleNavegarMiCuenta = (ruta) => {
     navigate(ruta);
+    setAnchorEl(null);
   }
 
 
@@ -117,6 +118,24 @@ export default function Header() {
               </Typography>
             </Button>
           </Grid>
+          {userAuthenticated.role == "Admin" ? (
+            <Grid item>
+            <Button
+              sx={{
+                color: "#ffffff",
+                fontSize: "16px",
+              }}
+              startIcon={<ManageAccountsIcon />}
+              onClick={()=>redirect("/gestionUsuarios")}
+            >
+              <Typography variant="p" color="#ffffff">
+                Gestion de usuarios
+              </Typography>
+            </Button>
+          </Grid>
+          ) : null
+          }
+          
         </Grid>
       </Grid>
       <Grid item size={6}>
@@ -131,7 +150,7 @@ export default function Header() {
         >
           <Box sx={{display:"flex", flexDirection:"column", textAlign:"center"}}>
             <Typography variant="p" color="#BBBBBB">
-                Bienvenido/a
+                ¡Bienvenido/a
             </Typography>
             <Typography variant="p" color="#BBBBBB">
                 {userAuthenticated.firstName}!
@@ -156,7 +175,7 @@ export default function Header() {
             onClose={handleClose}
             TransitionComponent={Fade}
           >
-            <MenuItem onClick={() => navigate("/userProfile")} sx={{ fontSize: "14px" }}>
+            <MenuItem onClick={() => handleNavegarMiCuenta("/userProfile")} sx={{ fontSize: "14px" }}>
               <ListItemIcon>
                 <PersonIcon fontSize="small" sx={{ color: "#6655D9" }} />
               </ListItemIcon>
@@ -169,7 +188,6 @@ export default function Header() {
                   fontSize="small"
                   fontColor="#6655D9"
                   sx={{ color: "#6655D9" }}
-                  
                 />
               </ListItemIcon>
               Logout

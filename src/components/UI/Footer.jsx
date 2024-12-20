@@ -7,9 +7,9 @@ export default function Footer() {
     <Box
       component="footer"
       sx={{
-        bottom: 0,                    // Posicionamiento relativo
-        width: '100%',                // Ocupa todo el ancho
-        mt: 'auto',                   // Empuja hacia abajo si el contenido es escaso
+        bottom: 0,                    
+        width: '100%',                
+        mt: 'auto',                   
         background: 'linear-gradient(180deg, rgba(147,92,201,1) 0%, rgba(36,8,70,1) 100%)',
         color: 'white',
         py: 4.95,

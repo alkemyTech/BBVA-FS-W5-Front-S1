@@ -21,9 +21,9 @@ import { useNavigate } from 'react-router-dom';
 export default function Transactions() {
     const navigate = useNavigate();
     const [transactions, setTransactions] = useState([]);
-    const [totalPages, setTotalPages] = useState(0);  // Estado para manejar el total de páginas
+    const [totalPages, setTotalPages] = useState(0);  
     const [page, setPage] = useState(1);
-    const itemsPerPage = 10;  // Número de elementos por página
+    const itemsPerPage = 10; 
     const [currencyFilter, setCurrencyFilter] = useState("ALL");
     const [typeFilter, setTypeFilter] = useState("ALL");
     const [amountFilter, setAmountFilter] = useState("ALL");

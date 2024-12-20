@@ -405,7 +405,7 @@ export default function SendMoney({ send }) {
                   error={Boolean(errores.cbu)}
                   helperText={errores.cbu}
                   onChange={(e) => {
-                    const nuevoCbu = e.target.value.replace(/[^0-9]/g, ""); // Filtra solo números
+                    const nuevoCbu = e.target.value.replace(/[^0-9]/g, ""); 
                     setTransaction({
                       ...transaction,
                       cbu: nuevoCbu,
@@ -527,7 +527,7 @@ export default function SendMoney({ send }) {
                 onValueChange={(values) => {
                   const { value } = values;
 
-                  // Validar que no comience con 0
+                  
                   if (value.startsWith("0") && value !== "") {
                     return;
                   }

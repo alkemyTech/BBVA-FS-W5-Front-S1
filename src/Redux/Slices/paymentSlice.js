@@ -12,14 +12,14 @@ const initialState = {
   error: null,
 };
 
-// Crear el slice
+
 const paymentSlice = createSlice({
   name: 'paymentReducer',
   initialState,
   reducers: {
     setPayment:(state, action) => {
       return {...state, ...action.payload}
-    }// Si necesitas otras acciones, las agregas aquí
+    }
   },
   
 });

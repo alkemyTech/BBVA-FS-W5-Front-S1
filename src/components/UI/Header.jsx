@@ -131,7 +131,7 @@ export default function Header() {
         >
           <Box sx={{display:"flex", flexDirection:"column", textAlign:"center"}}>
             <Typography variant="p" color="#BBBBBB">
-                Bienvenido/a
+                ¡Bienvenido/a
             </Typography>
             <Typography variant="p" color="#BBBBBB">
                 {userAuthenticated.firstName}!

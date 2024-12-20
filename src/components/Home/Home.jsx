@@ -200,7 +200,7 @@ export default function Home() {
             }
             )
             setLoadingScreen({
-                message: "Creando cuenta en USD...",
+                message: "Creando cuenta en USD",
                 duration: "3000",
             });
 
@@ -260,7 +260,7 @@ export default function Home() {
                                 </Grid>
                                 <Grid item size={6} sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
                                     <Typography sx={{ color: "gray" }}>
-                                        Limite de Transacción:
+                                        Límite de Transacción:
                                         <Typography sx={{ fontWeight: "bold", fontSize: "25px", display: "flex", alignSelf: "center", color: "black" }}>
                                             ${account.transactionLimit.toLocaleString("es-AR", { minimumFractionDigits: 0 })}
                                         </Typography>
@@ -306,7 +306,7 @@ export default function Home() {
                             "&:hover": {backgroundColor:"transparent"}}}
                                 onClick={openInfoDolar}>
                                 <AttachMoneyIcon sx={{ fontSize: "40px", color: "#6655D9" }} />
-                                Cotizacion Dolar
+                                Cotización dolar
                             </IconButton>
 
                             <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", textAlign: "center", 
@@ -410,7 +410,7 @@ export default function Home() {
                                 ))}
                             </List>
                         ) :
-                            <Typography variant="body1" color="grey" fontWeight="bold" sx={{ textAlign: "center" }}>Aún no tienes movimientos</Typography>
+                            <Typography variant="body1" color="grey" fontWeight="bold" sx={{ textAlign: "center" }}>Aún no tenes movimientos.</Typography>
                         }
                     </CardContent>
                 </Card>
@@ -460,7 +460,7 @@ export default function Home() {
                                 ))}
                             </List>
                         ) :
-                            <Typography variant="body1" color="grey" fontWeight="bold" sx={{ textAlign: "center" }}>Aún no tienes favoritos</Typography>
+                            <Typography variant="body1" color="grey" fontWeight="bold" sx={{ textAlign: "center" }}>Aún no tenes favoritos.</Typography>
                         }
                     </CardContent>
                 </Card>

@@ -2,8 +2,8 @@ import Grid from "@mui/material/Grid2";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import apiConfig from "../../Config/axiosConfig";
-import CallReceivedIcon from "@mui/icons-material/CallReceived";
-import CallMadeIcon from "@mui/icons-material/CallMade";
+import { GrTransaction } from "react-icons/gr";
+import { FaArrowDown } from "react-icons/fa";
 import GenericSnackbar from "../UI/Snackbar/Snackbar";
 import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
 import { Card, TextField, Button, MenuItem} from "@mui/material";
@@ -13,6 +13,7 @@ import { NumericFormat } from "react-number-format";
 import { useSelector } from "react-redux";
 import AlertaDialog from "../UI/Dialogs/AlertaDialog";
 import { useParams } from 'react-router-dom';
+import PropTypes from "prop-types";
 
 export default function SendMoney({ send }) {
   const { cbuParam, tipoCuentaParam } = useParams();
@@ -86,6 +87,7 @@ export default function SendMoney({ send }) {
   };
 
   const buscarCuentaCbu = async () => {
+    setSnackbarVisibility(false);
     let response;
     try {
       response = await apiConfig.get(`/accounts/${transaction.cbu}`, {});
@@ -97,6 +99,11 @@ export default function SendMoney({ send }) {
       });
       setCbuValido(true);
     } catch (e) {
+      setSnackbarVisibility(true)
+      setSnackbar({
+        status:"error",
+        message: e.response.data.Mensaje,
+      })
       setCbuValido(false);
       setCbuCompleto(false);
       setUserChip({
@@ -167,6 +174,7 @@ export default function SendMoney({ send }) {
         }
       }
     } else {
+      setIsLoading(false);
       try {
         response = await apiConfig.post("/transactions/deposit", {
           amount: deposit.amount,
@@ -174,19 +182,19 @@ export default function SendMoney({ send }) {
           currencyType: tipoCuenta.currency,
         });
         setIsLoading(true);
-          setLoadingScreen({
-            message:"Realizando Deposito",
-            duration: 3000
+        setLoadingScreen({
+          message:"Realizando Deposito",
+          duration: 3000
+        })
+        setTimeout(() => {
+          setDeposit({
+            amount:"",
+            description:"Varios"
           })
-          setTimeout(() => {
-            navigate("/home")
-          },3000)
+          navigate("/home");
+        },3000)
       } catch (e) {
-        setTransaction({
-          amount: "",
-          description: "",
-          currencyType: "",
-        });
+        console.log(e);
         setSnackbar({
           status: "error",
           message: e.response.data.Mensaje,
@@ -219,14 +227,15 @@ export default function SendMoney({ send }) {
   );
 
   const validarCampo = (campo, valor) => {
-    if (campo === "cbu" && !cbuCompleto && valor != "") {
+
+    if (campo === "cbu" && valor.length != 20 && valor != "") {
       setErrores((errores) => ({
         ...errores,
-        cbu: "El cbu debe contener 20 digitos",
+        cbu: "El CBU debe contener 20 digitos",
       }));
     }
 
-    if (campo === "cbu" && (cbuCompleto || valor === "")) {
+    if (campo === "cbu" && (valor.length == 20 || valor === "")) {
       setErrores((errores) => ({
         ...errores,
         cbu: null,
@@ -250,54 +259,76 @@ export default function SendMoney({ send }) {
     }
   };
 
+  
+  const textFieldStyle = {
+    width: "90%", 
+    textAlign: "center", 
+    "& .MuiOutlinedInput-root": {
+      "&.Mui-focused fieldset": {
+        borderColor: "#6655D9",
+      },
+      "& .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#505050",
+      },
+    },
+    "& .MuiInputLabel-root": {
+      color: "black",
+    },
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: "#6655D9",
+    },
+    "& .MuiOutlinedInput-root.Mui-error fieldset": {
+      borderColor: "red",
+    },
+    "& .MuiInputBase-input": {
+      color: "black",
+      "&:focus": {
+        color: "black",
+      },
+    },
+    "& .MuiInputLabel-root.Mui-error": {
+      color: "red",
+    },
+  };
+
   return (
-    <>
-    <Card
+
+    <Grid container justifyContent="center" alignItems="center" height="70vh">
+      <Card
       variant="elevation"
-      elevation={20}
+      elevation={10}
       sx={{
         width: "70%",
-        flexDirection: "column",
-        m: "auto",
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
         borderRadius: "20px",
-        mt: send ? 0 : 4,
         background: "#fafafa",
       }}
     >
-      <Grid
-        container
+      <Grid container
         justifyContent="center"
         alignItems="center"
         textAlign="center"
       >
-        <Grid item size={12}>
-          <Grid container>
-            <Grid item size={12}>
-              <Typography
-                variant="h3"
-                sx={{
-                  p: 2,
-                  mb: "30px",
-                  background: "#6655D9",
-                  color: " white",
-                }}
-              >
-                {send ? "Transferencia" : "Deposito"}{" "}
-                {send ? <CallMadeIcon sx={{fontSize:"40px"}} /> : <CallReceivedIcon />}
-              </Typography>
-            </Grid>
-          </Grid>
+        <Grid item size={12} sx={{display:"flex", justifyContent:"center", background: "#6655D9", mb:3}}>
+          <Typography
+            variant="h5"
+            sx={{
+              p: 2,
+              color: " white",
+              fontWeight:"bold",
+              display:"flex",
+              alignItems:"center",
+              gap:"12px"
+            }}
+          >
+          {send ? "Realizar Transferencia" : "Realizar Déposito"}
+          </Typography>
         </Grid>
         <Grid item size={12}>
           {send && cbuCompleto && cbuValido && (
             <Grid
               container
               sx={{
-                border: "1px solid #646cff",
+                border: "1px solid #6655D9",
                 borderRadius: "10px",
                 display: "flex",
                 justifyContent: "space-between",
@@ -380,7 +411,7 @@ export default function SendMoney({ send }) {
                     setCbuCompleto(nuevoCbu.length === 20);
                   }}
                   onBlur={(e) => validarCampo("cbu", e.target.value)}
-                  sx={{ width: "90%", textAlign: "center" }}
+                  sx={textFieldStyle}
                 />
               </Grid>
             ) : (
@@ -398,8 +429,7 @@ export default function SendMoney({ send }) {
                       width: "90%",
                       margin: "auto",
                       boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
-
-                      p: 1,
+                      p: 2,
                     }}
                   >
                     <Grid item size={2}>
@@ -426,9 +456,7 @@ export default function SendMoney({ send }) {
                         component="div"
                         sx={{ fontSize: "16px", color: "#646cff" }}
                       >
-                        {userAuthenticated.firstName +
-                          " " +
-                          userAuthenticated.lastName}
+                        {userAuthenticated.firstName + " " + userAuthenticated.lastName}
                       </Typography>
                       <Typography variant="p" color="textSecondary">
                         CBU: {obtenerCuenta(tipoCuenta.currency).cbu}
@@ -462,7 +490,7 @@ export default function SendMoney({ send }) {
                   setTipoCuenta({ ...tipoCuenta, currency: e.target.value })
                 }
                 select
-                sx={{ width: send ? "90%" : "90%" }}
+                sx={textFieldStyle}
                 variant="outlined"
               >
                 <MenuItem value="ARS">ARS</MenuItem>
@@ -546,7 +574,7 @@ export default function SendMoney({ send }) {
                         description: e.target.value,
                       })
                 }
-                sx={{ width: "80%" }}
+                sx={ textFieldStyle }
               />
             </Grid>
           </Grid>
@@ -593,7 +621,7 @@ export default function SendMoney({ send }) {
         mensajeAlerta={
           send
             ? "Estas a punto de realizar una transferencia"
-            : "Estas a punto de realizar un deposito"
+            : "Estas a punto de realizar un déposito"
         }
       />
     </Card>
@@ -603,7 +631,12 @@ export default function SendMoney({ send }) {
           message={loadingScreen.message}
           duration={loadingScreen.duration}
         />
-      )}
-    </>
+    )}
+
+    </Grid>
   );
 }
+
+SendMoney.propTypes = {
+  send: PropTypes.bool.isRequired,
+};

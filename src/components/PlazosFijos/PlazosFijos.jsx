@@ -538,7 +538,7 @@ export default function PlazosFijos() {
                     </TableHead>
                     <TableBody>
                       {fixedTermsWithData.map((fixedTerm) => (
-                        <TableRow key={fixedTerm.id} sx={{ cursor: "pointer" }} onClick={() => handleRowClick(fixedTerm.id)}>
+                        <TableRow key={fixedTerm.id} sx={{ cursor: "pointer" }}>
                           <TableCell sx={{ textAlign: "center", color: "green", fontWeight: "bold" }}>
                             ${fixedTerm.amount}
                           </TableCell>

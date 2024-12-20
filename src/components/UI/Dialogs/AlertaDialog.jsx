@@ -17,7 +17,7 @@ function AlertaDialog({mostrarAlerta, accion, closeAlerta, mensajeAlerta}) {
         borderRadius: "16px",
         padding: "16px", 
         backgroundColor: "#f0f0f0",
-        width: "500px",
+        width: "600px",
       },
     }}
   >
@@ -41,12 +41,12 @@ function AlertaDialog({mostrarAlerta, accion, closeAlerta, mensajeAlerta}) {
             <img src="/assets/alerta.gif" alt="" 
                 style={{height:"100px"}}/>
         </Box>
-        <Typography variant="h4" color="error" sx={{fontWeight:"bold"}}>¡ATENCION!</Typography>
+        <Typography variant="h4" color="error" sx={{fontWeight:"bold"}}>¡ATENCIÓN!</Typography>
         <Typography variant="h6" color="black" sx={{fontWeight:"bold"}}>{mensajeAlerta}.</Typography>
         <Typography variant="h6" color="black" sx={{fontWeight:"bold"}}>¿Estás seguro?</Typography>
         <Box sx={{display:"flex", gap:"20px", pt:2}}>
-            <Button variant='contained' sx={{backgroundColor:"#6655D9"}} onClick={closeAlerta}>Cancelar</Button>
-            <Button variant='contained' sx={{backgroundColor:"#228B22"}} onClick={accion}>Confirmar</Button>
+            <Button variant='contained' color="error" onClick={closeAlerta}>Cancelar</Button>
+            <Button variant='contained' sx={{backgroundColor:"#6655D9"}} onClick={accion}>Confirmar</Button>
         </Box>
     </DialogContent>
   </Dialog>

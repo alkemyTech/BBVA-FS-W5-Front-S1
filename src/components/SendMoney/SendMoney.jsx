@@ -136,7 +136,7 @@ export default function SendMoney({ send }) {
           });
           setIsLoading(true);
           setLoadingScreen({
-            message: "Realizando Transferencia " ,
+            message: "Realizando Transferencia" ,
             duration: 3000
           })
           setTimeout(() => {

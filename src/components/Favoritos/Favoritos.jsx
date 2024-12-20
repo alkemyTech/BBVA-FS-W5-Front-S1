@@ -326,7 +326,7 @@ export default function Favoritos() {
                     </Grid>
                     <Grid container spacing={2} alignItems="center" sx={{pb:2}}>
                         <Grid item size={12} sx={{display:"flex", justifyContent:"center", gap:"30px"}}>
-                            <Button variant="contained" size="small" sx={{fontWeight:"bold", backgroundColor:"#"}} onClick={()=> setMostrarDatosUsuario(false)}>Cancelar</Button>
+                            <Button variant="contained" size="small" sx={{fontWeight:"bold", backgroundColor:"#6655D9"}} onClick={()=> setMostrarDatosUsuario(false)}>Cancelar</Button>
                             <Button variant="contained" size="small" sx={{fontWeight:"bold", backgroundColor:"#228B22"}} onClick={()=> agregarUsuarioFavorito()}>Agregar a Favoritos</Button>
                         </Grid>
                     </Grid>

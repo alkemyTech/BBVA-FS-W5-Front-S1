@@ -110,7 +110,7 @@ export default function PlazosFijos() {
   }
 
   const calcularDatosTabla = (fixedTerms) => {
-    const porcentaje = 2; // Interés del 2%
+    const porcentaje = 2; 
 
     return fixedTerms.map((fixedTerm) => {
       const interes = fixedTerm.amount * (porcentaje / 100);
@@ -168,7 +168,6 @@ export default function PlazosFijos() {
   };
 
 
-  console.log(plazoFijo);
 
   const realizarInversion = async () => {
     setSnackbarVisibility(false);
@@ -227,7 +226,6 @@ export default function PlazosFijos() {
           .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate));
         setFixedTerms(sortedFixedTerms);
         setTotalPages(response.data.totalPages);
-        console.log(sortedFixedTerms);
       } catch (error) {
         console.error('Error fetching fixedTerms:', error);
       }

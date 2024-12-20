@@ -184,9 +184,6 @@ export default function Home() {
             (a, b) => new Date(b.transactionDate) - new Date(a.transactionDate)
           )
           .slice(0, 3);
-
-        console.log(response.data.content);
-
         setTransactions(sortedTransactions);
       } catch (error) {
         console.error("Error fetching accounts:", error);

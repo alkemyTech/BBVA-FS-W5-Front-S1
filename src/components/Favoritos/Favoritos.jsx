@@ -173,7 +173,6 @@ export default function Favoritos() {
         setMostrarDialogEliminarUsuarioFavorito(false);  
         try {    
             const response = await apiConfig.delete(`/users/favUser/${idUser}`);
-            console.log(response);
             setLoadingScreen({
                 message:"Eliminando usuario de Favoritos",
                 duration:3000
@@ -211,7 +210,6 @@ export default function Favoritos() {
                 const response = await apiConfig.get(`/users/favList?page=${page - 1}&size=${itemsPerPage}`);
                 setFavoritos(response.data.content);
                 setTotalPages(response.data.totalPages);
-                console.log(response.data.content); 
             } catch (error) {
                 console.error('Error fetching fixedTerms:', error);
             }

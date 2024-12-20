@@ -100,8 +100,6 @@ export default function Prestamos() {
             totalADevolver: response.data.total
         })
 
-      console.log(prestamo)
-
     } catch (error) {
       console.log(error);
     }

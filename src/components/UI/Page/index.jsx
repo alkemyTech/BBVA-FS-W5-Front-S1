@@ -19,5 +19,5 @@ export default function Page({ children }) {
 }
 
 Page.propTypes = {
-    children: PropTypes.node.isRequired,  // 'children' debe ser un nodo válido de React y es obligatorio
+    children: PropTypes.node.isRequired,  
 };

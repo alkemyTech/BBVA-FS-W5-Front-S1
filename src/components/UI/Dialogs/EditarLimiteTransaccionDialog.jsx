@@ -36,7 +36,7 @@ function EditarLimiteTransaccionDialog({mostrarDialogEditarLimiteTransaccion, fu
         style={{height:"50px"}}
       />
       <Typography variant="h5" color="initial" sx={{fontWeight:"bold", color:"#6655D9"}}>
-        Editar Limite de Transacción
+        Editar Límite de Transacción
       </Typography>
     </DialogTitle>
     <IconButton
@@ -51,8 +51,7 @@ function EditarLimiteTransaccionDialog({mostrarDialogEditarLimiteTransaccion, fu
     >
       <CloseIcon />
     </IconButton>
-    <DialogContent sx={{display:"flex", flexDirection:"column", alignItems:"center", textAlign:"center"}}>
-        <Typography variant="p" color="error" sx={{fontWeight:"bold"}}>Ingresá el nuevo límite de transacción</Typography>
+    <DialogContent dividers sx={{display:"flex", flexDirection:"column", alignItems:"center", textAlign:"center"}}>
         <NumericFormat
             thousandSeparator="."
             customInput={TextField}
@@ -61,7 +60,7 @@ function EditarLimiteTransaccionDialog({mostrarDialogEditarLimiteTransaccion, fu
                 const { value } = values;
                 setNuevoLimiteTransaccion({...nuevoLimiteTransaccion, transactionLimit: value });
                 }}
-            label="Limite de Transaccion"
+            label="Límite de Transacción "
             decimalSeparator=","
             decimalScale={0}
             fixedDecimalScale
@@ -70,13 +69,15 @@ function EditarLimiteTransaccionDialog({mostrarDialogEditarLimiteTransaccion, fu
             size="small"
             />
     </DialogContent>
-    <DialogActions>
-        <Button onClick={cerrarDialogEditarLimiteTransaccion} color="primary">
+    <DialogActions sx={{justifyContent:"center", gap:"25px", pt:2}}>
+        <Button onClick={cerrarDialogEditarLimiteTransaccion} variant='contained' color="error">
             Cancelar
         </Button>
             <Button
             onClick={() => funcionEditar(nuevoLimiteTransaccion.transactionLimit)}
-            color="error"
+            
+            variant='contained'
+            sx={{background:"green"}}
         >
             Confirmar
             </Button>

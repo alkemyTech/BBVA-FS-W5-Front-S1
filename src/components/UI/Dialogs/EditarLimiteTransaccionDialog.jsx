@@ -10,16 +10,11 @@ import PropTypes from "prop-types";
 import { Dialog } from '@mui/material';
 import { useState } from 'react';
 
-function EditarLimiteTransaccionDialog({mostrarDialogEditarLimiteTransaccion, funcionEditar, setTransactionLimit ,cerrarDialogEditarLimiteTransaccion}) {
+function EditarLimiteTransaccionDialog({mostrarDialogEditarLimiteTransaccion, funcionEditar ,cerrarDialogEditarLimiteTransaccion}) {
 
     const[nuevoLimiteTransaccion, setNuevoLimiteTransaccion] = useState({
         transactionLimit:"",
     });
-
-    const setearLimiteDeTransaccionYEnviar = () => {
-        setTransactionLimit(nuevoLimiteTransaccion.transactionLimit)
-        funcionEditar()
-    }
 
   return (
     <Dialog
@@ -80,7 +75,7 @@ function EditarLimiteTransaccionDialog({mostrarDialogEditarLimiteTransaccion, fu
             Cancelar
         </Button>
             <Button
-            onClick={() => setearLimiteDeTransaccionYEnviar()}
+            onClick={() => funcionEditar(nuevoLimiteTransaccion.transactionLimit)}
             color="error"
         >
             Confirmar
@@ -94,7 +89,6 @@ function EditarLimiteTransaccionDialog({mostrarDialogEditarLimiteTransaccion, fu
 EditarLimiteTransaccionDialog.propTypes = {
     mostrarDialogEditarLimiteTransaccion: PropTypes.bool.isRequired,
     funcionEditar: PropTypes.func.isRequired,
-    setTransactionLimit: PropTypes.func.isRequired,
     cerrarDialogEditarLimiteTransaccion: PropTypes.func.isRequired,
 };
 

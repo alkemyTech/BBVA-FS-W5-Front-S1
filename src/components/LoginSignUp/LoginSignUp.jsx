@@ -172,7 +172,7 @@ export default function LoginSignUp({ isLogin }) {
         });
         
         setLoadingScreen({
-          message: "Creando cuenta...",
+          message: "Creando cuenta",
           duration: duration,
         });
         setIsLoading(true);
@@ -201,7 +201,7 @@ export default function LoginSignUp({ isLogin }) {
           email: usuarioReactivar.email,
         });
         setLoadingScreen({
-          message: "Reactivando cuenta...",
+          message: "Reactivando cuenta",
           duration: "2000",
         });
         setIsLoading(true);
@@ -230,9 +230,7 @@ export default function LoginSignUp({ isLogin }) {
       });
     }
   };
-
-
-
+  
   const textFieldStyle = {
     "& .MuiOutlinedInput-root": {
       "&.Mui-focused fieldset": {
@@ -393,7 +391,7 @@ export default function LoginSignUp({ isLogin }) {
             elevation={20}
             sx={{
               backgroundColor: "rgba(0,0,0,0.5)",
-              width: "100%",
+              width: "90%",
               backdropFilter: "blur(10px)",
               borderRadius: "15px",
               padding: "30px",
@@ -553,7 +551,7 @@ export default function LoginSignUp({ isLogin }) {
                           textAlign: "center",
                         }}
                       >
-                        Todavía no tenes una cuenta?{"\n"}
+                        ¿Todavía no tenes una cuenta?{"\n"}
                       </Typography>
                       <Typography
                         variant="p"
@@ -575,7 +573,7 @@ export default function LoginSignUp({ isLogin }) {
                           textAlign: "center",
                         }}
                       >
-                        Tu cuenta esta desactivada?{" "}
+                        ¿Tu cuenta esta desactivada?{" "}
                       </Typography>
                       <Typography
                         variant="p"

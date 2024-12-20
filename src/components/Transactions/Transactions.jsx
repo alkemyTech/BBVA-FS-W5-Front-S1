@@ -243,7 +243,7 @@ export default function Transactions() {
                                                         {transaction.currencyType === "ARS" ? "ARS" : "USD"}
                                                     </TableCell>
                                                     <TableCell sx={{ textAlign: "center" }}>
-                                                        {formatearFecha(transaction.transactionDate)}
+                                                        {formatearFechaSimple(transaction.transactionDate)}
                                                     </TableCell>
                                                     <TableCell sx={{ textAlign: "center" }}>
                                                         <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold" }}

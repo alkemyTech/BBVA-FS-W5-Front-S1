@@ -18,8 +18,10 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import apiConfig from '../../Config/axiosConfig';
 import { useDispatch, useSelector } from 'react-redux';
 import Grid from '@mui/material/Grid2';
+import { useNavigate } from 'react-router-dom';
 
 const Payment = () => {
+  const navigate = useNavigate()
   const [accounts, setAccounts] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentService, setCurrentService] = useState(null);
@@ -65,6 +67,10 @@ const Payment = () => {
   };
 
   useEffect(() => {
+    let token = localStorage.getItem("token");
+        if (token == null) {
+            navigate("/")
+        }   
     const fetchAccounts = async () => {
       try {
         const response = await apiConfig.get("accounts/");

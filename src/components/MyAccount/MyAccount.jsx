@@ -32,9 +32,10 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import axios from "axios";
-import { use } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function MyAccount() {
+    const navigate = useNavigate()
     const [userProfile, setUserProfile] = useState({});
     const [staticUserProfile, setStaticUserProfile] = useState({
         firstName: "",
@@ -49,9 +50,7 @@ export default function MyAccount() {
         lastName: "",
         password: "",
     });
-    const [transactionLimitUpdate, setTransactionLimitUpdate] = useState({
-        transactionLimit: "",
-    })
+
     const [passwordVisibility, setPasswordVisibility] = useState(false);
     
     const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
@@ -93,8 +92,6 @@ export default function MyAccount() {
 
     const [habilitarEdicion, setHabilitarEdicion] = useState(false);
     const [editando, setEditando] = useState(false)
-    const [habilitarEdicionTransaction, setHabilitarEdicionTransaction] = useState(false);
-    const [editandoTransaction, setEditandoTransaction] = useState(false)
 
 
     const abrirEdicion = () => {
@@ -112,32 +109,18 @@ export default function MyAccount() {
             password: "",
         })
     }
-    
-    const abrirEdicionTransaction = () => {
-        setHabilitarEdicionTransaction(true);
-        setEditandoTransaction(true);
-    }
 
-    const cerrarEdicionTransaction = () => {
-        setHabilitarEdicionTransaction(false);
-        setEditandoTransaction(false);
-        setTransactionLimitUpdate({
-            transactionLimit: "",
-        })
-    }
 
     const changePasswordVisibility = () => {
         setPasswordVisibility((prev) => !prev);
     };
 
     const [open, setOpen] = useState(false);
-    const [openTransaction, setOpenTransaction] = useState(false);
     const [password, setPassword] = useState("");
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-    const handleOpenTransaction = () => setOpenTransaction(true);
-    const handleCloseTransaction = () => setOpenTransaction(false);
+
 
     const handleDeactivate = () => {
         handleDelete();
@@ -150,6 +133,10 @@ export default function MyAccount() {
     };
 
     useEffect(() => {
+        let token = localStorage.getItem("token");
+        if (token == null) {
+            navigate("/")
+        }   
         const fetchUserProfile = async () => {
             try {
                 const response = await apiConfig.get("/users/userProfile");
@@ -189,21 +176,6 @@ export default function MyAccount() {
         fetchAccounts();
     }, []);
 
-    const updateUser = async () => {
-        try {
-            const response = await apiConfig.patch("/users/update", {
-                firstName: userProfile.firstName,
-                lastName: userProfile.lastName,
-                password: userUpdate.password,
-            });
-
-            console.log(response.data)
-
-        } catch (error) {
-            console.error("Error fetching fechUpdate:", error);
-        }
-        window.location.reload();
-    };
 
     return (
         <Grid container sx={{ p: 5, pb: 5, pl: 2, pr: 2, alignItems: "start" }} spacing={5}>
@@ -492,7 +464,7 @@ export default function MyAccount() {
                                 </TableHead>
                                 <TableBody>
                                     {accounts.map((account) => (
-                                        <>
+                                        
                                         <TableRow key={account.cbu}>
                                             <TableCell align="center">{account.currency || "N/A"}</TableCell>
                                             <TableCell align="center">${account.balance || "0.00"}</TableCell>
@@ -508,42 +480,7 @@ export default function MyAccount() {
                                                 </Box>
                                             </TableCell>
                                         </TableRow>
-                                        <Dialog open={openTransaction} onClose={handleCloseTransaction}>
-                                        <DialogTitle>Editar Limite de Transaccion</DialogTitle>
-                                        <DialogContent>
-                                            <DialogContentText>
-                                                Por favor, Ingrese el nuevo limite de transaccion!
-                                            </DialogContentText>
-                                            <NumericFormat
-                                                    thousandSeparator="."
-                                                    customInput={TextField}
-                                                    label="Limite de Transaccion"
-                                                    value={transactionLimitUpdate.transactionLimit}
-                                                    onValueChange={(values) => {
-                                                        const { value } = values;
-                                                        setTransactionLimitUpdate({ ...transactionLimitUpdate, transactionLimit: value });
-                                                        }}
-                                                    decimalSeparator=","
-                                                    decimalScale={0}
-                                                    fixedDecimalScale
-                                                    allowNegative={false}
-                                                    displayType="input"
-                                                    size="small"
-                                                    />
-                                        </DialogContent>
-                                        <DialogActions>
-                                            <Button onClick={handleCloseTransaction} color="primary">
-                                                Cancelar
-                                            </Button>
-                                            <Button
-                                                onClick={() => handleEdit(account.cbu)}
-                                                color="error"
-                                            >
-                                                Confirmar
-                                            </Button>
-                                        </DialogActions>
-                                    </Dialog>
-                                    </>))}
+                                    ))}
                                 </TableBody>
                             </Table>
                         </TableContainer>

@@ -1,7 +1,7 @@
 import Page from "./components/UI/Page";
 import "./App.css";
 import LoginSignUp from "./components/LoginSignUp/LoginSignUp";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route,Navigate  } from "react-router-dom";
 import Home from "./components/Home/Home";
 import SendMoney from "./components/SendMoney/SendMoney"
 import Transactions from "./components/Transactions/Transactions";
@@ -29,7 +29,6 @@ function App() {
   useEffect(() => {
     const verificarToken = () => {
       setToken(localStorage.getItem("token"));
-
       if (token) {
         const decodedToken = jwtDecode(token);
         const tiempoActual = Math.floor(Date.now() / 1000);
@@ -63,6 +62,7 @@ function App() {
           <Route path="/favoritos" element={<Favoritos/>}></Route>
           <Route path="/userProfile" element={<MyAccount/>}></Route>
           <Route path="/gestionUsuarios" element={<GestionUsuarios/>}></Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         {alertaTokenExpirado && (
           <TokenExpiradoDialog

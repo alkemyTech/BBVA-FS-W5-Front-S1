@@ -110,7 +110,7 @@ export default function PlazosFijos() {
   }
 
   const calcularDatosTabla = (fixedTerms) => {
-    const porcentaje = 2; // Interés del 2%
+    const porcentaje = 2; 
 
     return fixedTerms.map((fixedTerm) => {
       const interes = fixedTerm.amount * (porcentaje / 100);

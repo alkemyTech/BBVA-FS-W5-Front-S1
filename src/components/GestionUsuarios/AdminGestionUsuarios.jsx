@@ -22,9 +22,9 @@ import AlertaDialog from '../UI/Dialogs/ActivarDesactivarUserDialog';
 export default function GestionUsuarios() {
 
     const [users, setUsers] = useState([]);
-    const [totalPages, setTotalPages] = useState(0);  // Estado para manejar el total de páginas
+    const [totalPages, setTotalPages] = useState(0);  
     const [page, setPage] = useState(1);
-    const itemsPerPage = 10;  // Número de elementos por página
+    const itemsPerPage = 10;  
     const [borradoExitoso, setBorradoExitoso] = useState(false);
     const [asignacionExitosa, setAsignacionExitosa] = useState(false);
     const [idUser, setIdUser] = useState(0);

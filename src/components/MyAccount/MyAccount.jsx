@@ -311,7 +311,7 @@ export default function MyAccount() {
                                             fullWidth
                                             sx={{
                                                 '& .MuiInputBase-root.Mui-disabled': {
-                                                    backgroundColor: "#ebebeb", // Fondo del campo deshabilitado
+                                                    backgroundColor: "#ebebeb", 
                                                 },
                                             }}
                                         />
@@ -340,7 +340,7 @@ export default function MyAccount() {
                                             fullWidth
                                             sx={{
                                                 '& .MuiInputBase-root.Mui-disabled': {
-                                                    backgroundColor: "#ebebeb", // Fondo del campo deshabilitado
+                                                    backgroundColor: "#ebebeb", 
                                                 },
                                             }}
                                         />
@@ -370,7 +370,7 @@ export default function MyAccount() {
                                             type={passwordVisibility ? "text" : "password"}
                                             sx={{
                                                 '& .MuiInputBase-root.Mui-disabled': {
-                                                    backgroundColor: "#ebebeb", // Fondo del campo deshabilitado
+                                                    backgroundColor: "#ebebeb", 
                                                 },
                                             }}
                                         />

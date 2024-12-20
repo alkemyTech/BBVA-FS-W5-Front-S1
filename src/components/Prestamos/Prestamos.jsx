@@ -14,12 +14,12 @@ import {
 } from "@mui/material";
 import { useState} from "react";
 import apiConfig from "../../Config/axiosConfig";
-import {formatearFechaPrestamo, sumarMeses } from "../../utils/helpers";
+import {formatearFechaCompleta, sumarMeses } from "../../utils/helpers";
 
 export default function Prestamos() {
   const [prestamo, setPrestamo] = useState({
-    montoInvertido: 0,
-    plazo: 0,
+    montoInvertido: "",
+    plazo: "",
     interesMensual: "",
     cuotaMensual: "",
     fechaDeCierre: "",
@@ -87,7 +87,7 @@ export default function Prestamos() {
             plazo: response.data.plazo,
             interesMensual: response.data.interes,
             cuotaMensual: response.data.cuotaMensual,
-            fechaDeCierre: formatearFechaPrestamo(sumarMeses(fechaActual, prestamo.plazo)),
+            fechaDeCierre: formatearFechaCompleta(sumarMeses(fechaActual, prestamo.plazo)),
             totalADevolver: response.data.total
         })
 
@@ -241,7 +241,7 @@ export default function Prestamos() {
                 Fecha de vencimiento del Préstamo:
               </Typography>
               <Typography variant="p" color="#6655D9">
-                {formatearFechaPrestamo(sumarMeses(fechaActual, prestamo.plazo))}
+                {formatearFechaCompleta(sumarMeses(fechaActual, prestamo.plazo))}
               </Typography>
             </CardContent>
           </Card>

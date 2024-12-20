@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
-export const formatearFecha = (fechaOriginal) => {
+export const formatearFechaSimple = (fechaOriginal) => {
 
     const fechaFormateada = format(new Date(fechaOriginal), "dd, MMM, HH:mm", {
         locale: es,
@@ -10,7 +10,7 @@ export const formatearFecha = (fechaOriginal) => {
     return fechaFormateada;
 };
 
-export const formatearFechaPrestamo = (fechaOriginal) => {
+export const formatearFechaCompleta = (fechaOriginal) => {
 
     const fechaFormateada = format(new Date(fechaOriginal), "dd, MMM, yyyy", {
         locale: es,

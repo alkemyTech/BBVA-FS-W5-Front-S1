@@ -167,8 +167,6 @@ export default function PlazosFijos() {
     }
   };
 
-
-
   const realizarInversion = async () => {
     setSnackbarVisibility(false);
     setCargaFinalizada(false);
@@ -206,7 +204,6 @@ export default function PlazosFijos() {
         interestEarned: "",
         finalAmount: "",
       });
-
     } catch (error) {
       console.log(error)
       setSnackbar({
@@ -230,40 +227,44 @@ export default function PlazosFijos() {
         console.error('Error fetching fixedTerms:', error);
       }
     };
-    fetchFixedTermDeposits();
-  }, [page, cargaFinalizada]);
 
-  useEffect(() => {
-    
-    let token = localStorage.getItem("token");
-      if (token == null) {
-          navigate("/")
-      }   
-    
     const fetchTotals = async () => {
       setLoadingTotals(true);
       try {
         const response = await apiConfig.get("/fixedTerm/totals");
-        console.log("Respuesta del endpoint /totals:", response.data);
-
         if (response.data) {
           setTotals({
-            totalInvertido: response.data.totalInvertido || 0,
-            totalInteres: response.data.totalInteres || 0,
-            totalGeneral: response.data.totalGeneral || 0,
+            totalInvertido: response.data.totalInvertido,
+            totalInteres: response.data.interesAcumulado,
+            totalGeneral: response.data.totalGeneral,
           });
         } else {
           console.error("La respuesta no contiene datos válidos");
         }
       } catch (error) {
         console.error("Error fetching totals:", error);
-      } finally {
-        setLoadingTotals(false);
       }
+      setLoadingTotals(false);
     };
 
     fetchTotals();
-  }, []);
+    fetchFixedTermDeposits();
+
+    const fetchTotalsInterval = setInterval(fetchTotals, 10000);
+    const fetchFixedTermDepositsInterval = setInterval(fetchFixedTermDeposits, 10000); 
+    return () => {
+      clearInterval(fetchTotalsInterval);
+      clearInterval(fetchFixedTermDepositsInterval);
+    }; 
+
+  }, [page, cargaFinalizada]);
+
+  useEffect(() => {
+    let token = localStorage.getItem("token");
+      if (token == null) {
+          navigate("/")
+      }   
+    }, []);
 
   const textFieldStyle = {
     width: "50%",
@@ -294,11 +295,6 @@ export default function PlazosFijos() {
       color: "red",
     },
   };
-
-
-
-
-
   return (
     <Grid container flexDirection="row" sx={{ p: 3 }} spacing={4}>
       <Grid item size={6} sx={{ display: "flex", justifyContent: "center" }}>
@@ -495,11 +491,7 @@ export default function PlazosFijos() {
             {fixedTerms.length > 0 ? (
               <>
                 {/* Tabla de Totales */}
-                {loadingTotals ? (
-                  <Typography variant="body2" align="center">
-                    Cargando totales...
-                  </Typography>
-                ) : (
+                {!loadingTotals && (
                   <TableContainer component={Paper}>
                     <Table aria-label="totals table">
                       <TableBody>
@@ -546,7 +538,7 @@ export default function PlazosFijos() {
                           Estado
                         </TableCell>
                         <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>
-                          Interés (2%)
+                          Interés Diario (2%)
                         </TableCell>
                         <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>
                           Importe con Interés
@@ -565,7 +557,7 @@ export default function PlazosFijos() {
                           <TableCell sx={{ textAlign: "center", color: "gray", fontWeight: "bold" }}>
                             {formatearFecha(fixedTerm.closingDate)}
                           </TableCell>
-                          <TableCell sx={{ textAlign: "center", color: fixedTerm.settled == 0 ? "red" : "#6655D9", fontWeight: "bold" }}>
+                          <TableCell sx={{ textAlign: "center", color: fixedTerm.settled == 0 ? "red" : "#228B22", fontWeight: "bold" }}>
                             {fixedTerm.settled == 0 ? "En progreso..." : "Liquidado"}
                           </TableCell>
                           <TableCell sx={{ textAlign: "center", color: "blue", fontWeight: "bold" }}>

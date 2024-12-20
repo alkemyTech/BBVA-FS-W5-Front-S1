@@ -228,6 +228,13 @@ export default function PlazosFijos() {
       }
     };
 
+  useEffect(() => {
+    
+    let token = localStorage.getItem("token");
+      if (token == null) {
+          navigate("/")
+      }   
+    
     const fetchTotals = async () => {
       setLoadingTotals(true);
       try {

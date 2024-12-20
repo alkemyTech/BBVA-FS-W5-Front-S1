@@ -34,8 +34,9 @@ export default function SendMoney({ send }) {
     duration: null,
   });
   const [tipoCuenta, setTipoCuenta] = useState({
-    currency: (tipoCuentaParam == 0 || tipoCuentaParam == "ARS") ? "ARS" : "USD",
+    currency: (tipoCuentaParam == 0 || tipoCuentaParam == "ARS" || tipoCuentaParam== undefined) ? "ARS" : "USD",
   });
+  
   const [transaction, setTransaction] = useState({
     amount: "",
     description: "Varios",
@@ -45,7 +46,7 @@ export default function SendMoney({ send }) {
   const [deposit, setDeposit] = useState({
     amount: "",
     description: "Varios",
-    currencyType: "",
+    currencyType: "ARS",
   });
 
   const [snackbar, setSnackbar] = useState({
@@ -126,9 +127,6 @@ export default function SendMoney({ send }) {
     if (send == true) {
       if (tipoCuenta.currency == "ARS") {
         try {
-          if (transaction.description == "") {
-            transaction.description = "Varios";
-          }
           response = await apiConfig.post("/transactions/sendArs", {
             amount: transaction.amount,
             description: transaction.description,

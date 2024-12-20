@@ -198,6 +198,13 @@ export default function Favoritos() {
         }
     };
 
+    useEffect(()=>{
+        let token = localStorage.getItem("token");
+            if (token == null) {
+                navigate("/")
+            }   
+      },[])
+
     useEffect(() => {
         const fetchFavoritos = async () => {
             try {

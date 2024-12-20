@@ -32,9 +32,10 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import axios from "axios";
-import { use } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function MyAccount() {
+    const navigate = useNavigate()
     const [userProfile, setUserProfile] = useState({});
     const [staticUserProfile, setStaticUserProfile] = useState({
         firstName: "",
@@ -49,6 +50,7 @@ export default function MyAccount() {
         lastName: "",
         password: "",
     });
+
     const [passwordVisibility, setPasswordVisibility] = useState(false);
     
     const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
@@ -95,8 +97,8 @@ export default function MyAccount() {
     const abrirEdicion = () => {
         setHabilitarEdicion(true);
         setEditando(true);
-
     }
+    
 
     const cerrarEdicion = () => {
         setHabilitarEdicion(false);
@@ -106,8 +108,8 @@ export default function MyAccount() {
             lastName: "",
             password: "",
         })
-
     }
+
 
     const changePasswordVisibility = () => {
         setPasswordVisibility((prev) => !prev);
@@ -118,6 +120,7 @@ export default function MyAccount() {
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+
 
     const handleDeactivate = () => {
         handleDelete();
@@ -130,6 +133,10 @@ export default function MyAccount() {
     };
 
     useEffect(() => {
+        let token = localStorage.getItem("token");
+        if (token == null) {
+            navigate("/")
+        }   
         const fetchUserProfile = async () => {
             try {
                 const response = await apiConfig.get("/users/userProfile");
@@ -169,21 +176,6 @@ export default function MyAccount() {
         fetchAccounts();
     }, []);
 
-    const updateUser = async () => {
-        try {
-            const response = await apiConfig.patch("/users/update", {
-                firstName: userProfile.firstName,
-                lastName: userProfile.lastName,
-                password: userUpdate.password,
-            });
-
-            console.log(response.data)
-
-        } catch (error) {
-            console.error("Error fetching fechUpdate:", error);
-        }
-        window.location.reload();
-    };
 
     return (
         <Grid container sx={{ p: 5, pb: 5, pl: 2, pr: 2, alignItems: "start" }} spacing={5}>
@@ -437,10 +429,6 @@ export default function MyAccount() {
                             </CardActions>
                         </Card>
                     </Grid>
-
-
-
-
                 </Grid>
 
                 {/* Tabla de Cuentas */}
@@ -476,6 +464,7 @@ export default function MyAccount() {
                                 </TableHead>
                                 <TableBody>
                                     {accounts.map((account) => (
+                                        
                                         <TableRow key={account.cbu}>
                                             <TableCell align="center">{account.currency || "N/A"}</TableCell>
                                             <TableCell align="center">${account.balance || "0.00"}</TableCell>
@@ -485,7 +474,7 @@ export default function MyAccount() {
                                                     <Typography variant="body2" sx={{ m: "auto" }}>
                                                         ${account.transactionLimit || "Sin límite"}
                                                     </Typography>
-                                                    <Button color="primary" sx={{ p: 0 }}>
+                                                    <Button color="primary" sx={{ p: 0 }} onClick={() => handleOpenTransaction()} >
                                                         <EditIcon />
                                                     </Button>
                                                 </Box>
@@ -495,8 +484,12 @@ export default function MyAccount() {
                                 </TableBody>
                             </Table>
                         </TableContainer>
+                        
                     </CardContent>
                 </Card>
+                
+                    
+                
             </Grid>
 
             {/* Columna derecha */}

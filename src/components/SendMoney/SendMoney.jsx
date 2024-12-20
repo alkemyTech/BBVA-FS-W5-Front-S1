@@ -126,9 +126,6 @@ export default function SendMoney({ send }) {
     if (send == true) {
       if (tipoCuenta.currency == "ARS") {
         try {
-          if (transaction.description == "") {
-            transaction.description = "Varios";
-          }
           response = await apiConfig.post("/transactions/sendArs", {
             amount: transaction.amount,
             description: transaction.description,

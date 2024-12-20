@@ -1,23 +1,35 @@
-import Grid from '@mui/material/Grid2';
-import SendIcon from '@mui/icons-material/Send';
-import { Card, CardContent, Typography, List, ListItem, Divider, Box, Button, Tooltip } from '@mui/material';
-import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
-import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
-import {useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import apiConfig from '../../Config/axiosConfig';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import MovingIcon from '@mui/icons-material/Moving';
-import GradeIcon from '@mui/icons-material/Grade';
+import Grid from "@mui/material/Grid2";
+import SendIcon from "@mui/icons-material/Send";
+import EditIcon from "@mui/icons-material/Edit";
+import {
+  Card,
+  CardContent,
+  Typography,
+  List,
+  ListItem,
+  Divider,
+  Box,
+  Button,
+  Tooltip,
+} from "@mui/material";
+import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
+import AssuredWorkloadIcon from "@mui/icons-material/AssuredWorkload";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import apiConfig from "../../Config/axiosConfig";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import MovingIcon from "@mui/icons-material/Moving";
+import GradeIcon from "@mui/icons-material/Grade";
 import PersonIcon from "@mui/icons-material/Person";
-import ReceiptIcon from '@mui/icons-material/Receipt';
+import ReceiptIcon from "@mui/icons-material/Receipt";
 import { IconButton } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { GrTransaction } from "react-icons/gr";
 import { FaArrowDown } from "react-icons/fa";
 import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
 import GenericSnackbar from "../UI/Snackbar/Snackbar";
+import EditarLimiteTransaccionDialog from "../UI/Dialogs/EditarLimiteTransaccionDialog";
 import CotizacionDolarDialog from "../UI/Dialogs/CotizacionDolarDialog";
 import AlertaDialog from "../UI/Dialogs/AlertaDialog";
 import FavoritoDialog from "../UI/Dialogs/FavoritoDialog";
@@ -28,151 +40,162 @@ import { formatearFechaSimple } from '../../utils/helpers';
 import ContactsIcon from '@mui/icons-material/Contacts';
 
 export default function Home() {
+  const [accounts, setAccounts] = useState([]);
+  const [cbuCuentaEditarLimite, setCbuCuentaEditarLimite] = useState({
+    cbu: "",
+  });
+  const [favList, setFavList] = useState([]);
+  const [favUser, setFavUser] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    cuentaArs: "",
+    cuentaUsd: "",
+  });
+  const [transactions, setTransactions] = useState([]);
+  const [transaction, setTransaction] = useState({
+    amount: "",
+    currencyType: "",
+    type: "",
+    description: "",
+    transactionDate: "",
+    titular: "",
+    cuenta: "",
+    cuentaDestino: "",
+  });
+  const [balanceVisibility, setBalanceVisibility] = useState(true);
+  const changeBalanceVisibility = () => {
+    setBalanceVisibility(!balanceVisibility);
+  };
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingScreen, setLoadingScreen] = useState({
+    message: "",
+    duration: null,
+  });
+  const [snackbar, setSnackbar] = useState({
+    status: "",
+    message: "",
+  });
 
-    const [accounts, setAccounts] = useState([]);
-    const [favList, setFavList] = useState([]);
-    const [favUser, setFavUser] = useState({
-        firstName: "",
-        lastName: "",
-        email: "",
-        cuentaArs: "",
-        cuentaUsd: ""
-    })
-    const [transactions, setTransactions] = useState([]);
-    const [transaction, setTransaction] = useState({
-        amount: "",
-        currencyType: "",
-        type: "",
-        description: "",
-        transactionDate: "",
-        titular: "",
-        cuenta: "",
-        cuentaDestino: "",
+  const [snackbarVisibility, setSnackbarVisibility] = useState(false);
+  const [cargaFinalizada, setCargaFinalizada] = useState(false);
+
+  const [infoDolar, setInfoDolar] = useState({
+    compra: "",
+    venta: "",
+    fechaActualizacion: "",
+  });
+
+  const [mostrarInfoDolar, setMostrarInfoDolar] = useState(false);
+  const closeInfoDolar = () => {
+    setMostrarInfoDolar(false);
+  };
+  const openInfoDolar = () => {
+    setMostrarInfoDolar(true);
+  };
+
+  const [mostrarDialogCrearCuentaDolar, setMostrarDialogCrearCuentaDolar] =
+    useState(false);
+  const closeDialogCuentaDolar = () => {
+    setMostrarDialogCrearCuentaDolar(false);
+  };
+  const openDialogCuentaDolar = () => {
+    setMostrarDialogCrearCuentaDolar(true);
+  };
+
+  const [mostrarDetalleTransaccion, setMostrarDetalleTransaccion] =
+    useState(false);
+  const closeDetalleTransaccion = () => {
+    setMostrarDetalleTransaccion(false);
+  };
+  const openDetalleTransaccion = (transaction) => {
+    setTransaction({
+      amount: transaction.amount,
+      currencyType: transaction.currencyType,
+      type: transaction.type,
+      description: transaction.description,
+      transactionDate: transaction.transactionDate,
+      titular: transaction.titular,
+      cuenta: transaction.cuenta,
+      cuentaDestino: transaction.cuentaDestino,
     });
-    const [balanceVisibility, setBalanceVisibility] = useState(true);
-    const changeBalanceVisibility = () => {
-        setBalanceVisibility(!balanceVisibility);
+
+    setMostrarDetalleTransaccion(true);
+  };
+
+  const [mostrarDetalleFavorito, setMostrarDetalleFavorito] = useState(false);
+  const closeDetalleFavorito = () => {
+    setMostrarDetalleFavorito(false);
+  };
+  const openDetalleFavorito = (favorito) => {
+    setFavUser({
+      firstName: favorito.firstName,
+      lastName: favorito.lastName,
+      email: favorito.email,
+      cuentaArs: favorito.cuentaArs,
+      cuentaUsd: favorito.cuentaUsd,
+    });
+
+    setMostrarDetalleFavorito(true);
+  };
+
+  const navigate = useNavigate();
+
+  const handleNavegar = (ruta) => {
+    navigate(ruta);
+  };
+
+  const fetchCotizacionDolar = async () => {
+    try {
+      const response = await axios.get(
+        "https://dolarapi.com/v1/dolares/oficial"
+      );
+      setInfoDolar({
+        compra: response.data.compra,
+        venta: response.data.venta,
+        fechaActualizacion: response.data.fechaActualizacion,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const [transactionLimitUpdate, setTransactionLimitUpdate] = useState({
+    transactionLimit: "",
+  });
+  const [habilitarEdicionTransaction, setHabilitarEdicionTransaction] =
+    useState(false);
+  const [editandoTransaction, setEditandoTransaction] = useState(false);
+
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      try {
+        const response = await apiConfig.get("/accounts/");
+        setAccounts(response.data);
+      } catch (error) {
+        console.error("Error fetching accounts:", error);
+      }
     };
-    const [isLoading, setIsLoading] = useState(false);
-    const [loadingScreen, setLoadingScreen] = useState({
-        message: "",
-        duration: null,
-    });
-    const [snackbar, setSnackbar] = useState({
-        status: "",
-        message: "",
-    });
-    
-    const [snackbarVisibility, setSnackbarVisibility] = useState(false);
-    const [cargaFinalizada, setCargaFinalizada] = useState(false);
-    
-    const [infoDolar, setInfoDolar] = useState({
-        compra: "",
-        venta: "",
-        fechaActualizacion: ""
-    });
-    
-    const [mostrarInfoDolar, setMostrarInfoDolar] = useState(false);
-    const closeInfoDolar = () => {
-        setMostrarInfoDolar(false);
-    }
-    const openInfoDolar = () => {
-        setMostrarInfoDolar(true);
-    }
+    const fetchTransactions = async () => {
+      try {
+        const response = await apiConfig.get("/transactions?page=0&size=100");
 
-    const [mostrarDialogCrearCuentaDolar, setMostrarDialogCrearCuentaDolar] = useState(false);
-    const closeDialogCuentaDolar = () => {
-        setMostrarDialogCrearCuentaDolar(false);
-    }
-    const openDialogCuentaDolar = () => {
-        setMostrarDialogCrearCuentaDolar(true);
-    }
+        const sortedTransactions = response.data.content
+          .sort(
+            (a, b) => new Date(b.transactionDate) - new Date(a.transactionDate)
+          )
+          .slice(0, 3);
 
-    const [mostrarDetalleTransaccion, setMostrarDetalleTransaccion] = useState(false);
-    const closeDetalleTransaccion = () => {
-        setMostrarDetalleTransaccion(false);
-    }
-    const openDetalleTransaccion = (transaction) => {
+        console.log(response.data.content);
 
-        setTransaction({
-            amount: transaction.amount,
-            currencyType: transaction.currencyType,
-            type: transaction.type,
-            description: transaction.description,
-            transactionDate: transaction.transactionDate,
-            titular: transaction.titular,
-            cuenta: transaction.cuenta,
-            cuentaDestino: transaction.cuentaDestino
-        })
-        
-        setMostrarDetalleTransaccion(true);
-    }
-
-    const [mostrarDetalleFavorito, setMostrarDetalleFavorito] = useState(false);
-    const closeDetalleFavorito = () => {
-        setMostrarDetalleFavorito(false);
-    }
-    const openDetalleFavorito = (favorito) => {
-
-        setFavUser({
-            firstName: favorito.firstName,
-            lastName: favorito.lastName,
-            email: favorito.email,
-            cuentaArs: favorito.cuentaArs,
-            cuentaUsd: favorito.cuentaUsd
-        })
-        
-        setMostrarDetalleFavorito(true);
-    }
-
-    const navigate = useNavigate();
-
-    const handleNavegar = (ruta) => {
-        navigate(ruta);
-    }
-
-    const fetchCotizacionDolar = async () => {
-        try {
-            const response = await axios.get("https://dolarapi.com/v1/dolares/oficial")
-            setInfoDolar({
-                compra: response.data.compra,
-                venta: response.data.venta,
-                fechaActualizacion: response.data.fechaActualizacion
-            })
-        } catch (error) {
-            console.log(error);
-        }
+        setTransactions(sortedTransactions);
+      } catch (error) {
+        console.error("Error fetching accounts:", error);
+      }
     };
-
-    useEffect(() => {
-        const fetchAccounts = async () => {
-            try {
-                const response = await apiConfig.get("/accounts/");
-                setAccounts(response.data);
-            } catch (error) {
-                console.error('Error fetching accounts:', error);
-            }
-        };
-        const fetchTransactions = async () => {
-            try {
-                const response = await apiConfig.get("/transactions?page=0&size=100");
-
-                const sortedTransactions = response.data.content
-                    .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate))
-                    .slice(0, 3);
-
-                console.log(response.data.content);
-
-                setTransactions(sortedTransactions);
-            } catch (error) {
-                console.error('Error fetching accounts:', error);
-            }
-        };
-        fetchCotizacionDolar();   
-        fetchAccounts();
-        fetchTransactions();
-
-    }, [cargaFinalizada]);
+    fetchCotizacionDolar();
+    fetchAccounts();
+    fetchTransactions();
+  }, [cargaFinalizada]);
 
     useEffect(() => {
         let token = localStorage.getItem("token");
@@ -188,8 +211,8 @@ export default function Home() {
             }
         };
 
-        fetchFavList();
-    }, []);
+    fetchFavList();
+  }, []);
 
     const crearCuentaUsd = async () => {
         setMostrarDialogCrearCuentaDolar(false);
@@ -203,22 +226,63 @@ export default function Home() {
                 duration: "3000",
             });
 
-            setIsLoading(true);
+      setIsLoading(true);
 
-            setTimeout(() => {
-                setSnackbar({
-                    status: "success",
-                    message: "Cuenta en USD creada con éxito!"
-                })
-                setSnackbarVisibility(true);
-                setCargaFinalizada(true);
-            }, 3000)
-        } catch (error) {
-            console.log(error);
-        }
+      setTimeout(() => {
+        setSnackbar({
+          status: "success",
+          message: "Cuenta en USD creada con éxito!",
+        });
+        setSnackbarVisibility(true);
+        setCargaFinalizada(true);
+      }, 3000);
+    } catch (error) {
+      console.log(error);
     }
+  };
+    const [transactionLimitFinal, setTransactionLimitFinal] = useState("")
+  const updateTransaction = async (transactionLimitFinal) => {
+    try {
+      const response = await apiConfig.patch(
+        `/accounts/${cbuCuentaEditarLimite.cbu}`,
+        {
+          transactionLimit: transactionLimitFinal,
+        }
+      );
+    } catch (error) {
+      console.error("Falla al editar", error.response?.data || error.message);
+    }
+  };
 
-    return (
+  const abrirEdicionTransaction = () => {
+    setHabilitarEdicionTransaction(true);
+    setEditandoTransaction(true);
+  };
+
+  const cerrarEdicionTransaction = () => {
+    setHabilitarEdicionTransaction(false);
+    setEditandoTransaction(false);
+    setTransactionLimitUpdate({
+      transactionLimit: "",
+    });
+  };
+  const [openTransaction, setOpenTransaction] = useState(false);
+
+  const handleOpenTransaction = (cbuBuscado) => {
+    setCbuCuentaEditarLimite({ cbu: cbuBuscado });
+    setOpenTransaction(true);
+  };
+
+  const handleCloseTransaction = () => setOpenTransaction(false);
+  
+  const handleEdit = ( setTransactionLimitFinal) => {
+    updateTransaction( setTransactionLimitFinal);
+    setOpenTransaction(false);
+  };
+
+  
+
+  return (
     <>
         <Grid container sx={{ p: 4, alignItems: "start" }} spacing={5}>
             {accounts.map((account) => (
@@ -308,18 +372,46 @@ export default function Home() {
                                 Cotización dolar
                             </IconButton>
 
-                            <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", textAlign: "center", 
-                                "&:hover": {backgroundColor:"transparent"}} } onClick={() => handleNavegar("/depositmoney")}>
-                                <AssuredWorkloadIcon sx={{ fontSize: "40px", color: "#6655D9" }} />
-                                Ingresar dinero
-                            </IconButton>
-                        </Box>
-                        <Box flexDirection="column" justifyContent="center" alignItems="center">
-                            <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", textAlign: "center", 
-                                "&:hover": {backgroundColor:"transparent"}}} onClick={() => handleNavegar("/payment")}>
-                                <RequestQuoteIcon sx={{ fontSize: "40px", color: "#6655D9" }} />
-                                Pagar servicios
-                            </IconButton>
+                <IconButton
+                  sx={{
+                    gap: "5px",
+                    fontSize: "15px",
+                    fontWeight: "bold",
+                    display: "flex",
+                    flexDirection: "column",
+                    textAlign: "center",
+                    "&:hover": { backgroundColor: "transparent" },
+                  }}
+                  onClick={() => handleNavegar("/depositmoney")}
+                >
+                  <AssuredWorkloadIcon
+                    sx={{ fontSize: "40px", color: "#6655D9" }}
+                  />
+                  Ingresar dinero
+                </IconButton>
+              </Box>
+              <Box
+                flexDirection="column"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <IconButton
+                  sx={{
+                    gap: "5px",
+                    fontSize: "15px",
+                    fontWeight: "bold",
+                    display: "flex",
+                    flexDirection: "column",
+                    textAlign: "center",
+                    "&:hover": { backgroundColor: "transparent" },
+                  }}
+                  onClick={() => handleNavegar("/payment")}
+                >
+                  <RequestQuoteIcon
+                    sx={{ fontSize: "40px", color: "#6655D9" }}
+                  />
+                  Pagar servicios
+                </IconButton>
 
                             <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", textAlign: "center", justifyContent: "center", alignItems: "center", 
                             "&:hover": {backgroundColor:"transparent"}}} 
@@ -478,35 +570,41 @@ export default function Home() {
                 />
             )}
 
-            {mostrarInfoDolar && (
-                <CotizacionDolarDialog
-                    mostrarCotizacion={mostrarInfoDolar}
-                    infoDolar={infoDolar}
-                    closeInfoDolar={closeInfoDolar}
-                />
-            )}
+        {mostrarInfoDolar && (
+          <CotizacionDolarDialog
+            mostrarCotizacion={mostrarInfoDolar}
+            infoDolar={infoDolar}
+            closeInfoDolar={closeInfoDolar}
+          />
+        )}
 
-            {mostrarDetalleTransaccion && (
-                <DetalleTransaccionDialog
-                    mostrarDetalleTransaccion={mostrarDetalleTransaccion}
-                    transaccion={transaction}
-                    closeDetalleTransaccion={closeDetalleTransaccion}
-                />
-            )}
+        {mostrarDetalleTransaccion && (
+          <DetalleTransaccionDialog
+            mostrarDetalleTransaccion={mostrarDetalleTransaccion}
+            transaccion={transaction}
+            closeDetalleTransaccion={closeDetalleTransaccion}
+          />
+        )}
 
-            <AlertaDialog
-                mostrarAlerta={mostrarDialogCrearCuentaDolar}
-                accion={crearCuentaUsd}
-                closeAlerta={closeDialogCuentaDolar}
-                mensajeAlerta="Vas a crear una cuenta en USD"
-            />  
-            
-            <FavoritoDialog
-                mostrarDetalleFavorito={mostrarDetalleFavorito}
-                favorito={favUser}
-                closeDetalleFavorito={closeDetalleFavorito}
-            />
-        </Grid>
+        <AlertaDialog
+          mostrarAlerta={mostrarDialogCrearCuentaDolar}
+          accion={crearCuentaUsd}
+          closeAlerta={closeDialogCuentaDolar}
+          mensajeAlerta="Vas a crear una cuenta en USD"
+        />
+
+        <FavoritoDialog
+          mostrarDetalleFavorito={mostrarDetalleFavorito}
+          favorito={favUser}
+          closeDetalleFavorito={closeDetalleFavorito}
+        />
+        <EditarLimiteTransaccionDialog
+          mostrarDialogEditarLimiteTransaccion={openTransaction}
+          funcionEditar={handleEdit}
+          setTransactionLimit={setTransactionLimitFinal}
+          cerrarDialogEditarLimiteTransaccion={handleCloseTransaction}
+        />
+      </Grid>
     </>
-    );
+  );
 }

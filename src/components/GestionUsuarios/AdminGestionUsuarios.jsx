@@ -16,7 +16,7 @@ import { es, id } from "date-fns/locale";
 import PersonIcon from '@mui/icons-material/Person';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AlertaDialog from '../UI/Dialogs/ActivarDesactivarUserDialog';
 
 export default function GestionUsuarios() {
@@ -34,6 +34,7 @@ export default function GestionUsuarios() {
     const [accion, setAccion] = useState("");
     const [idUsuarioAEliminar, setIdUsuarioAEliminar] = useState("");
     const [mailUsuarioAEliminar, setEmailUsuarioAEliminar] = useState("");
+    const navigate = useNavigate()
 
     const abrirAlerta = (accionAlerta, id, email) => {
         setMostrarAlerta(true);
@@ -115,6 +116,13 @@ export default function GestionUsuarios() {
             console.error("error al asignar el rol", error);
         }
     };
+
+    useEffect(()=>{
+        let token = localStorage.getItem("token");
+            if (token == null) {
+                navigate("/")
+            }   
+      },[])
     
     useEffect(() => {
         const listaUsers = async () => {

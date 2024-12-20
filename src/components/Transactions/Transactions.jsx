@@ -16,8 +16,10 @@ import { FaArrowDown } from "react-icons/fa";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import DetalleTransaccionDialog from "../UI/Dialogs/DetalleTransaccionDialog";
+import { useNavigate } from 'react-router-dom';
 
 export default function Transactions() {
+    const navigate = useNavigate();
     const [transactions, setTransactions] = useState([]);
     const [totalPages, setTotalPages] = useState(0);  // Estado para manejar el total de páginas
     const [page, setPage] = useState(1);
@@ -66,6 +68,13 @@ export default function Transactions() {
 
         return fechaFormateada;
     };
+
+    useEffect(() => {
+        let token = localStorage.getItem("token");
+        if (token == null) {
+            navigate("/")
+        }   
+    }, [])
 
     useEffect(() => {
         fetchTransactions();

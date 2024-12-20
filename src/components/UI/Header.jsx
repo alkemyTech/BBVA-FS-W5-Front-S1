@@ -131,11 +131,9 @@ export default function Header() {
           }}
         >
           <Box sx={{display:"flex", flexDirection:"column", textAlign:"center"}}>
+            
             <Typography variant="p" color="#BBBBBB">
-                Bienvenido/a
-            </Typography>
-            <Typography variant="p" color="#BBBBBB">
-                {userAuthenticated.firstName}!
+            {userAuthenticated.firstName} {userAuthenticated.lastName}
             </Typography>
           </Box>
           <IconButton

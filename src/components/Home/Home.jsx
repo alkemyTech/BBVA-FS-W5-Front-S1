@@ -1,9 +1,9 @@
 import Grid from '@mui/material/Grid2';
 import SendIcon from '@mui/icons-material/Send';
-import { Card, CardContent, Typography, Link as MuiLink, List, ListItem, Divider, Box, Button, Alert } from '@mui/material';
+import { Card, CardContent, Typography, List, ListItem, Divider, Box, Button } from '@mui/material';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
-import { Link, useNavigate } from 'react-router-dom';
+import {useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import apiConfig from '../../Config/axiosConfig';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
@@ -24,6 +24,7 @@ import DetalleTransaccionDialog from "../UI/Dialogs/DetalleTransaccionDialog";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import axios from "axios"
 import { formatearFecha } from '../../utils/helpers';
+import ContactsIcon from '@mui/icons-material/Contacts';
 
 export default function Home() {
 
@@ -151,10 +152,10 @@ export default function Home() {
     useEffect(() => {
         const fetchFavList = async () => {
             try {
-                const response = await apiConfig.get("/users/favList");
-                setFavList(response.data);
+                const response = await apiConfig.get("/users/favList?page=0&size=3");
+                setFavList(response.data.content);
             } catch (error) {
-                console.error('Error fetching accounts:', error);
+                console.error('Error fetching favUsers:', error);
             }
         };
 
@@ -273,7 +274,6 @@ export default function Home() {
                     </Card>
                 </Grid>
             )}
-
             <Grid item size={2} sx={{ display: "flex", alignSelf: "center" }}>
                 <Card variant="elevation" elevation={5} sx={{ borderRadius: "20%" }}>
                     <CardContent sx={{ display: "flex", flexDirection: "row" }}>
@@ -295,7 +295,8 @@ export default function Home() {
                                 Pagar servicios
                             </IconButton>
 
-                            <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", textAlign: "center", justifyContent: "center", alignItems: "center" }} onClick={() => handleNavegar("/sendmoney")}>
+                            <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold", display: "flex", flexDirection: "column", textAlign: "center", justifyContent: "center", alignItems: "center" }} 
+                            onClick={() => handleNavegar("/sendmoney/0/0")}>
                                 <SendIcon sx={{ fontSize: "40px", color: "#6655D9" }} />
                                 Enviar dinero
                             </IconButton>
@@ -303,7 +304,6 @@ export default function Home() {
                     </CardContent>
                 </Card>
             </Grid>
-
             <Grid item size={6}>
                 <Card variant="elevation" elevation={5}>
                     <CardContent sx={{
@@ -314,7 +314,8 @@ export default function Home() {
                             <MovingIcon sx={{ fontSize: "25px", color: "red" }} />
                             Movimientos
                         </Typography>
-                        <Button endIcon={<KeyboardArrowRightIcon />} sx={{ backgroundColor: "none", color: "white", fontWeight: "bold", fontSize: "12px" }} onClick={() => navigate("/transactions")}>
+                        <Button endIcon={<KeyboardArrowRightIcon />} sx={{ backgroundColor: "none", color: "white", fontWeight: "bold", fontSize: "12px" }} 
+                        onClick={() => navigate("/transactions")}>
                             Ver todos
                         </Button>
                     </CardContent>
@@ -324,8 +325,8 @@ export default function Home() {
                             <List>
                                 {transactions.map((transaction) => (
                                     <>
-                                        <ListItem sx={{ padding: 0, margin: 0 }} key={transaction.id}>
-                                            <CardContent sx={{ width: "100%", '&:hover': { backgroundColor: '#f0f0f0' } }}>
+                                        <ListItem key={transaction.id} sx={{padding: 0}}>
+                                            <CardContent sx={{ width: "100%"}}>
                                                 <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                                                     <Box sx={{ display: "flex", flexDirection: "row", gap: "10px", alignItems: "start" }}>
                                                         <Box>
@@ -390,10 +391,11 @@ export default function Home() {
                         justifyContent: "space-between"
                     }}>
                         <Typography variant='h6' color="#e8e8e8" sx={{ fontWeight: "bold", display: "flex", flexDirection: "row", alignItems: "center", gap: "5px" }}>
-                            <GradeIcon sx={{ fontSize: "25px", color: "gold" }} />
+                            <GradeIcon sx={{ fontSize: "25px", color: "gold" }}/>
                             Mis favoritos
                         </Typography>
-                        <Button endIcon={<KeyboardArrowRightIcon />} sx={{ backgroundColor: "none", color: "white", fontWeight: "bold", fontSize: "12px" }}>
+                        <Button endIcon={<KeyboardArrowRightIcon />} sx={{ backgroundColor: "none", color: "white", fontWeight: "bold", fontSize: "12px" }} 
+                        onClick={() => navigate("/favoritos")}>
                             Ver todos
                         </Button>
                     </CardContent>
@@ -403,9 +405,8 @@ export default function Home() {
                             <List>
                                 {favList.map((favUser) => (
                                     <>
-                                        <ListItem key={favUser.email}>
-                                            <MuiLink component={Link} to="/Transactions" sx={{ textDecoration: "none", width: "100%", color: "black" }}>
-                                                <CardContent sx={{ width: "100%", '&:hover': { backgroundColor: '#f0f0f0' } }}>
+                                        <ListItem key={favUser.id} sx={{padding: 0}}>
+                                                <CardContent sx={{ width: "100%", display:"flex", flexDirection:"row", justifyContent:"space-between"}}>
                                                     <Box sx={{ display: "flex", flexDirection: "row", gap: "10px", alignItems: "center" }}>
                                                         <PersonIcon style={{
                                                             color: "white", background: "grey", fontSize: "30px",
@@ -415,8 +416,10 @@ export default function Home() {
                                                             {(favUser.firstName + " " + favUser.lastName).toUpperCase()}
                                                         </Typography>
                                                     </Box>
+                                                    <IconButton> 
+                                                        <ContactsIcon sx={{ fontSize: "30px", color: "#6655D9" }} />
+                                                    </IconButton>
                                                 </CardContent>
-                                            </MuiLink>
                                         </ListItem>
                                         <Divider />
                                     </>

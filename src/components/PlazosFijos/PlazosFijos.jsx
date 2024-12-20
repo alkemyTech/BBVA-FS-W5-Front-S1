@@ -168,7 +168,6 @@ export default function PlazosFijos() {
   };
 
 
-  console.log(plazoFijo);
 
   const realizarInversion = async () => {
     setSnackbarVisibility(false);
@@ -227,7 +226,6 @@ export default function PlazosFijos() {
           .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate));
         setFixedTerms(sortedFixedTerms);
         setTotalPages(response.data.totalPages);
-        console.log(sortedFixedTerms);
       } catch (error) {
         console.error('Error fetching fixedTerms:', error);
       }

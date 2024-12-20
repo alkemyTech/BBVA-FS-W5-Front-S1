@@ -81,10 +81,7 @@ export default function MyAccount() {
             Authorization: 'Client-ID 78ace87ca84ed65', 
         },
     });
-        
         setIgmurImagenUrl(response.data.data.link);
-        console.log(igmurImagenUrl);
-        
     } catch (error) {
       console.error('Error al subir la imagen:', error);
     }
@@ -158,7 +155,6 @@ export default function MyAccount() {
     const deleteAccount = async () => {
         try {
             const response = await apiConfig.delete("/users");
-            console.log(response.data); 
         } catch (error) {
             console.error("Falla al eliminar", error.response?.data || error.message);
         }

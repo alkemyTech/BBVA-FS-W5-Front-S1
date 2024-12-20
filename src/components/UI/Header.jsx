@@ -129,7 +129,7 @@ export default function Header() {
               onClick={()=>redirect("/gestionUsuarios")}
             >
               <Typography variant="p" color="#ffffff">
-                Gestion de usuarios
+                Gestión de usuarios
               </Typography>
             </Button>
           </Grid>
@@ -149,11 +149,9 @@ export default function Header() {
           }}
         >
           <Box sx={{display:"flex", flexDirection:"column", textAlign:"center"}}>
+            
             <Typography variant="p" color="#BBBBBB">
-                ¡Bienvenido/a
-            </Typography>
-            <Typography variant="p" color="#BBBBBB">
-                {userAuthenticated.firstName}!
+            {userAuthenticated.firstName} {userAuthenticated.lastName}
             </Typography>
           </Box>
           <IconButton

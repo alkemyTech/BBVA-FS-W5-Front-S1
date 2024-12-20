@@ -15,7 +15,7 @@ import { GrTransaction } from "react-icons/gr";
 import { FaArrowDown } from "react-icons/fa";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import Swal from "sweetalert2";
+import DetalleTransaccionDialog from "../UI/Dialogs/DetalleTransaccionDialog";
 
 export default function Transactions() {
     const [transactions, setTransactions] = useState([]);
@@ -25,6 +25,37 @@ export default function Transactions() {
     const [currencyFilter, setCurrencyFilter] = useState("ALL");
     const [typeFilter, setTypeFilter] = useState("ALL");
     const [amountFilter, setAmountFilter] = useState("ALL");
+    const [transaction, setTransaction] = useState({
+        amount: "",
+        currencyType: "",
+        type: "",
+        description: "",
+        transactionDate: "",
+        titular: "",
+        cuenta: "",
+        cuentaDestino: "",
+    });
+    const [mostrarDetalleTransaccion, setMostrarDetalleTransaccion] = useState(false);
+
+    const openDetalleTransaccion = (transaction) => {
+
+        setTransaction({
+            amount: transaction.amount,
+            currencyType: transaction.currencyType,
+            type: transaction.type,
+            description: transaction.description,
+            transactionDate: transaction.transactionDate,
+            titular: transaction.titular,
+            cuenta: transaction.cuenta,
+            cuentaDestino: transaction.cuentaDestino
+        })
+        
+        setMostrarDetalleTransaccion(true);
+    }
+
+    const closeDetalleTransaccion = () => {
+        setMostrarDetalleTransaccion(false);
+    }
 
 
     const formatearFecha = (fechaOriginal) => {
@@ -216,7 +247,7 @@ export default function Transactions() {
                                                     </TableCell>
                                                     <TableCell sx={{ textAlign: "center" }}>
                                                         <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold" }}
-                                                            onClick={() => infoTransactionsDetail(transaction.amount, transaction.currencyType, transaction.type, transaction.description, transaction.transactionDate, transaction.cuenta, transaction.titular, transaction.cuentaDestino)}>
+                                                           onClick={()=> openDetalleTransaccion(transaction)}>
                                                             <ReceiptIcon sx={{ fontSize: "30px", color: "#6655D9" }} />
                                                         </IconButton>
                                                     </TableCell>
@@ -242,6 +273,14 @@ export default function Transactions() {
                 </Grid>
 
             </Grid>
+
+            {mostrarDetalleTransaccion && (
+                <DetalleTransaccionDialog
+                    mostrarDetalleTransaccion={mostrarDetalleTransaccion}
+                    transaccion={transaction}
+                    closeDetalleTransaccion={closeDetalleTransaccion}
+                />
+            )}
         </Grid>
     )
 }

@@ -24,6 +24,7 @@ import {
     DialogContentText,
     DialogTitle,
 } from "@mui/material";
+import { NumericFormat } from "react-number-format";
 import DeleteIcon from "@mui/icons-material/Delete";
 import apiConfig from "../../Config/axiosConfig";
 import Visibility from '@mui/icons-material/Visibility';
@@ -39,18 +40,21 @@ export default function MyAccount() {
         lastName: "",
         password: "",
     });
+    const [transactionLimitUpdate, setTransactionLimitUpdate] = useState({
+        transactionLimit: "",
+    })
     const [passwordVisibility, setPasswordVisibility] = useState(false);
-
-
     const [habilitarEdicion, setHabilitarEdicion] = useState(false);
     const [editando, setEditando] = useState(false)
+    const [habilitarEdicionTransaction, setHabilitarEdicionTransaction] = useState(false);
+    const [editandoTransaction, setEditandoTransaction] = useState(false)
 
 
     const abrirEdicion = () => {
         setHabilitarEdicion(true);
         setEditando(true);
-
     }
+    
 
     const cerrarEdicion = () => {
         setHabilitarEdicion(false);
@@ -60,7 +64,19 @@ export default function MyAccount() {
             lastName: "",
             password: "",
         })
+    }
+    
+    const abrirEdicionTransaction = () => {
+        setHabilitarEdicionTransaction(true);
+        setEditandoTransaction(true);
+    }
 
+    const cerrarEdicionTransaction = () => {
+        setHabilitarEdicionTransaction(false);
+        setEditandoTransaction(false);
+        setTransactionLimitUpdate({
+            transactionLimit: "",
+        })
     }
 
     const changePasswordVisibility = () => {
@@ -68,10 +84,13 @@ export default function MyAccount() {
     };
 
     const [open, setOpen] = useState(false);
+    const [openTransaction, setOpenTransaction] = useState(false);
     const [password, setPassword] = useState("");
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const handleOpenTransaction = () => setOpenTransaction(true);
+    const handleCloseTransaction = () => setOpenTransaction(false);
 
     const handleDeactivate = () => {
         handleDelete();
@@ -83,10 +102,10 @@ export default function MyAccount() {
         deleteAccount();
     };
 
-
-
-
-    console.log(userProfile);
+    const handleEdit = (cbu) => {
+        updateTransaction(cbu)
+        setOpenTransaction(false)
+    }
 
     useEffect(() => {
         const fetchUserProfile = async () => {
@@ -105,14 +124,26 @@ export default function MyAccount() {
     const deleteAccount = async () => {
         try {
             const response = await apiConfig.delete("/users");
-            console.log(response.data); // Muestra el mensaje de éxito del backend
+            console.log(response.data); 
         } catch (error) {
             console.error("Falla al eliminar", error.response?.data || error.message);
         }
     };
 
+    const updateTransaction = async (cbu) => {
+        try {
+            const response = await apiConfig.patch(`/accounts/${cbu}`, {
+                transactionLimit: transactionLimitUpdate.transactionLimit,
+            }); 
+            console.log(cbu)
+        } catch (error) {
+            console.error("Falla al editar", error.response?.data || error.message);
+        }
+        
+    };
 
-    console.log(staticUserProfile)
+
+    
 
     useEffect(() => {
         const fetchAccounts = async () => {
@@ -390,10 +421,6 @@ export default function MyAccount() {
                             </CardActions>
                         </Card>
                     </Grid>
-
-
-
-
                 </Grid>
 
                 {/* Tabla de Cuentas */}
@@ -429,6 +456,7 @@ export default function MyAccount() {
                                 </TableHead>
                                 <TableBody>
                                     {accounts.map((account) => (
+                                        <>
                                         <TableRow key={account.cbu}>
                                             <TableCell align="center">{account.currency || "N/A"}</TableCell>
                                             <TableCell align="center">${account.balance || "0.00"}</TableCell>
@@ -438,18 +466,57 @@ export default function MyAccount() {
                                                     <Typography variant="body2" sx={{ m: "auto" }}>
                                                         ${account.transactionLimit || "Sin límite"}
                                                     </Typography>
-                                                    <Button color="primary" sx={{ p: 0 }}>
+                                                    <Button color="primary" sx={{ p: 0 }} onClick={() => handleOpenTransaction()} >
                                                         <EditIcon />
                                                     </Button>
                                                 </Box>
                                             </TableCell>
                                         </TableRow>
-                                    ))}
+                                        <Dialog open={openTransaction} onClose={handleCloseTransaction}>
+                                        <DialogTitle>Editar Limite de Transaccion</DialogTitle>
+                                        <DialogContent>
+                                            <DialogContentText>
+                                                Por favor, Ingrese el nuevo limite de transaccion!
+                                            </DialogContentText>
+                                            <NumericFormat
+                                                    thousandSeparator="."
+                                                    customInput={TextField}
+                                                    label="Limite de Transaccion"
+                                                    value={transactionLimitUpdate.transactionLimit}
+                                                    onValueChange={(values) => {
+                                                        const { value } = values;
+                                                        setTransactionLimitUpdate({ ...transactionLimitUpdate, transactionLimit: value });
+                                                        }}
+                                                    decimalSeparator=","
+                                                    decimalScale={0}
+                                                    fixedDecimalScale
+                                                    allowNegative={false}
+                                                    displayType="input"
+                                                    size="small"
+                                                    />
+                                        </DialogContent>
+                                        <DialogActions>
+                                            <Button onClick={handleCloseTransaction} color="primary">
+                                                Cancelar
+                                            </Button>
+                                            <Button
+                                                onClick={() => handleEdit(account.cbu)}
+                                                color="error"
+                                            >
+                                                Confirmar
+                                            </Button>
+                                        </DialogActions>
+                                    </Dialog>
+                                    </>))}
                                 </TableBody>
                             </Table>
                         </TableContainer>
+                        
                     </CardContent>
                 </Card>
+                
+                    
+                
             </Grid>
 
             {/* Columna derecha */}

@@ -64,6 +64,10 @@ export default function SendMoney({ send }) {
   };
 
   useEffect(() => {
+    let token = localStorage.getItem("token");
+    if (token == null) {
+        navigate("/")
+    }
     const fetchAccounts = async () => {
       try {
         const response = await apiConfig.get("accounts/");

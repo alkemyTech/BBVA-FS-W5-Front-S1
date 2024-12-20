@@ -63,7 +63,7 @@ export default function Header() {
         boxShadow: "0px 8px 10px rgba(0, 0, 0, 0.2)",
       }}
     >
-      <Grid item size={6}>
+      <Grid item size={7}>
         <Grid container alignItems="center" flexDirection="row" spacing={3}>
           <Grid item>
             <img
@@ -73,7 +73,6 @@ export default function Header() {
               onClick={handleNavigate}
             />
           </Grid>
-
           <Grid item>
             <Button
               sx={{
@@ -123,7 +122,7 @@ export default function Header() {
             <Button
               sx={{
                 color: "#ffffff",
-                fontSize: "16px",
+                fontSize: "14px",
               }}
               startIcon={<ManageAccountsIcon />}
               onClick={()=>redirect("/gestionUsuarios")}
@@ -138,7 +137,7 @@ export default function Header() {
           
         </Grid>
       </Grid>
-      <Grid item size={6}>
+      <Grid item size={5}>
         <Box
           sx={{
             display: "flex",
@@ -151,7 +150,7 @@ export default function Header() {
           <Box sx={{display:"flex", flexDirection:"column", textAlign:"center"}}>
             
             <Typography variant="p" color="#BBBBBB">
-            {userAuthenticated.firstName} {userAuthenticated.lastName}
+              ¡Bienvenido/a {userAuthenticated.firstName} {userAuthenticated.lastName}!
             </Typography>
           </Box>
           <IconButton

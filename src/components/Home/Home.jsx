@@ -197,20 +197,19 @@ export default function Home() {
     fetchTransactions();
   }, [cargaFinalizada]);
 
-  useEffect(() => {
-    let token = localStorage.getItem("token");
-    console.log(token);
-    if (token == null) {
-      navigate("/");
-    }
-    const fetchFavList = async () => {
-      try {
-        const response = await apiConfig.get("/users/favList?page=0&size=3");
-        setFavList(response.data.content);
-      } catch (error) {
-        console.error("Error fetching favUsers:", error);
-      }
-    };
+    useEffect(() => {
+        let token = localStorage.getItem("token");
+        if (token == null) {
+            navigate("/")
+        }
+        const fetchFavList = async () => {
+            try {
+                const response = await apiConfig.get("/users/favList?page=0&size=3");
+                setFavList(response.data.content);
+            } catch (error) {
+                console.error('Error fetching favUsers:', error);
+            }
+        };
 
     fetchFavList();
   }, []);

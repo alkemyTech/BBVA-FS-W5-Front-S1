@@ -25,7 +25,8 @@ import { useNavigate } from 'react-router-dom';
 import apiConfig from "../../Config/axiosConfig";
 import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
 import GenericSnackbar from "../UI/Snackbar/Snackbar";
-import { formatearFechaSimple } from "../../utils/helpers";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 
 export default function PlazosFijos() {
@@ -134,6 +135,15 @@ export default function PlazosFijos() {
 
   const fechaActual = new Date();
 
+  const formatearFecha = (fechaOriginal) => {
+
+    const fechaFormateada = format(new Date(fechaOriginal), "dd, MMM, HH:mm:ss", {
+      locale: es,
+    }).toUpperCase();
+
+    return fechaFormateada;
+  };
+
   const cotizarPlazo = async () => {
     setCotizando(true);
 
@@ -184,8 +194,7 @@ export default function PlazosFijos() {
           message: "Plazo Fijo creado con éxito!",
         });
         setCargaFinalizada(true);
-        setSnackbarVisibility(true);
-        window.location.reload();
+        setSnackbarVisibility(true);     
       }, 3000);
 
       setPlazoFijo({
@@ -281,6 +290,10 @@ export default function PlazosFijos() {
       color: "red",
     },
   };
+
+
+
+
 
   return (
     <Grid container flexDirection="row" sx={{ p: 3 }} spacing={4}>
@@ -400,9 +413,9 @@ export default function PlazosFijos() {
               </Typography>
               <Typography variant="p" color="#6655D9">
                 {
-                  plazoFijo.cantidadDias == 30 ? formatearFechaSimple(new Date(fechaActual.getTime() + 1 * 60 * 1000)) :
-                    plazoFijo.cantidadDias == 60 ? formatearFechaSimple(new Date(fechaActual.getTime() + 2 * 60 * 1000)) :
-                      formatearFechaSimple(new Date(fechaActual.getTime() + 3 * 60 * 1000))
+                  plazoFijo.cantidadDias == 30 ? formatearFecha(new Date(fechaActual.getTime() + 1 * 60 * 1000)) :
+                    plazoFijo.cantidadDias == 60 ? formatearFecha(new Date(fechaActual.getTime() + 2 * 60 * 1000)) :
+                      formatearFecha(new Date(fechaActual.getTime() + 3 * 60 * 1000))
                 }
               </Typography>
             </CardContent>
@@ -418,7 +431,7 @@ export default function PlazosFijos() {
           </Box>
         )}
         {cotizacionCompleta && (
-          <Card variant="elevation" elevation={5} sx={{ width: "75%" }}>
+          <Card variant="elevation" elevation={20} sx={{ width: "75%" }}>
             <CardContent sx={{ display: "flex", justifyContent: "center" }}>
               <Typography variant="h7" color="#6655D9" fontWeight="bold">COTIZACIÓN DEL PLAZO FIJO</Typography>
             </CardContent>
@@ -440,7 +453,7 @@ export default function PlazosFijos() {
                 <Typography variant="body1" color="#6655D9" fontWeight="bold">${plazoFijo.finalAmount}</Typography>
               </Typography>
               <Typography variant="p" color="black" sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "5px" }}>- Fecha de cierre:
-                <Typography variant="body1" color="#6655D9" fontWeight="bold">{formatearFechaSimple(plazoFijo.closingDate)}</Typography>
+                <Typography variant="body1" color="#6655D9" fontWeight="bold">{formatearFecha(plazoFijo.closingDate)}</Typography>
               </Typography>
               <Box sx={{ display: "flex", flexDirection: "row", gap: "10px", alignItems: "center", justifyContent: "space-around", pt: 1 }}>
                 <Button variant="contained" size="small" onClick={() => setCotizacionCompleta(false)} sx={{
@@ -538,15 +551,15 @@ export default function PlazosFijos() {
                     </TableHead>
                     <TableBody>
                       {fixedTermsWithData.map((fixedTerm) => (
-                        <TableRow key={fixedTerm.id} sx={{ cursor: "pointer" }}>
+                        <TableRow key={fixedTerm.id} sx={{ cursor: "pointer" }} onClick={() => handleRowClick(fixedTerm.id)}>
                           <TableCell sx={{ textAlign: "center", color: "green", fontWeight: "bold" }}>
                             ${fixedTerm.amount}
                           </TableCell>
                           <TableCell sx={{ textAlign: "center", color: "gray", fontWeight: "bold" }}>
-                            {formatearFechaSimple(fixedTerm.creationDate)}
+                            {formatearFecha(fixedTerm.creationDate)}
                           </TableCell>
                           <TableCell sx={{ textAlign: "center", color: "gray", fontWeight: "bold" }}>
-                            {formatearFechaSimple(fixedTerm.closingDate)}
+                            {formatearFecha(fixedTerm.closingDate)}
                           </TableCell>
                           <TableCell sx={{ textAlign: "center", color: fixedTerm.settled == 0 ? "red" : "#6655D9", fontWeight: "bold" }}>
                             {fixedTerm.settled == 0 ? "En progreso..." : "Liquidado"}

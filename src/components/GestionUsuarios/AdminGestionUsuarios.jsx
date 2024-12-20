@@ -14,9 +14,10 @@ import apiConfig from '../../Config/axiosConfig';
 import { format } from "date-fns";
 import { es, id } from "date-fns/locale";
 import PersonIcon from '@mui/icons-material/Person';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import { Link } from 'react-router-dom';
+import AlertaDialog from '../UI/Dialogs/ActivarDesactivarUserDialog';
 
 export default function GestionUsuarios() {
 
@@ -26,8 +27,24 @@ export default function GestionUsuarios() {
     const itemsPerPage = 10;  // Número de elementos por página
     const [borradoExitoso, setBorradoExitoso] = useState(false);
     const [asignacionExitosa, setAsignacionExitosa] = useState(false);
+    const [idUser, setIdUser] = useState(0);
     const [verUser, setVerUser] = useState(false);
     const [role, setRole] = useState("");
+    const [mostrarAlerta, setMostrarAlerta] = useState(false);
+    const [accion, setAccion] = useState("");
+    const [idUsuarioAEliminar, setIdUsuarioAEliminar] = useState("");
+    const [mailUsuarioAEliminar, setEmailUsuarioAEliminar] = useState("");
+
+    const abrirAlerta = (accionAlerta, id, email) => {
+        setMostrarAlerta(true);
+        setAccion(accionAlerta);
+        setIdUsuarioAEliminar(id);
+        setEmailUsuarioAEliminar(email);
+    }
+
+    const closeAlerta = () => {
+        setMostrarAlerta(false);
+    }
 
     const handleRoleChange = (event) => {
         setRole(event.target.value);
@@ -46,10 +63,24 @@ export default function GestionUsuarios() {
         try {
             await apiConfig.delete(`/users/admin/${idUsuario}`);
             setBorradoExitoso(true);
+            setIdUser(idUsuario);
         } catch (error) {
             console.error("error no se borro", error);
-            setBorradoExitoso(false);
         }
+        setMostrarAlerta(false);
+    };
+
+    const habilitarUser = async (emailUser, idUsuario) => {
+        try {
+            await apiConfig.post(`/auth/reactivate`, {
+                email: emailUser
+            });
+            setBorradoExitoso(false);
+            setIdUser(idUsuario);
+        } catch (error) {
+            console.error("error no se borro", error);
+        }
+        setMostrarAlerta(false);
     };
 
     const buscarUsuario = async (idUsuario) => {
@@ -84,7 +115,7 @@ export default function GestionUsuarios() {
             console.error("error al asignar el rol", error);
         }
     };
-
+    
     useEffect(() => {
         const listaUsers = async () => {
             try {
@@ -97,7 +128,7 @@ export default function GestionUsuarios() {
             }
         }
         listaUsers();
-    }, [page, borradoExitoso, asignacionExitosa]);
+    }, [page, borradoExitoso, asignacionExitosa, idUser]);
 
     const formatearFecha = (fechaOriginal) => {
 
@@ -125,7 +156,7 @@ export default function GestionUsuarios() {
                 <Grid container spacing={2} sx={{ justifyContent: "center" }}>
 
                     <Grid item size={12}>
-                        <Card variant="elevation" elevation={5} sx={{textAlign: "left"}}>
+                        <Card variant="elevation" elevation={5} sx={{ textAlign: "left" }}>
                             <CardContent sx={{ background: "#6655D9" }}>
                                 <Typography variant='h5' sx={{ fontWeight: "bold", color: "#e8e8e8" }}>
                                     ¿Como asignar un rol?
@@ -152,7 +183,7 @@ export default function GestionUsuarios() {
 
 
                         {verUser == true ? (
-                            <Card sx={{ textAlign: "left"}} variant="elevation" elevation={3}>
+                            <Card sx={{ textAlign: "left" }} variant="elevation" elevation={3}>
                                 <CardContent sx={{ background: "#6655D9" }}>
                                     <Typography variant='h5' sx={{ fontWeight: "bold", color: "#e8e8e8" }}>
                                         Datos del usuario
@@ -173,7 +204,7 @@ export default function GestionUsuarios() {
 
                                 </CardContent>
                                 <CardContent>
-                                    <FormControl variant="outlined" fullWidth sx={{marginBottom:"5px"}}>
+                                    <FormControl variant="outlined" fullWidth sx={{ marginBottom: "5px" }}>
                                         <InputLabel id="role-selector-label">Seleccione Rol</InputLabel>
                                         <Select
                                             labelId="role-selector-label"
@@ -210,7 +241,6 @@ export default function GestionUsuarios() {
                                                 <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Nombre</TableCell>
                                                 <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Apellido</TableCell>
                                                 <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Email</TableCell>
-                                                {/* <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Fecha de creacion</TableCell> */}
                                                 <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Fecha de modificacion</TableCell>
                                                 <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Rol</TableCell>
                                                 <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Estado</TableCell>
@@ -247,9 +277,6 @@ export default function GestionUsuarios() {
                                                             {user.email}
                                                         </Typography>
                                                     </TableCell>
-                                                    {/* <TableCell sx={{ textAlign: "center" }}>
-                                                        {formatearFecha(user.creationDate)}
-                                                    </TableCell> */}
                                                     <TableCell sx={{ textAlign: "center" }}>
                                                         {formatearFecha(user.updateDate)}
                                                     </TableCell>
@@ -259,17 +286,32 @@ export default function GestionUsuarios() {
                                                     <TableCell sx={{ textAlign: "center" }}>
                                                         {user.softDelete == null ? "Activo" : "Inactivo"}
                                                     </TableCell>
-                                                    <TableCell sx={{ textAlign: "center" }}>
-                                                        <Button
-                                                            variant='outlined'
-                                                            size='small'
-                                                            color='error'
-                                                            startIcon={<PersonRemoveIcon />}
-                                                            onClick={() => eliminarUser(user.id)}
-                                                        >
-                                                            Deshabilitar
-                                                        </Button>
-                                                    </TableCell>
+                                                    {user.softDelete == null ? (
+                                                        <TableCell sx={{ textAlign: "center" }}>
+                                                            <Button
+                                                                variant='outlined'
+                                                                size='small'
+                                                                color='error'
+                                                                startIcon={<PersonRemoveIcon />}
+                                                                onClick={() => abrirAlerta("deshabilitar", user.id, "")}
+                                                            >
+                                                                Deshabilitar
+                                                            </Button>
+                                                        </TableCell>
+                                                    ) : (
+                                                        <TableCell sx={{ textAlign: "center" }}>
+                                                            <Button
+                                                                variant='outlined'
+                                                                size='small'
+                                                                color='success'
+                                                                startIcon={<PersonAddAlt1Icon />}
+                                                                onClick={() => abrirAlerta("habilitar", user.id, user.email)}
+                                                            >
+                                                                Habilitar
+                                                            </Button>
+                                                        </TableCell>
+                                                    )}
+
                                                 </TableRow>
                                             ))}
                                         </TableBody>
@@ -283,6 +325,7 @@ export default function GestionUsuarios() {
                                     color="primary"
                                     sx={{ display: "flex", justifyContent: "center", marginTop: 1, background: "#eee", marginBottom: 1 }}
                                 />
+                                
 
                             </>
                         ) :
@@ -291,6 +334,13 @@ export default function GestionUsuarios() {
                     </Grid>
                 </Grid>
             </Grid>
+            <AlertaDialog
+                mostrarAlerta={mostrarAlerta}
+                habilitar={()=>habilitarUser(mailUsuarioAEliminar,idUsuarioAEliminar)}
+                deshabilitar={()=>eliminarUser(idUsuarioAEliminar)}
+                closeAlerta={closeAlerta}
+                accion={accion}
+            />
         </Grid>
     );
 }

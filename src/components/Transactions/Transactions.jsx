@@ -13,7 +13,9 @@ import MovingIcon from '@mui/icons-material/Moving';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import { GrTransaction } from "react-icons/gr";
 import { FaArrowDown } from "react-icons/fa";
-import { formatearFechaSimple } from '../../utils/helpers';
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import DetalleTransaccionDialog from "../UI/Dialogs/DetalleTransaccionDialog";
 
 export default function Transactions() {
     const [transactions, setTransactions] = useState([]);
@@ -23,6 +25,47 @@ export default function Transactions() {
     const [currencyFilter, setCurrencyFilter] = useState("ALL");
     const [typeFilter, setTypeFilter] = useState("ALL");
     const [amountFilter, setAmountFilter] = useState("ALL");
+    const [transaction, setTransaction] = useState({
+        amount: "",
+        currencyType: "",
+        type: "",
+        description: "",
+        transactionDate: "",
+        titular: "",
+        cuenta: "",
+        cuentaDestino: "",
+    });
+    const [mostrarDetalleTransaccion, setMostrarDetalleTransaccion] = useState(false);
+
+    const openDetalleTransaccion = (transaction) => {
+
+        setTransaction({
+            amount: transaction.amount,
+            currencyType: transaction.currencyType,
+            type: transaction.type,
+            description: transaction.description,
+            transactionDate: transaction.transactionDate,
+            titular: transaction.titular,
+            cuenta: transaction.cuenta,
+            cuentaDestino: transaction.cuentaDestino
+        })
+        
+        setMostrarDetalleTransaccion(true);
+    }
+
+    const closeDetalleTransaccion = () => {
+        setMostrarDetalleTransaccion(false);
+    }
+
+
+    const formatearFecha = (fechaOriginal) => {
+
+        const fechaFormateada = format(new Date(fechaOriginal), "dd, MMM, HH:mm:ss", {
+            locale: es,
+        }).toUpperCase();
+
+        return fechaFormateada;
+    };
 
     useEffect(() => {
         fetchTransactions();
@@ -82,7 +125,7 @@ export default function Transactions() {
         <Grid container sx={{ justifyContent: "center", textAlign: "center", marginTop: "10px" }} spacing={2}>
             <Grid item size={12}>
                 <Typography variant="h5" sx={{ fontWeight: "bold", color: "#6655D9" }} >
-                    Movimientos
+                    MIS MOVIMIENTOS
                 </Typography>
             </Grid>
             <Grid item size={9.1}>
@@ -203,7 +246,8 @@ export default function Transactions() {
                                                         {formatearFechaSimple(transaction.transactionDate)}
                                                     </TableCell>
                                                     <TableCell sx={{ textAlign: "center" }}>
-                                                        <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold" }}>
+                                                        <IconButton sx={{ gap: "5px", fontSize: "15px", fontWeight: "bold" }}
+                                                           onClick={()=> openDetalleTransaccion(transaction)}>
                                                             <ReceiptIcon sx={{ fontSize: "30px", color: "#6655D9" }} />
                                                         </IconButton>
                                                     </TableCell>
@@ -229,6 +273,14 @@ export default function Transactions() {
                 </Grid>
 
             </Grid>
+
+            {mostrarDetalleTransaccion && (
+                <DetalleTransaccionDialog
+                    mostrarDetalleTransaccion={mostrarDetalleTransaccion}
+                    transaccion={transaction}
+                    closeDetalleTransaccion={closeDetalleTransaccion}
+                />
+            )}
         </Grid>
     )
 }

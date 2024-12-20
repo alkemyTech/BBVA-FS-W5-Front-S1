@@ -249,22 +249,21 @@ export default function Home() {
         }
       );
       setLoadingScreen({
-        message: "Creando cuenta en USD",
-        duration: "3000",
+        message: "Editando el limite de transacción",
+        duration: 3000,
       });
 
       setIsLoading(true);
       setTimeout(() => {
         setSnackbar({
           status: "success",
-          message: "¡Limite de trabsacción modificado con exito!",
+          message: "¡Limite de transacción modificado con exito!",
         });
         setSnackbarVisibility(true);
         setCargaFinalizada(true);
       }, 2500);
     } catch (error) {
-      console.log(snackbarVisibility)
-      console.log(error)
+      transactionLimitFinal = ""
       console.error("Falla al editar", error.response?.data || error.message);
       setSnackbar({
         status: "error",

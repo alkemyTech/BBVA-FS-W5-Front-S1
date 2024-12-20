@@ -63,7 +63,7 @@ export default function Header() {
         boxShadow: "0px 8px 10px rgba(0, 0, 0, 0.2)",
       }}
     >
-      <Grid item size={7}>
+      <Grid item size={8}>
         <Grid container alignItems="center" flexDirection="row" spacing={3}>
           <Grid item>
             <img
@@ -137,7 +137,7 @@ export default function Header() {
           
         </Grid>
       </Grid>
-      <Grid item size={5}>
+      <Grid item size={4}>
         <Box
           sx={{
             display: "flex",

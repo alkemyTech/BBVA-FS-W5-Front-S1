@@ -2,8 +2,6 @@ import Grid from "@mui/material/Grid2";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import apiConfig from "../../Config/axiosConfig";
-import { GrTransaction } from "react-icons/gr";
-import { FaArrowDown } from "react-icons/fa";
 import GenericSnackbar from "../UI/Snackbar/Snackbar";
 import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
 import { Card, TextField, Button, MenuItem} from "@mui/material";
@@ -14,6 +12,7 @@ import { useSelector } from "react-redux";
 import AlertaDialog from "../UI/Dialogs/AlertaDialog";
 import { useParams } from 'react-router-dom';
 import PropTypes from "prop-types";
+import { formatearNumero } from "../../utils/helpers"
 
 export default function SendMoney({ send }) {
   const { cbuParam, tipoCuentaParam } = useParams();
@@ -121,13 +120,12 @@ export default function SendMoney({ send }) {
   };
 
   const manejarTransferencia = async () => {
-    let response;
     setSnackbarVisibility(false);
     setMostrarAlertaMovimiento(false)
     if (send == true) {
       if (tipoCuenta.currency == "ARS") {
         try {
-          response = await apiConfig.post("/transactions/sendArs", {
+          await apiConfig.post("/transactions/sendArs", {
             amount: transaction.amount,
             description: transaction.description,
             cbu: transaction.cbu,
@@ -149,7 +147,7 @@ export default function SendMoney({ send }) {
         }
       } else {
         try {
-          response = await apiConfig.post("/transactions/sendUsd", {
+            await apiConfig.post("/transactions/sendUsd", {
             amount: transaction.amount,
             description: transaction.description,
             cbu: transaction.cbu,
@@ -178,7 +176,7 @@ export default function SendMoney({ send }) {
     } else {
       setIsLoading(false);
       try {
-        response = await apiConfig.post("/transactions/deposit", {
+        await apiConfig.post("/transactions/deposit", {
           amount: deposit.amount,
           description: deposit.description,
           currencyType: tipoCuenta.currency,
@@ -469,7 +467,7 @@ export default function SendMoney({ send }) {
                         <Grid item size={12}>
                           <Typography variant="p" color="textSecondary">
                             {"Balance: $" +
-                              obtenerCuenta(tipoCuenta.currency).balance}
+                              formatearNumero(obtenerCuenta(tipoCuenta.currency).balance)}
                           </Typography>
                         </Grid>
                         <Grid item size={12}>

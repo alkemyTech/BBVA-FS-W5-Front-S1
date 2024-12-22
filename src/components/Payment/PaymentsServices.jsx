@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -6,12 +6,6 @@ import {
   Button,
   Box,
   CardMedia,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  TextField,
 } from "@mui/material";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import apiConfig from "../../Config/axiosConfig";
@@ -19,7 +13,6 @@ import { useDispatch, useSelector } from "react-redux";
 import Grid from "@mui/material/Grid2";
 import { useNavigate } from "react-router-dom";
 import AlertaDialog from "../UI/Dialogs/AlertaDialog";
-import { Style } from "@mui/icons-material";
 import GenericSnackbar from "../UI/Snackbar/Snackbar";
 import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
 
@@ -126,7 +119,7 @@ const Payment = () => {
       }
     };
     fetchAccounts();
-  }, [handleConfirmPayment]);
+  }, []);
 
   const accountPesos = accounts.filter((account) => account.currency === "ARS");
 
@@ -374,13 +367,13 @@ const Payment = () => {
         closeAlerta={handleCloseDialog}
         mensajeAlerta={
           <>
-      Vas a pagar el siguiente servicio:{" "}
-      <span style={{ color: serviceAlert.color }}>{serviceAlert.name}</span>
-      <br />
-      Por el precio de:{" "}
-      <span style={{ color: "green" }}>${serviceAlert.price}</span>
-    </>
-  }
+            Vas a pagar el siguiente servicio:{" "}
+            <span style={{ color: serviceAlert.color }}>{serviceAlert.name}</span>
+            <br />
+            Por el precio de:{" "}
+            <span style={{ color: "green" }}>${serviceAlert.price}</span>
+          </>
+        }
       />
       {snackbarVisibility && (
         <GenericSnackbar

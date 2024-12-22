@@ -6,13 +6,13 @@ import { GrTransaction } from "react-icons/gr";
 import { FaArrowDown } from "react-icons/fa";
 import GenericSnackbar from "../UI/Snackbar/Snackbar";
 import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
-import { Card, TextField, Button, MenuItem} from "@mui/material";
+import { Card, TextField, Button, MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import { NumericFormat } from "react-number-format";
 import { useSelector } from "react-redux";
 import AlertaDialog from "../UI/Dialogs/AlertaDialog";
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 import PropTypes from "prop-types";
 
 export default function SendMoney({ send }) {
@@ -34,9 +34,14 @@ export default function SendMoney({ send }) {
     duration: null,
   });
   const [tipoCuenta, setTipoCuenta] = useState({
-    currency: (tipoCuentaParam == 0 || tipoCuentaParam == "ARS" || tipoCuentaParam== undefined) ? "ARS" : "USD",
+    currency:
+      tipoCuentaParam == 0 ||
+      tipoCuentaParam == "ARS" ||
+      tipoCuentaParam == undefined
+        ? "ARS"
+        : "USD",
   });
-  
+
   const [transaction, setTransaction] = useState({
     amount: "",
     description: "Varios",
@@ -67,7 +72,7 @@ export default function SendMoney({ send }) {
   useEffect(() => {
     let token = localStorage.getItem("token");
     if (token == null) {
-        navigate("/")
+      navigate("/");
     }
     const fetchAccounts = async () => {
       try {
@@ -104,11 +109,11 @@ export default function SendMoney({ send }) {
       });
       setCbuValido(true);
     } catch (e) {
-      setSnackbarVisibility(true)
+      setSnackbarVisibility(true);
       setSnackbar({
-        status:"error",
+        status: "error",
         message: e.response.data.Mensaje,
-      })
+      });
       setCbuValido(false);
       setCbuCompleto(false);
       setUserChip({
@@ -123,7 +128,7 @@ export default function SendMoney({ send }) {
   const manejarTransferencia = async () => {
     let response;
     setSnackbarVisibility(false);
-    setMostrarAlertaMovimiento(false)
+    setMostrarAlertaMovimiento(false);
     if (send == true) {
       if (tipoCuenta.currency == "ARS") {
         try {
@@ -134,12 +139,12 @@ export default function SendMoney({ send }) {
           });
           setIsLoading(true);
           setLoadingScreen({
-            message: "Realizando Transferencia" ,
-            duration: 3000
-          })
+            message: "Realizando Transferencia",
+            duration: 3000,
+          });
           setTimeout(() => {
-            navigate("/home")
-          },3000)
+            navigate("/home");
+          }, 3000);
         } catch (e) {
           setSnackbar({
             status: "error",
@@ -156,12 +161,12 @@ export default function SendMoney({ send }) {
           });
           setIsLoading(true);
           setLoadingScreen({
-            message: "Realizando Transferencia " ,
-            duration: 3000
-          })
+            message: "Realizando Transferencia ",
+            duration: 3000,
+          });
           setTimeout(() => {
-            navigate("/home")
-          },3000)
+            navigate("/home");
+          }, 3000);
         } catch (e) {
           setTransaction({
             amount: "",
@@ -185,16 +190,16 @@ export default function SendMoney({ send }) {
         });
         setIsLoading(true);
         setLoadingScreen({
-          message:"Realizando Deposito",
-          duration: 3000
-        })
+          message: "Realizando Deposito",
+          duration: 3000,
+        });
         setTimeout(() => {
           setDeposit({
-            amount:"",
-            description:"Varios"
-          })
+            amount: "",
+            description: "Varios",
+          });
           navigate("/home");
-        },3000)
+        }, 3000);
       } catch (e) {
         console.log(e);
         setSnackbar({
@@ -229,7 +234,6 @@ export default function SendMoney({ send }) {
   );
 
   const validarCampo = (campo, valor) => {
-
     if (campo === "cbu" && valor.length != 20 && valor != "") {
       setErrores((errores) => ({
         ...errores,
@@ -261,10 +265,9 @@ export default function SendMoney({ send }) {
     }
   };
 
-  
   const textFieldStyle = {
-    width: "90%", 
-    textAlign: "center", 
+    width: "90%",
+    textAlign: "center",
     "& .MuiOutlinedInput-root": {
       "&.Mui-focused fieldset": {
         borderColor: "#6655D9",
@@ -294,148 +297,74 @@ export default function SendMoney({ send }) {
   };
 
   return (
-
     <Grid container justifyContent="center" alignItems="center" height="70vh">
       <Card
-      variant="elevation"
-      elevation={10}
-      sx={{
-        width: "70%",
-        borderRadius: "20px",
-        background: "#fafafa",
-      }}
-    >
-      <Grid container
-        justifyContent="center"
-        alignItems="center"
-        textAlign="center"
+        variant="elevation"
+        elevation={10}
+        sx={{
+          width: "70%",
+          borderRadius: "20px",
+          background: "white",
+        }}
       >
-        <Grid item size={12} sx={{display:"flex", justifyContent:"center", background: "#6655D9", mb:3}}>
-          <Typography
-            variant="h5"
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          textAlign="center"
+        >
+          <Grid
+            item
+            size={12}
             sx={{
-              p: 2,
-              color: " white",
-              fontWeight:"bold",
-              display:"flex",
-              alignItems:"center",
-              gap:"12px"
+              display: "flex",
+              justifyContent: "center",
+              background: "#6655D9",
+              mb: 3,
             }}
           >
-          {send ? "Realizar Transferencia" : "Realizar Déposito"}
-          </Typography>
-        </Grid>
-        <Grid item size={12}>
-          {send && cbuCompleto && cbuValido && (
-            <Grid
-              container
+            <Typography
+              variant="h5"
               sx={{
-                border: "1px solid #6655D9",
-                borderRadius: "10px",
+                p: 2,
+                color: " white",
+                fontWeight: "bold",
                 display: "flex",
-                justifyContent: "space-between",
-                textAlign: "center",
                 alignItems: "center",
-                width: "60%",
-                margin: "auto",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
-                marginBottom: "30px",
-                p: 1.5,
+                gap: "12px",
               }}
             >
-              <Grid item size={2}>
-                <Avatar
-                  sx={{
-                    backgroundColor: "#646cff",
-                    color: "#ffffff !important",
-                    fontWeight: "bold",
-                    fontSize: "20px",
-                    height: "56px",
-                    width: "56px",
-                  }}
-                >
-                  {obtenerIniciales(
-                    userChip.firstName + " " + userChip.lastName
-                  )}
-                </Avatar>
-              </Grid>
-              <Grid item size={5}>
-                <Typography
-                  variant="h6"
-                  component="div"
-                  sx={{ fontSize: "16px", color: "#646cff" }}
-                >
-                  {userChip.firstName + " " + userChip.lastName}
-                </Typography>
-                <Typography variant="p" color="textSecondary">
-                  CBU: {transaction.cbu}
-                </Typography>
-              </Grid>
-              <Grid item size={5}>
-                <Grid container>
-                  <Grid item size={12}>
-                    <Typography variant="p" color="textSecondary">
-                      {"Limite de transaccion: $" + userChip.transactionLimit}
-                    </Typography>
-                  </Grid>
-                  <Grid item size={12}>
-                    <Typography variant="p" color="textSecondary">
-                      Tipo de cuenta: {userChip.currency}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-          )}
-        </Grid>
-        <Grid item size={6}>
-          <Grid
-            container
-            p="10px"
-            flexDirection="column"
-            spacing={send ? 8 : 6}
-          >
-            {send ? (
-              <Grid item size={12}>
-                <TextField
-                  id="cbu-input"
-                  name="cbu"
-                  label="CBU"
-                  value={transaction.cbu}
-                  error={Boolean(errores.cbu)}
-                  helperText={errores.cbu}
-                  onChange={(e) => {
-                    const nuevoCbu = e.target.value.replace(/[^0-9]/g, ""); 
-                    setTransaction({
-                      ...transaction,
-                      cbu: nuevoCbu,
-                    });
-                    setCbuCompleto(nuevoCbu.length === 20);
-                  }}
-                  onBlur={(e) => validarCampo("cbu", e.target.value)}
-                  sx={textFieldStyle}
-                />
-              </Grid>
-            ) : (
-              <Grid item size={12}>
-                {!send && obtenerCuenta(tipoCuenta.currency) != null && (
-                  <Grid
-                    container
-                    sx={{
-                      border: "1px solid #646cff",
-                      borderRadius: "10px",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      textAlign: "center",
-                      alignItems: "center",
-                      width: "90%",
-                      margin: "auto",
-                      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
-                      p: 2,
-                    }}
-                  >
-                    <Grid item size={2}>
-                      <Avatar
+              {send ? "Realizar Transferencia" : "Realizar Déposito"}
+            </Typography>
+          </Grid>
+          <Grid item size={12}>
+            {send && cbuCompleto && cbuValido && (
+              <Grid
+                container
+                sx={{
+                  border: "1px solid #6655D9",
+                  borderRadius: "10px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  textAlign: "center",
+                  alignItems: "center",
+                  width: "50%",
+                  margin: "auto",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
+                  marginBottom: "30px",
+                  p: 2,
+                  background: "#eee",
+                }}
+              >
+                <Grid item size={4}>
+                  <Grid container>
+                    <Grid
+                      item
+                      size={12}
+                      sx={{ display: "flex", justifyContent: "center", alignItems:"center" }}
+                    >
+                      <Grid item size={6}>
+                        <Avatar
                         sx={{
                           backgroundColor: "#646cff",
                           color: "#ffffff !important",
@@ -446,195 +375,293 @@ export default function SendMoney({ send }) {
                         }}
                       >
                         {obtenerIniciales(
-                          userAuthenticated.firstName +
-                            " " +
-                            userAuthenticated.lastName
+                          userChip.firstName + " " + userChip.lastName
                         )}
                       </Avatar>
-                    </Grid>
-                    <Grid item size={5}>
+                      </Grid>
+                      <Grid item size={6}>
                       <Typography
-                        variant="h6"
+                        variant="p"
                         component="div"
-                        sx={{ fontSize: "16px", color: "#646cff" }}
+                        sx={{ fontSize: "19px", color: "#646cff" }}
                       >
-                        {userAuthenticated.firstName + " " + userAuthenticated.lastName}
-                      </Typography>
-                      <Typography variant="p" color="textSecondary">
-                        CBU: {obtenerCuenta(tipoCuenta.currency).cbu}
+                        {userChip.firstName + " " + userChip.lastName}
                       </Typography>
                     </Grid>
-                    <Grid item size={5}>
-                      <Grid container>
-                        <Grid item size={12}>
-                          <Typography variant="p" color="textSecondary">
-                            {"Balance: $" +
-                              obtenerCuenta(tipoCuenta.currency).balance}
-                          </Typography>
-                        </Grid>
-                        <Grid item size={12}>
-                          <Typography variant="p" color="textSecondary">
-                            Tipo de cuenta: {tipoCuenta.currency}
-                          </Typography>
+                    </Grid>
+                  </Grid>
+                </Grid>
+
+                <Grid item size={8} sx={{pl:"50px"}}>
+                  <Grid container>
+                    <Grid item size={12}>
+                      <Typography variant="p" sx={{fontSize:"17.5px"}}>
+                        CBU: {transaction.cbu}
+                      </Typography>
+                    </Grid>
+                    <Grid item size={12}>
+                      <Typography variant="p">
+                        Tipo de cuenta: {userChip.currency}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid item size={5}>
+                  <Grid container>
+                    <Grid item size={12}></Grid>
+                    <Grid item size={12}></Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+            )}
+          </Grid>
+          <Grid item size={6}>
+            <Grid
+              container
+              p="10px"
+              flexDirection="column"
+              spacing={send ? 8 : 6}
+            >
+              {send ? (
+                <Grid item size={12}>
+                  <TextField
+                    id="cbu-input"
+                    name="cbu"
+                    label="CBU"
+                    value={transaction.cbu}
+                    error={Boolean(errores.cbu)}
+                    helperText={errores.cbu}
+                    onChange={(e) => {
+                      const nuevoCbu = e.target.value.replace(/[^0-9]/g, "");
+                      setTransaction({
+                        ...transaction,
+                        cbu: nuevoCbu,
+                      });
+                      setCbuCompleto(nuevoCbu.length === 20);
+                    }}
+                    onBlur={(e) => validarCampo("cbu", e.target.value)}
+                    sx={textFieldStyle}
+                  />
+                </Grid>
+              ) : (
+                <Grid item size={12}>
+                  {!send && obtenerCuenta(tipoCuenta.currency) != null && (
+                    <Grid
+                      container
+                      sx={{
+                        border: "1px solid #646cff",
+                        borderRadius: "10px",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        textAlign: "center",
+                        alignItems: "center",
+                        width: "90%",
+                        margin: "auto",
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
+                        p: 2,
+                      }}
+                    >
+                      <Grid item size={2}>
+                        <Avatar
+                          sx={{
+                            backgroundColor: "#646cff",
+                            color: "#ffffff !important",
+                            fontWeight: "bold",
+                            fontSize: "20px",
+                            height: "56px",
+                            width: "56px",
+                          }}
+                        >
+                          {obtenerIniciales(
+                            userAuthenticated.firstName +
+                              " " +
+                              userAuthenticated.lastName
+                          )}
+                        </Avatar>
+                      </Grid>
+                      <Grid item size={5}>
+                        <Typography
+                          variant="h6"
+                          component="div"
+                          sx={{ fontSize: "16px", color: "#646cff" }}
+                        >
+                          {userAuthenticated.firstName +
+                            " " +
+                            userAuthenticated.lastName}
+                        </Typography>
+                        <Typography variant="p" color="textSecondary">
+                          CBU: {obtenerCuenta(tipoCuenta.currency).cbu}
+                        </Typography>
+                      </Grid>
+                      <Grid item size={5}>
+                        <Grid container>
+                          <Grid item size={12}>
+                            <Typography variant="p" color="textSecondary">
+                              {"Balance: $" +
+                                obtenerCuenta(tipoCuenta.currency).balance}
+                            </Typography>
+                          </Grid>
+                          <Grid item size={12}>
+                            <Typography variant="p" color="textSecondary">
+                              Tipo de cuenta: {tipoCuenta.currency}
+                            </Typography>
+                          </Grid>
                         </Grid>
                       </Grid>
                     </Grid>
-                  </Grid>
-                )}
-              </Grid>
-            )}
-            <Grid item size={12}>
-              <TextField
-                id="tipo-cuenta"
-                label="Tipo de cuenta"
-                value={tipoCuenta.currency}
-                onChange={(e) =>
-                  setTipoCuenta({ ...tipoCuenta, currency: e.target.value })
-                }
-                select
-                sx={textFieldStyle}
-                variant="outlined"
-              >
-                <MenuItem value="ARS">ARS</MenuItem>
-                {accounts.length > 1 && <MenuItem value="USD">USD</MenuItem>}
-              </TextField>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item size={6}>
-          <Grid
-            container
-            flexDirection="column"
-            justifyContent="center"
-            alignItems="center"
-            textAlign="center"
-            spacing={5}
-          >
-            <Grid item={12}>
-              <NumericFormat
-                name="amount"
-                error={Boolean(errores.amount)}
-                helperText={errores.amount}
-                onBlur={(e) => validarCampo("amount", e.target.value)}
-                sx={{
-                  width: "100%",
-                  "& input::placeholder": {
-                    color: "black",
-                    opacity: 1,
-                  },
-                }}
-                value={send ? transaction.amount : deposit.amount}
-                onValueChange={(values) => {
-                  const { value } = values;
-
-                  
-                  if (value.startsWith("0") && value !== "") {
-                    return;
+                  )}
+                </Grid>
+              )}
+              <Grid item size={12}>
+                <TextField
+                  id="tipo-cuenta"
+                  label="Tipo de cuenta"
+                  value={tipoCuenta.currency}
+                  onChange={(e) =>
+                    setTipoCuenta({ ...tipoCuenta, currency: e.target.value })
                   }
-
-                  send
-                    ? setTransaction({ ...transaction, amount: value })
-                    : setDeposit({ ...deposit, amount: value });
-                }}
-                prefix="$"
-                customInput={TextField}
-                decimalSeparator=","
-                thousandSeparator="."
-                decimalScale={0}
-                fixedDecimalScale
-                allowNegative={false}
-                allowLeadingZeros={false}
-                displayType="input"
-                InputProps={{
-                  disableUnderline: true,
-                  inputProps: {
-                    style: {
-                      textAlign: "center",
-                      fontSize: "50px",
-                      color: "#646cff",
-                    },
-                  },
-                }}
-                size="small"
-                variant="standard"
-                placeholder="$0"
-              />
-            </Grid>
-            <Grid item size={12}>
-              <TextField
-                id=""
-                label="Descripcion"
-                value={send ? transaction.description : deposit.description}
-                onChange={(e) =>
-                  send
-                    ? setTransaction({
-                        ...transaction,
-                        description: e.target.value,
-                      })
-                    : setDeposit({
-                        ...deposit,
-                        description: e.target.value,
-                      })
-                }
-                sx={ textFieldStyle }
-              />
+                  select
+                  sx={textFieldStyle}
+                  variant="outlined"
+                >
+                  <MenuItem value="ARS">ARS</MenuItem>
+                  {accounts.length > 1 && <MenuItem value="USD">USD</MenuItem>}
+                </TextField>
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-
-        <Grid item size={12}>
-          <Grid container justifyContent="end" alignItems="end">
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{
-                padding: "10px 20px",
-                fontSize: "16px",
-                background: "#646cff",
-                fontWeight: "bold",
-                margin: 2,
-              }}
-              onClick={() => openAlertaMovimiento()}
-              disabled={
-                send
-                  ? presenciaDeErrores ||
-                    transaction.amount == "" ||
-                    transaction.cbu == ""
-                  : presenciaDeErrores || deposit.amount == ""
-              }
+          <Grid item size={6}>
+            <Grid
+              container
+              flexDirection="column"
+              justifyContent="center"
+              alignItems="center"
+              textAlign="center"
+              spacing={5}
             >
-              {send ? "Transferir" : "Depositar"}
-            </Button>
+              <Grid item={12}>
+                <NumericFormat
+                  name="amount"
+                  error={Boolean(errores.amount)}
+                  helperText={errores.amount}
+                  onBlur={(e) => validarCampo("amount", e.target.value)}
+                  sx={{
+                    width: "100%",
+                    "& input::placeholder": {
+                      color: "black",
+                      opacity: 1,
+                    },
+                  }}
+                  value={send ? transaction.amount : deposit.amount}
+                  onValueChange={(values) => {
+                    const { value } = values;
+
+                    if (value.startsWith("0") && value !== "") {
+                      return;
+                    }
+
+                    send
+                      ? setTransaction({ ...transaction, amount: value })
+                      : setDeposit({ ...deposit, amount: value });
+                  }}
+                  prefix="$"
+                  customInput={TextField}
+                  decimalSeparator=","
+                  thousandSeparator="."
+                  decimalScale={0}
+                  fixedDecimalScale
+                  allowNegative={false}
+                  allowLeadingZeros={false}
+                  displayType="input"
+                  InputProps={{
+                    disableUnderline: true,
+                    inputProps: {
+                      style: {
+                        textAlign: "center",
+                        fontSize: "50px",
+                        color: "#646cff",
+                      },
+                    },
+                  }}
+                  size="small"
+                  variant="standard"
+                  placeholder="$0"
+                />
+              </Grid>
+              <Grid item size={12}>
+                <TextField
+                  id=""
+                  label="Descripcion"
+                  value={send ? transaction.description : deposit.description}
+                  onChange={(e) =>
+                    send
+                      ? setTransaction({
+                          ...transaction,
+                          description: e.target.value,
+                        })
+                      : setDeposit({
+                          ...deposit,
+                          description: e.target.value,
+                        })
+                  }
+                  sx={textFieldStyle}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+
+          <Grid item size={12}>
+            <Grid container justifyContent="end" alignItems="end">
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{
+                  padding: "10px 20px",
+                  fontSize: "16px",
+                  background: "#646cff",
+                  fontWeight: "bold",
+                  margin: 2,
+                }}
+                onClick={() => openAlertaMovimiento()}
+                disabled={
+                  send
+                    ? presenciaDeErrores ||
+                      transaction.amount == "" ||
+                      transaction.cbu == ""
+                    : presenciaDeErrores || deposit.amount == ""
+                }
+              >
+                {send ? "Transferir" : "Depositar"}
+              </Button>
+            </Grid>
           </Grid>
         </Grid>
-      </Grid>
-      
-      {snackbarVisibility && (
-        <GenericSnackbar
-          status={snackbar.status}
-          message={snackbar.message}
-          visibility={snackbarVisibility}
+
+        {snackbarVisibility && (
+          <GenericSnackbar
+            status={snackbar.status}
+            message={snackbar.message}
+            visibility={snackbarVisibility}
+          />
+        )}
+        <AlertaDialog
+          mostrarAlerta={mostrarAlertaMovimiento}
+          accion={manejarTransferencia}
+          closeAlerta={closeAlertaMovimiento}
+          mensajeAlerta={
+            send
+              ? "Estas a punto de realizar una transferencia"
+              : "Estas a punto de realizar un déposito"
+          }
         />
-      )}
-      <AlertaDialog
-        mostrarAlerta={mostrarAlertaMovimiento}
-        accion={manejarTransferencia}
-        closeAlerta={closeAlertaMovimiento}
-        mensajeAlerta={
-          send
-            ? "Estas a punto de realizar una transferencia"
-            : "Estas a punto de realizar un déposito"
-        }
-      />
-    </Card>
-    
-    {isLoading && (
+      </Card>
+
+      {isLoading && (
         <LoadingScreen
           message={loadingScreen.message}
           duration={loadingScreen.duration}
         />
-    )}
-
+      )}
     </Grid>
   );
 }

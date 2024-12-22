@@ -42,3 +42,10 @@ export const obtenerIniciales = (cadena) => {
 export const abreviarCBU = (cbu) => {
     return cbu.slice (0, 6) + "...";
 }
+
+export const formatearNumero = (numero) => {
+    
+    return numero.toLocaleString("es-AR", {
+        minimumFractionDigits: 0,
+    })
+}

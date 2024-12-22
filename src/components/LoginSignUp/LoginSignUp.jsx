@@ -406,6 +406,7 @@ export default function LoginSignUp({ isLogin }) {
                 display: "flex",
                 flexDirection: "column",
                 gap: "30px",
+                width:"80%"
               }}
             >
               <Typography

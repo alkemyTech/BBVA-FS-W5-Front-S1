@@ -8,8 +8,8 @@ import {
     Avatar,
     TextField,
     Button,
-    CardActions,
     IconButton,
+    Box,
 } from "@mui/material";
 import { formatearFechaCompleta } from "../../utils/helpers";
 import apiConfig from "../../Config/axiosConfig";
@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 import AlertaDialog from "../UI/Dialogs/AlertaDialog";
 import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
 import GenericSnackbar from "../UI/Snackbar/Snackbar";
-import { set } from "date-fns";
+import EditIcon from "@mui/icons-material/Edit";
 
 export default function MyAccount() {
     const navigate = useNavigate()
@@ -132,7 +132,7 @@ export default function MyAccount() {
     return (
         <Grid container sx={{p:3}} spacing={5} justifyContent={"center"}>
             <Grid item size={12}>
-                <Typography variant="h5" color="#6655D9" sx={{fontWeight:"bold", textAlign:"center"}}>MI CUENTA</Typography>
+                <Typography variant="h5" color="#6655D9" sx={{fontWeight:"bold", textAlign:"center"}}>MI PERFIL</Typography>
             </Grid>
             {/* Columna izquierda */}
             <Grid item size={10}>
@@ -177,7 +177,7 @@ export default function MyAccount() {
                             }}
                         >
                             <CardHeader
-                                title="Información del Usuario"
+                                title="Datos personales"
                                 sx={{
                                     backgroundColor: "#6655D9",
                                     color: "#ffffff",
@@ -186,73 +186,70 @@ export default function MyAccount() {
                                     fontSize: "1.5rem",
                                 }}
                             />
-                            <CardContent sx={{ textAlign: "center", mt: 1 }}>
-                                <Typography variant="body2" color="textSecondary" sx={{ mb: 3, fontSize: "1.3rem" }}>
-                                    {staticUserProfile.email || "email@example.com"}
-                                </Typography>
-                                {/* Contenedor principal */}
-                                <Grid container spacing={1}>
-
-                                    {/* Nombre */}
-                                    <Grid item size={4} sx={{ display: "flex", alignItems: "center", justifyContent:"center" }}>
+                            <CardContent>
+                                <Grid container spacing={2} sx={{ml:3}}>
+                                    <Grid item size={12} sx={{textAlign:"center"}}>
+                                        <Typography variant="body2" color="textSecondary" sx={{fontSize: "1.3rem" }}>
+                                            {staticUserProfile.email}
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item size={12} sx={{display:"flex", flexDirection:"column", justifyContent:"center", gap:"10px"}}>
                                         <Typography
                                             variant="subtitle1"
-                                            sx={{
-                                                fontWeight: "bold",
-                                                whiteSpace: "nowrap",
-                                            }}
+                                            sx={{fontWeight: "bold"}}
                                         >
                                             Nombre:
                                         </Typography>
+                                        <Box sx={{display:"flex", alignItems:"center"}}>
+                                            <TextField
+                                                disabled={!habilitarEdicion}
+                                                placeholder="Ingrese su nombre"
+                                                value={userProfile.firstName}
+                                                onChange={(e) =>
+                                                    setUserProfile({ ...userProfile, firstName: e.target.value })
+                                                }
+                                                size="small"
+                                                sx={{
+                                                    '& .MuiInputBase-root.Mui-disabled': {
+                                                        backgroundColor: "#ebebeb", 
+                                                    },
+                                                    width:"100%"
+                                                }}
+                                            />
+                                            <IconButton>
+                                                <EditIcon sx={{width:"90%",mb:"4px", color:"#535bf2" }}/>
+                                            </IconButton>
+                                        </Box>
                                     </Grid>
-                                    <Grid item size={8}>
-                                        <TextField
-                                            disabled={!habilitarEdicion}
-                                            placeholder="Ingrese su nombre"
-                                            value={userProfile.firstName}
-                                            onChange={(e) =>
-                                                setUserProfile({ ...userProfile, firstName: e.target.value })
-                                            }
-                                            fullWidth
-                                            sx={{
-                                                '& .MuiInputBase-root.Mui-disabled': {
-                                                    backgroundColor: "#ebebeb", 
-                                                },
-                                            }}
-                                        />
-                                    </Grid>
-
-                                    {/* Apellido */}
-                                    <Grid item size={4} sx={{ textAlign: "right", display: "flex", alignItems: "center", justifyContent:"center" }}>
+                                    <Grid item size={12} sx={{display:"flex", flexDirection:"column", gap:"10px"}}>
                                         <Typography
                                             variant="subtitle1"
-                                            sx={{
-                                                fontWeight: "bold",
-                                                whiteSpace: "nowrap",
-                                            }}
+                                            sx={{fontWeight: "bold"}}
                                         >
                                             Apellido:
                                         </Typography>
+                                        <Box sx={{display:"flex", alignItems:"center"}}>
+                                            <TextField
+                                                disabled={!habilitarEdicion}
+                                                placeholder="Ingrese su apellido"
+                                                value={userProfile.lastName}
+                                                onChange={(e) =>
+                                                    setUserProfile({ ...userProfile, lastName: e.target.value })
+                                                }
+                                                size="small"
+                                                sx={{
+                                                    '& .MuiInputBase-root.Mui-disabled': {
+                                                        backgroundColor: "#ebebeb", 
+                                                    },
+                                                    width:"100%"
+                                                }}
+                                            />
+                                            <IconButton>
+                                                <EditIcon sx={{width:"90%",mb:"4px", color:"#535bf2" }}/>
+                                            </IconButton>
+                                        </Box>     
                                     </Grid>
-                                    <Grid item size={8}>
-                                        <TextField
-                                            disabled={!habilitarEdicion}
-                                            placeholder="Ingrese su apellido"
-                                            value={userProfile.lastName}
-                                            onChange={(e) =>
-                                                setUserProfile({ ...userProfile, lastName: e.target.value })
-                                            }
-                                            fullWidth
-                                            sx={{
-                                                '& .MuiInputBase-root.Mui-disabled': {
-                                                    backgroundColor: "#ebebeb", 
-                                                },
-                                            }}
-                                        />
-                                    </Grid>
-
-                                    {/* Contraseña */}
-                                    <Grid item size={4} sx={{ textAlign: "right", display: "flex", alignItems: "center", justifyContent:"center" }}>
+                                    <Grid item size={12} sx={{display:"flex", flexDirection:"column", gap:"10px"}}>
                                         <Typography
                                             variant="subtitle1"
                                             sx={{
@@ -262,76 +259,30 @@ export default function MyAccount() {
                                         >
                                             Contraseña:
                                         </Typography>
-                                    </Grid>
-                                    <Grid item size={8} sx={{ position: "relative" }}>
-                                        <TextField
-                                            disabled={!habilitarEdicion}
-                                            placeholder={habilitarEdicion ? "Nueva contraseña" : "*********"}
-                                            value={userUpdate.password || ""}
-                                            onChange={(e) =>
-                                                setUserUpdate({ ...userUpdate, password: e.target.value })
-                                            }
-                                            fullWidth
-                                            type={passwordVisibility ? "text" : "password"}
-                                            sx={{
-                                                '& .MuiInputBase-root.Mui-disabled': {
-                                                    backgroundColor: "#ebebeb", 
-                                                },
-                                            }}
-                                        />
-                                        {habilitarEdicion && (
-                                            <IconButton
-                                                onClick={changePasswordVisibility}
+                                        <Box sx={{display:"flex", alignItems:"center"}}>
+                                            <TextField
+                                                disabled={!habilitarEdicion}
+                                                placeholder={habilitarEdicion ? "Nueva contraseña" : "*********"}
+                                                value={userUpdate.password || ""}
+                                                onChange={(e) =>
+                                                    setUserUpdate({ ...userUpdate, password: e.target.value })
+                                                }
+                                                size="small"
+                                                type={passwordVisibility ? "text" : "password"}
                                                 sx={{
-                                                    position: "absolute",
-                                                    right: "8px",
-                                                    top: "50%",
-                                                    transform: "translateY(-50%)",
-                                                    color: "#5F49D7",
+                                                    '& .MuiInputBase-root.Mui-disabled': {
+                                                        backgroundColor: "#ebebeb", 
+                                                    },
+                                                    width:"100%"
                                                 }}
-                                            >
-                                                {passwordVisibility ? <Visibility /> : <VisibilityOff />}
+                                            />
+                                            <IconButton>
+                                                <EditIcon sx={{width:"90%",mb:"4px", color:"#535bf2" }}/>
                                             </IconButton>
-                                        )}
+                                        </Box>
                                     </Grid>
                                 </Grid>
                             </CardContent>
-                            <CardActions
-                                sx={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    gap: 2,
-                                    padding: "16px",
-                                }}
-                            >
-                                {!editando && (
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={() => abrirEdicion()}
-                                    >
-                                        Editar
-                                    </Button>
-                                )}
-                                {habilitarEdicion && (
-                                    <>
-                                        <Button
-                                            variant="contained"
-                                            color="secondary"
-                                            onClick={() => cerrarEdicion()}
-                                        >
-                                            Cancelar
-                                        </Button>
-                                        <Button
-                                            variant="contained"
-                                            color="primary"
-                                            onClick={() => updateUser()}
-                                        >
-                                            Confirmar
-                                        </Button>
-                                    </>
-                                )}
-                            </CardActions>
                         </Card>
                     </Grid>
                 </Grid>

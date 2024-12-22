@@ -36,14 +36,13 @@ import FavoritoDialog from "../UI/Dialogs/FavoritoDialog";
 import DetalleTransaccionDialog from "../UI/Dialogs/DetalleTransaccionDialog";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import axios from "axios";
-import { formatearFechaSimple } from "../../utils/helpers";
+import { formatearFechaSimple, formatearNumero } from "../../utils/helpers";
 import ContactsIcon from "@mui/icons-material/Contacts";
 
 export default function Home() {
   const [accounts, setAccounts] = useState([]);
-  const [cbuCuentaEditarLimite, setCbuCuentaEditarLimite] = useState({
-    cbu: "",
-  });
+  const [cbuCuentaEditarLimite, setCbuCuentaEditarLimite] = useState("");
+  const [transactionLimitAModificar, setTransactionLimitAmodificar] = useState("");
   const [favList, setFavList] = useState([]);
   const [favUser, setFavUser] = useState({
     firstName: "",
@@ -159,12 +158,6 @@ export default function Home() {
       console.log(error);
     }
   };
-  const [transactionLimitUpdate, setTransactionLimitUpdate] = useState({
-    transactionLimit: "",
-  });
-  const [habilitarEdicionTransaction, setHabilitarEdicionTransaction] =
-    useState(false);
-  const [editandoTransaction, setEditandoTransaction] = useState(false);
 
   useEffect(() => {
     const fetchAccounts = async () => {
@@ -192,8 +185,7 @@ export default function Home() {
     fetchCotizacionDolar();
     fetchAccounts();
     fetchTransactions();
-  }, [cargaFinalizada || isLoading]);
-  console.log(cargaFinalizada)
+  }, [cargaFinalizada]);
 
   useEffect(() => {
     let token = localStorage.getItem("token");
@@ -261,7 +253,7 @@ export default function Home() {
         });
         setSnackbarVisibility(true);
         setCargaFinalizada(true);
-      }, 2500);
+      }, 3000);
     } catch (error) {
       transactionLimitFinal = ""
       console.error("Falla al editar", error.response?.data || error.message);
@@ -275,11 +267,12 @@ export default function Home() {
 
   const [openTransaction, setOpenTransaction] = useState(false);
 
-  const handleOpenTransaction = (cbuBuscado) => {
-    setCbuCuentaEditarLimite({ cbu: cbuBuscado });
-    console.log(cbuCuentaEditarLimite)
+  const handleOpenTransaction = (cbuBuscado, transactionLimitViejo) => {
+    setTransactionLimitAmodificar(transactionLimitViejo);
+    setCbuCuentaEditarLimite({cbu: cbuBuscado});
     setOpenTransaction(true);
   };
+
   const handleCloseTransaction = () => {
     setOpenTransaction(false);
   };
@@ -342,9 +335,7 @@ export default function Home() {
                       <AttachMoneyIcon />
                       <Typography sx={{ fontSize: "45px", color: "#12a14b" }}>
                         {balanceVisibility
-                          ? account.balance.toLocaleString("es-AR", {
-                              minimumFractionDigits: 0,
-                            })
+                          ? formatearNumero(account.balance)
                           : "**"}
                       </Typography>
                       <IconButton onClick={changeBalanceVisibility} edge="end">
@@ -377,7 +368,8 @@ export default function Home() {
                           minimumFractionDigits: 0,
                         })}
                         <IconButton>
-                          <EditIcon sx={{width:"90%",mb:"4px", color:"#535bf2" }} onClick={() => handleOpenTransaction(account.cbu)}/>
+                          <EditIcon sx={{width:"90%",mb:"4px", color:"#535bf2" }} onClick={() => handleOpenTransaction(account.cbu, 
+                            account.transactionLimit)}/>
                         </IconButton>
                         
                         
@@ -903,6 +895,7 @@ export default function Home() {
         <EditarLimiteTransaccionDialog
           mostrarDialogEditarLimiteTransaccion={openTransaction}
           funcionEditar={handleEdit}
+          transactionLimitAnterior={transactionLimitAModificar}
           cerrarDialogEditarLimiteTransaccion={handleCloseTransaction}
         />
       </Grid>

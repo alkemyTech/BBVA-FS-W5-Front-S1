@@ -48,25 +48,18 @@ export default function PlazosFijos() {
   });
 
   const [loadingTotals, setLoadingTotals] = useState(false);
-
   const [cotizando, setCotizando] = useState(false);
-
   const [cotizacionCompleta, setCotizacionCompleta] = useState(false);
-
   const [isLoading, setIsLoading] = useState(false);
-
   const [cargaFinalizada, setCargaFinalizada] = useState(false);
-
   const [loadingScreen, setLoadingScreen] = useState({
     message: "",
     duration: null,
   });
-
   const [snackbar, setSnackbar] = useState({
     status: "",
     message: "",
   });
-
   const [snackbarVisibility, setSnackbarVisibility] = useState(false);
   const navigate = useNavigate();
   const [fixedTerms, setFixedTerms] = useState([]);

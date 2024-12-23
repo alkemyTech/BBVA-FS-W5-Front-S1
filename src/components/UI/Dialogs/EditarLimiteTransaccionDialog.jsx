@@ -150,14 +150,14 @@ function EditarLimiteTransaccionDialog({mostrarDialogEditarLimiteTransaccion, fu
             />
     </DialogContent>
     <DialogActions sx={{justifyContent:"center", gap:"25px", pt:2}}>
-        <Button onClick={() => handleCloseEditarLimiteDeTransaccion ()} variant='contained' color="error">
+        <Button onClick={() => handleCloseEditarLimiteDeTransaccion ()} variant='outlined' color="error">
             Cancelar
         </Button>
             <Button
             onClick={() => funcionEditar(nuevoLimiteTransaccion.transactionLimit)}
             disabled={presenciaDeErrores}
             variant='contained'
-            sx={{background:"green"}}
+            sx={{background:"#6655D9"}}
         >
             Confirmar
             </Button>

@@ -145,7 +145,7 @@ const Payment = () => {
     { name: "EDEA", price: 7000, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlWPHfcJqrHd9aKmbXJJrNGCCDyU5wTOLeUQ&s" },
     { name: "EPEC", price: 8500, image: "https://pbs.twimg.com/profile_images/1852291438735683584/MCHA77sl_400x400.jpg" },
     { name: "EDEMSA", price: 9000, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCksWAsGL1z3tSEweoAt3BplbOMvtJRQUYBQ&s" },
-    { name: "EDESA", price: 4300, image: "https://yt3.googleusercontent.com/schhEQD-kRBSBO5T7s_bsVtUy5TuXQeTT6n08DIqLXFxCC20P2tJZ3xJ-Z7saBpu5pwzAXkvLA=s900-c-k-c0x00ffffff-no-rj" },
+    { name: "EDESA", price: 4300, image: "https://play-lh.googleusercontent.com/7WIykVC0DVjEp4TSpdpuf-Q45PnRPJ-L51CJd-r28LNJjbgqfpED8FTjo_kWQdsK3A=w240-h480-rw" },
   ];
 
   const serviciosAgua = [
@@ -188,7 +188,7 @@ const Payment = () => {
             fontWeight: "bold",
             fontSize: "28px",
             marginTop: "30px",
-            color: "#6a0dad",
+            color: "#6655D9",
           }}
         >
           PAGAR SERVICIOS
@@ -302,6 +302,7 @@ const Payment = () => {
                       variant="contained"
                       color="primary"
                       onClick={() => handleOpenDialog(serviciosStreaming)}
+                      sx={{backgroundColor:"#6655D9"}}
                     >
                       Pagar
                     </Button>
@@ -334,7 +335,7 @@ const Payment = () => {
               <Card sx={{ boxShadow: 4, borderRadius: 4 }}>
                 <CardMedia
                   component="img"
-                  height="140"
+                  height="130"
                   image={servicioslUZ.image}
                   alt={servicioslUZ.name}
                 />
@@ -356,6 +357,7 @@ const Payment = () => {
                       variant="contained"
                       color="primary"
                       onClick={() => handleOpenDialog(servicioslUZ)}
+                      sx={{backgroundColor:"#6655D9"}}
                     >
                       Pagar
                     </Button>
@@ -412,6 +414,7 @@ const Payment = () => {
                       variant="contained"
                       color="primary"
                       onClick={() => handleOpenDialog(serviciosGas)}
+                      sx={{backgroundColor:"#6655D9"}}
                     >
                       Pagar
                     </Button>
@@ -468,6 +471,7 @@ const Payment = () => {
                       variant="contained"
                       color="primary"
                       onClick={() => handleOpenDialog(serviciosPrepagas)}
+                      sx={{backgroundColor:"#6655D9"}}
                     >
                       Pagar
                     </Button>
@@ -494,7 +498,7 @@ const Payment = () => {
 
       {/* Mostrar servicios */}
       <Grid item size={12} sx={{ padding: "0px 50px 100px 50px" }}>
-        <Grid container spacing={4} sx={{ width: "100%" }}>
+        <Grid container spacing={4} sx={{ width: "110%" }}>
           {serviciosAgua.map((serviciosAgua) => (
             <Grid item size={2} key={serviciosAgua.name}>
               <Card sx={{ boxShadow: 4, borderRadius: 4 }}>
@@ -522,6 +526,7 @@ const Payment = () => {
                       variant="contained"
                       color="primary"
                       onClick={() => handleOpenDialog(serviciosAgua)}
+                      sx={{backgroundColor:"#6655D9"}}
                     >
                       Pagar
                     </Button>

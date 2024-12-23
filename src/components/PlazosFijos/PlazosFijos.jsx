@@ -410,7 +410,7 @@ export default function PlazosFijos() {
           </Card>
         )}
         <Button variant="contained" disabled={presenciaDeErrores || !datosCompletos(plazoFijo, ["amount", "cantidadDias"]) || cotizando || cotizacionCompleta} onClick={cotizarPlazo}
-          sx={{ backgroundColor: "#6655D9", cursor: "pointer", width: "60%" }}>Calcular Plazo</Button>
+          sx={{ backgroundColor: "#6655D9", cursor: "pointer", width: "50%" }}>Calcular Plazo</Button>
         {cotizando && (
           <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "15px", pt: 5 }}>
             <img src="/assets/iconoPaginaVioleta.png" alt="" style={{ height: "45px" }} />
@@ -526,7 +526,7 @@ export default function PlazosFijos() {
                           Interés Diario (2%)
                         </TableCell>
                         <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>
-                          Importe con Interés
+                          Monto + interés diario
                         </TableCell>
                       </TableRow>
                     </TableHead>
@@ -558,13 +558,15 @@ export default function PlazosFijos() {
                 </TableContainer>
 
                 {/* Paginación */}
-                <Pagination
-                  count={totalPages}
-                  page={page}
-                  onChange={handleChangePage}
-                  color="primary"
-                  sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}
-                />
+                {totalPages > 1 && (
+                  <Pagination
+                    count={totalPages}
+                    page={page}
+                    onChange={handleChangePage}
+                    color="primary"
+                    sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}
+                  />
+                )}
               </>
             ) : (
               <Typography

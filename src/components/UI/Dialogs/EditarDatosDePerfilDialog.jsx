@@ -242,14 +242,14 @@ function EditarDatosDePerfilDialog({mostrarDialogEditarDatosDePerfil, funcionEdi
        )}
     </DialogContent>
     <DialogActions sx={{justifyContent:"center", gap:"25px", pt:2}}>
-        <Button onClick={() => handleCloseEditarDatosDePerfil ()} variant='contained' color="error">
+        <Button onClick={() => handleCloseEditarDatosDePerfil ()} variant='outlined' color="error">
             Cancelar
         </Button>
             <Button
               onClick={() => funcionEditar(nuevoDato.dato)}
               disabled={presenciaDeErrores || nuevoDato.dato == ""}
               variant='contained'
-              sx={{background:"green"}}
+              sx={{background:"#6655D9"}}
             >
               Confirmar
             </Button>

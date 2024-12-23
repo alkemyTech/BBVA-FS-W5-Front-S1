@@ -45,7 +45,7 @@ function AlertaDialog({mostrarAlerta, accion, closeAlerta, mensajeAlerta}) {
         <Typography variant="h6" color="black" sx={{fontWeight:"bold"}}>{mensajeAlerta}.</Typography>
         <Typography variant="h6" color="black" sx={{fontWeight:"bold"}}>¿Estás seguro?</Typography>
         <Box sx={{display:"flex", gap:"20px", pt:2}}>
-            <Button variant='contained' color="error" onClick={closeAlerta}>Cancelar</Button>
+            <Button variant="outlined" color="error" onClick={closeAlerta}>Cancelar</Button>
             <Button variant='contained' sx={{backgroundColor:"#6655D9"}} onClick={accion}>Confirmar</Button>
         </Box>
     </DialogContent>

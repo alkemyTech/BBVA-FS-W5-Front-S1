@@ -332,7 +332,7 @@ export default function SendMoney({ send }) {
                 gap: "12px",
               }}
             >
-              {send ? "Realizar Transferencia" : "Realizar Déposito"}
+              {send ? "Realizar Transferencia" : "Ingresar Dinero"}
             </Typography>
           </Grid>
           <Grid item size={12}>
@@ -404,12 +404,7 @@ export default function SendMoney({ send }) {
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item size={5}>
-                  <Grid container>
-                    <Grid item size={12}></Grid>
-                    <Grid item size={12}></Grid>
-                  </Grid>
-                </Grid>
+                
               </Grid>
             )}
           </Grid>
@@ -479,28 +474,24 @@ export default function SendMoney({ send }) {
                       </Grid>
                       <Grid item size={5}>
                         <Typography
-                          variant="h6"
+                          variant="p"
                           component="div"
-                          sx={{ fontSize: "16px", color: "#646cff" }}
+                          sx={{ fontSize: "20px", color: "#646cff" }}
                         >
                           {userAuthenticated.firstName +
                             " " +
                             userAuthenticated.lastName}
                         </Typography>
-                        <Typography variant="p" color="textSecondary">
-                          CBU: {obtenerCuenta(tipoCuenta.currency).cbu}
-                        </Typography>
                       </Grid>
                       <Grid item size={5}>
                         <Grid container>
                           <Grid item size={12}>
-                            <Typography variant="p" color="textSecondary">
-                              {"Balance: $" +
-                                obtenerCuenta(tipoCuenta.currency).balance}
+                            <Typography variant="p" sx={{fontSize:"17px"}}>
+                              {"Balance: $" + obtenerCuenta(tipoCuenta.currency).balance}
                             </Typography>
                           </Grid>
                           <Grid item size={12}>
-                            <Typography variant="p" color="textSecondary">
+                            <Typography variant="p" sx={{fontSize:"17px"}}>
                               Tipo de cuenta: {tipoCuenta.currency}
                             </Typography>
                           </Grid>

@@ -18,7 +18,7 @@ import { setUserAuthenticated } from "../../Redux/Slices/userAuthenticatedSlice"
 import GenericSnackbar from "../UI/Snackbar/Snackbar";
 import apiConfig from "../../Config/axiosConfig";
 import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
-import CheckIcon from '@mui/icons-material/Check';
+import CheckIcon from "@mui/icons-material/Check";
 
 export default function LoginSignUp({ isLogin }) {
   const [usuario, setUsuario] = useState({
@@ -162,7 +162,8 @@ export default function LoginSignUp({ isLogin }) {
         email: "",
         password: "",
       });
-    } if(isLogin == false){
+    }
+    if (isLogin == false) {
       try {
         response = await apiConfig.post("/auth/register", {
           firstName: usuarioRegister.firstName,
@@ -170,7 +171,7 @@ export default function LoginSignUp({ isLogin }) {
           email: usuarioRegister.email,
           password: usuarioRegister.password,
         });
-        
+
         setLoadingScreen({
           message: "Creando cuenta",
           duration: duration,
@@ -184,8 +185,7 @@ export default function LoginSignUp({ isLogin }) {
           });
           setSnackbarVisibility(true);
           navigate("/");
-        }, duration)
-
+        }, duration);
       } catch (e) {
         console.log(e);
       }
@@ -195,7 +195,8 @@ export default function LoginSignUp({ isLogin }) {
         email: "",
         password: "",
       });
-    } if(isLogin == "reactivate") {
+    }
+    if (isLogin == "reactivate") {
       try {
         response = await apiConfig.post("/auth/reactivate", {
           email: usuarioReactivar.email,
@@ -205,7 +206,6 @@ export default function LoginSignUp({ isLogin }) {
           duration: "2000",
         });
         setIsLoading(true);
-        
         setTimeout(() => {
           navigate("/");
         }, duration);
@@ -230,7 +230,7 @@ export default function LoginSignUp({ isLogin }) {
       });
     }
   };
-  
+
   const textFieldStyle = {
     "& .MuiOutlinedInput-root": {
       "&.Mui-focused fieldset": {
@@ -406,6 +406,7 @@ export default function LoginSignUp({ isLogin }) {
                 display: "flex",
                 flexDirection: "column",
                 gap: "30px",
+                width:"80%"
               }}
             >
               <Typography
@@ -413,35 +414,53 @@ export default function LoginSignUp({ isLogin }) {
                 color="#e8e8e8"
                 sx={{ fontWeight: "bold", textAlign: "center" }}
               >
-                {isLogin === true ? "Iniciar Sesión" : isLogin === false ?"Registrarse": "Reactivación"}
+                {isLogin === true
+                  ? "Iniciar Sesión"
+                  : isLogin === false
+                  ? "Registrarse"
+                  : "Reactivación"}
               </Typography>
               {!isLogin && (
                 <>
                   <TextField
-                    id=""
+                    id="firstName"
                     label="Nombre"
                     value={usuarioRegister.firstName}
                     onChange={(e) =>
                       setUsuarioRegister({
                         ...usuarioRegister,
-                        firstName: e.target.value,
+                        firstName: e.target.value.replace(
+                          /[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g,
+                          ""
+                        ),
                       })
                     }
                     size="small"
                     sx={textFieldStyle}
+                    inputProps={{
+                      inputMode: "text", 
+                      pattern: "[a-zA-ZáéíóúÁÉÍÓÚñÑs]*", 
+                    }}
                   />
                   <TextField
-                    id=""
+                    id="lastName"
                     label="Apellido"
                     value={usuarioRegister.lastName}
                     onChange={(e) =>
                       setUsuarioRegister({
                         ...usuarioRegister,
-                        lastName: e.target.value,
+                        lastName: e.target.value.replace(
+                          /[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g,
+                          ""
+                        ), 
                       })
                     }
                     size="small"
                     sx={textFieldStyle}
+                    inputProps={{
+                      inputMode: "text",
+                      pattern: "[a-zA-ZáéíóúÁÉÍÓÚñÑs]*",
+                    }}
                   />
                 </>
               )}
@@ -451,64 +470,75 @@ export default function LoginSignUp({ isLogin }) {
                 label="E-mail"
                 name="email"
                 size="small"
-                value={isLogin === true ? usuario.email : isLogin === false ? usuarioRegister.email: usuarioReactivar.email}
+                value={
+                  isLogin === true
+                    ? usuario.email
+                    : isLogin === false
+                    ? usuarioRegister.email
+                    : usuarioReactivar.email
+                }
                 error={Boolean(errores.email)}
                 helperText={errores.email}
                 onChange={(e) =>
                   isLogin === true
                     ? setUsuario({ ...usuario, email: e.target.value })
-                    : isLogin === false  ? setUsuarioRegister({
+                    : isLogin === false
+                    ? setUsuarioRegister({
                         ...usuarioRegister,
                         email: e.target.value,
                       })
                     : setUsuarioReactivar({
-                      ...usuarioReactivar,
-                      email: e.target.value,
-                    })
+                        ...usuarioReactivar,
+                        email: e.target.value,
+                      })
                 }
                 onBlur={(e) => validarCampo("email", e.target.value)}
                 sx={textFieldStyle}
               />
-              {(isLogin == true || isLogin == false) && (<TextField
-                id=""
-                type={passwordVisibility ? "text" : "password"}
-                label="Contraseña"
-                name="contraseña"
-                size="small"
-                value={
-                  isLogin == true ? usuario.password : usuarioRegister.password
-                }
-                helperText={errores.contraseña}
-                error={Boolean(errores.contraseña)}
-                onChange={(e) =>
-                  isLogin === true
-                    ? setUsuario({ ...usuario, password: e.target.value })
-                    : setUsuarioRegister({
-                        ...usuarioRegister,
-                        password: e.target.value,
-                      })
-                }
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={changePasswordVisibility}
-                        edge="end"
-                        sx={{ p: 1, color: "#5F49D7" }}
-                      >
-                        {passwordVisibility ? (
-                          <Visibility />
-                        ) : (
-                          <VisibilityOff />
-                        )}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                onBlur={(e) => validarCampo("contraseña", e.target.value)}
-                sx={textFieldStyle}
-              />)}
-              
+              {(isLogin == true || isLogin == false) && (
+                <TextField
+                  id=""
+                  type={passwordVisibility ? "text" : "password"}
+                  label="Contraseña"
+                  name="contraseña"
+                  size="small"
+                  value={
+                    isLogin == true
+                      ? usuario.password
+                      : usuarioRegister.password
+                  }
+                  helperText={errores.contraseña}
+                  error={Boolean(errores.contraseña)}
+                  onChange={(e) =>
+                    isLogin === true
+                      ? setUsuario({ ...usuario, password: e.target.value })
+                      : setUsuarioRegister({
+                          ...usuarioRegister,
+                          password: e.target.value,
+                        })
+                  }
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={changePasswordVisibility}
+                          edge="end"
+                          sx={{ p: 1, color: "#5F49D7" }}
+                        >
+                          {passwordVisibility ? (
+                            <Visibility />
+                          ) : (
+                            <VisibilityOff />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  onBlur={(e) => validarCampo("contraseña", e.target.value)}
+                  sx={textFieldStyle}
+                />
+              )}
+
               <Button
                 variant="contained"
                 type="submit"
@@ -521,10 +551,22 @@ export default function LoginSignUp({ isLogin }) {
                 }}
                 disabled={
                   !datosCompletos(
-                    isLogin === true ? usuario : isLogin === false ? usuarioRegister : usuarioReactivar 
+                    isLogin === true
+                      ? usuario
+                      : isLogin === false
+                      ? usuarioRegister
+                      : usuarioReactivar
                   ) || presenciaDeErrores
                 }
-                endIcon={isLogin === true ? <LoginIcon /> : isLogin === false ? <HowToRegIcon /> : <CheckIcon/>}
+                endIcon={
+                  isLogin === true ? (
+                    <LoginIcon />
+                  ) : isLogin === false ? (
+                    <HowToRegIcon />
+                  ) : (
+                    <CheckIcon />
+                  )
+                }
                 onClick={manejarEnvio}
               >
                 {isLogin === true

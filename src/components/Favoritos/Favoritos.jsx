@@ -173,7 +173,6 @@ export default function Favoritos() {
         setMostrarDialogEliminarUsuarioFavorito(false);  
         try {    
             const response = await apiConfig.delete(`/users/favUser/${idUser}`);
-            console.log(response);
             setLoadingScreen({
                 message:"Eliminando usuario de Favoritos",
                 duration:3000
@@ -198,13 +197,19 @@ export default function Favoritos() {
         }
     };
 
+    useEffect(()=>{
+        let token = localStorage.getItem("token");
+            if (token == null) {
+                navigate("/")
+            }   
+      },[])
+
     useEffect(() => {
         const fetchFavoritos = async () => {
             try {
                 const response = await apiConfig.get(`/users/favList?page=${page - 1}&size=${itemsPerPage}`);
                 setFavoritos(response.data.content);
                 setTotalPages(response.data.totalPages);
-                console.log(response.data.content); 
             } catch (error) {
                 console.error('Error fetching fixedTerms:', error);
             }
@@ -326,7 +331,7 @@ export default function Favoritos() {
                     </Grid>
                     <Grid container spacing={2} alignItems="center" sx={{pb:2}}>
                         <Grid item size={12} sx={{display:"flex", justifyContent:"center", gap:"30px"}}>
-                            <Button variant="contained" size="small" sx={{fontWeight:"bold", backgroundColor:"#"}} onClick={()=> setMostrarDatosUsuario(false)}>Cancelar</Button>
+                            <Button variant="contained" size="small" sx={{fontWeight:"bold", backgroundColor:"#6655D9"}} onClick={()=> setMostrarDatosUsuario(false)}>Cancelar</Button>
                             <Button variant="contained" size="small" sx={{fontWeight:"bold", backgroundColor:"#228B22"}} onClick={()=> agregarUsuarioFavorito()}>Agregar a Favoritos</Button>
                         </Grid>
                     </Grid>

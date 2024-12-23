@@ -12,11 +12,13 @@ import {
   CardContent,
   Divider,
 } from "@mui/material";
-import { useState} from "react";
+import { useEffect, useState} from "react";
 import apiConfig from "../../Config/axiosConfig";
 import {formatearFechaCompleta, sumarMeses } from "../../utils/helpers";
+import { useNavigate } from "react-router-dom";
 
 export default function Prestamos() {
+  const navigate = useNavigate();
   const [prestamo, setPrestamo] = useState({
     montoInvertido: "",
     plazo: "",
@@ -33,6 +35,13 @@ export default function Prestamos() {
   const [cotizacionCompleta, setCotizacionCompleta] = useState(false);
 
   const [errores, setErrores] = useState({});
+
+  useEffect(()=>{
+    let token = localStorage.getItem("token");
+        if (token == null) {
+            navigate("/")
+        }   
+  },[])
 
   const presenciaDeErrores = Object.values(errores).some(
     (valor) => valor != null
@@ -90,8 +99,6 @@ export default function Prestamos() {
             fechaDeCierre: formatearFechaCompleta(sumarMeses(fechaActual, prestamo.plazo)),
             totalADevolver: response.data.total
         })
-
-      console.log(prestamo)
 
     } catch (error) {
       console.log(error);

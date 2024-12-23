@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
 
   Card,
@@ -7,29 +7,51 @@ import {
   Button,
   Box,
   CardMedia,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  TextField
-} from '@mui/material';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import apiConfig from '../../Config/axiosConfig';
-import { useDispatch, useSelector } from 'react-redux';
-import Grid from '@mui/material/Grid2';
+} from "@mui/material";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import apiConfig from "../../Config/axiosConfig";
+import { useDispatch, useSelector } from "react-redux";
+import Grid from "@mui/material/Grid2";
+import { useNavigate } from "react-router-dom";
+import AlertaDialog from "../UI/Dialogs/AlertaDialog";
+import GenericSnackbar from "../UI/Snackbar/Snackbar";
+import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
 
 const Payment = () => {
+  const navigate = useNavigate();
   const [accounts, setAccounts] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentService, setCurrentService] = useState(null);
   const [concept, setConcept] = useState("");
   const dispatch = useDispatch();
+  const [serviceAlert, setServiceAlert] = useState({
+    name: "",
+    price: "",
+    color: ""
+  });
+
+  const [snackbar, setSnackbar] = useState({
+    status: "",
+    message: "",
+  });
+  const [snackbarVisibility, setSnackbarVisibility] = useState(false);
+
+  const [loadingScreen, setLoadingScreen] = useState({
+    message: "",
+    duration: null,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [cargaFinalizada, setCargaFinalizada] = useState(false);
 
   const userAuthenticated = useSelector((state) => state.userAuthenticated);
 
   const handleOpenDialog = (service) => {
     setCurrentService(service);
+    setServiceAlert({
+      name: service.name,
+      price: service.price,
+      color: service.color,
+    });
     setConcept(`Pago de ${service.name}`);
     setDialogOpen(true);
   };
@@ -56,27 +78,51 @@ const Payment = () => {
   };
 
   const pagarServicio = async (transaction) => {
+    setSnackbarVisibility(false);
+    setIsLoading(false);
+    setCargaFinalizada(false);
     try {
       await apiConfig.post("/transactions/payment", transaction);
-      alert("El servicio fue pagado con éxito");
+      setLoadingScreen({
+        message: "Pagando el servicio",
+        duration: 3000,
+      });
+      setIsLoading(true);
+      setTimeout(() => {
+        setSnackbar({
+          status: "success",
+          message: "¡Servicio pagado con exito!",
+        });
+        setSnackbarVisibility(true);
+        setCargaFinalizada(true);
+      }, 2500);
     } catch (e) {
-      alert("Ocurrió un error al realizar el pago");
+      setSnackbar({
+        status: "error",
+        message: e.response.data.Mensaje,
+      });
+      setSnackbarVisibility(true);
     }
   };
 
   useEffect(() => {
+    let token = localStorage.getItem("token");
+    if (token == null) {
+      navigate("/");
+    }
+
     const fetchAccounts = async () => {
       try {
         const response = await apiConfig.get("accounts/");
         setAccounts(response.data);
       } catch (error) {
-        console.error('Error fetching accounts:', error);
+        console.error("Error fetching accounts:", error);
       }
     };
     fetchAccounts();
   }, []);
 
-  const accountPesos = accounts.filter(account => account.currency === "ARS");
+  const accountPesos = accounts.filter((account) => account.currency === "ARS");
 
   const serviciosStreaming = [
     { name: "Netflix", price: 6000, image: "https://www.liderlogo.es/wp-content/uploads/2022/12/pasted-image-0-6-1024x576.png" },
@@ -91,8 +137,7 @@ const Payment = () => {
     { name: "Movistar+", price: 4550, image: "https://i0.wp.com/imgs.hipertextual.com/wp-content/uploads/2023/07/movistar-logo-001.jpg?fit=1920%2C1200&quality=70&strip=all&ssl=1" },
     { name: "Star+", price: 7200, image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjWWcQyYoGF046D9j85Xijvdro9u1C3rsXpqTRgkTUn7euHgzbjixOG-D3OAUQNRjn44k6rVf_BJkl3EaEwyLa4rLK4y7vZ4GOYJPoQuZ07UKvYDx1mXfwuR4eGYbajsAJOIezQGDF4ZjXp/s16000/star-%252B-logo-official.png" },
     { name: "Fox Sport", price: 8700, image: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Fox_Sports_Premium_Argentina_2019.png" },
-
-  ];
+  ]
 
   const servicioslUZ = [
     { name: "Edesur", price: 6000, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMqWKQ9lpecqeAsR3Vj_2sXvn8t_ZhProz6w&s" },
@@ -127,7 +172,15 @@ const Payment = () => {
   ];
 
   return (
-    <Grid container sx={{ minHeight: "100vh", background: "#f5f5f5", position: "relative", overflow: "hidden" }}>
+    <Grid
+      container
+      sx={{
+        minHeight: "100vh",
+        background: "#f5f5f5",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
       <Grid item size={12}>
         <Typography
           sx={{
@@ -160,21 +213,44 @@ const Payment = () => {
               }}
             >
               <Box>
-                <Typography sx={{ fontWeight: "bold", fontSize: "24px", color: "black" }}>
+                <Typography
+                  sx={{ fontWeight: "bold", fontSize: "24px", color: "black" }}
+                >
                   {userAuthenticated.firstName} {userAuthenticated.lastName}
                 </Typography>
               </Box>
               <Box sx={{ display: "flex", alignItems: "center", gap: "20px" }}>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <Typography sx={{ textAlign: "center", fontWeight: "bold", fontSize: "18px", color: "#454545" }}>
+                  <Typography
+                    sx={{
+                      textAlign: "center",
+                      fontWeight: "bold",
+                      fontSize: "18px",
+                      color: "#454545",
+                    }}
+                  >
                     Dinero disponible:
                   </Typography>
-                  <AttachMoneyIcon sx={{ fontSize: "40px", color: "#4CAF50" }} />
-                  <Typography sx={{ fontWeight: "bold", fontSize: "36px", color: "#2E3B55" }}>
+                  <AttachMoneyIcon
+                    sx={{ fontSize: "40px", color: "#4CAF50" }}
+                  />
+                  <Typography
+                    sx={{
+                      fontWeight: "bold",
+                      fontSize: "36px",
+                      color: "#2E3B55",
+                    }}
+                  >
                     {account.balance}
                   </Typography>
                 </Box>
-                <Typography sx={{ fontWeight: "bold", fontSize: "20px", color: "#2E3B55" }}>
+                <Typography
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "20px",
+                    color: "#2E3B55",
+                  }}
+                >
                   {account.currency}
                 </Typography>
               </Box>
@@ -456,38 +532,41 @@ const Payment = () => {
           ))}
         </Grid>
       </Grid>
+    
+      
 
-      {/* Diálogo de pago */}
-      <Dialog open={dialogOpen} onClose={handleCloseDialog} >
-        <DialogTitle>Pago de Servicio</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            No va a ser posible revertir la operación. Por favor, ingrese el concepto del pago:
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="concepto"
-            label="Concepto"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={concept}
-            onChange={(e) => setConcept(e.target.value)}
+
+      {/* Diálogo de pago */ }
+
+            < AlertaDialog
+        mostrarAlerta = { dialogOpen }
+        accion = { handleConfirmPayment }
+        closeAlerta = { handleCloseDialog }
+        mensajeAlerta = {
+          <>
+            Vas a pagar el siguiente servicio:{" "}
+          <span style={{ color: serviceAlert.color }}>{serviceAlert.name}</span>
+          <br />
+          Por el precio de:{" "}
+          <span style={{ color: "green" }}>${serviceAlert.price}</span>
+        </>
+        }
+      />
+        {snackbarVisibility && (
+          <GenericSnackbar
+            status={snackbar.status}
+            message={snackbar.message}
+            visibility={snackbarVisibility}
           />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="error">
-            Cancelar
-          </Button>
-          <Button onClick={handleConfirmPayment} color="primary">
-            Confirmar
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Grid>
-  );
+        )}
+        {isLoading && (
+          <LoadingScreen
+            message={loadingScreen.message}
+            duration={loadingScreen.duration}
+          />
+        )}
+      </Grid>
+      );
 };
 
-export default Payment;
-
+      export default Payment;

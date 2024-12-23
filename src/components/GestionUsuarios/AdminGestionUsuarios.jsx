@@ -16,15 +16,15 @@ import { es, id } from "date-fns/locale";
 import PersonIcon from '@mui/icons-material/Person';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AlertaDialog from '../UI/Dialogs/ActivarDesactivarUserDialog';
 
 export default function GestionUsuarios() {
 
     const [users, setUsers] = useState([]);
-    const [totalPages, setTotalPages] = useState(0);  // Estado para manejar el total de páginas
+    const [totalPages, setTotalPages] = useState(0);  
     const [page, setPage] = useState(1);
-    const itemsPerPage = 10;  // Número de elementos por página
+    const itemsPerPage = 10;  
     const [borradoExitoso, setBorradoExitoso] = useState(false);
     const [asignacionExitosa, setAsignacionExitosa] = useState(false);
     const [idUser, setIdUser] = useState(0);
@@ -34,6 +34,7 @@ export default function GestionUsuarios() {
     const [accion, setAccion] = useState("");
     const [idUsuarioAEliminar, setIdUsuarioAEliminar] = useState("");
     const [mailUsuarioAEliminar, setEmailUsuarioAEliminar] = useState("");
+    const navigate = useNavigate()
 
     const abrirAlerta = (accionAlerta, id, email) => {
         setMostrarAlerta(true);
@@ -115,6 +116,13 @@ export default function GestionUsuarios() {
             console.error("error al asignar el rol", error);
         }
     };
+
+    useEffect(()=>{
+        let token = localStorage.getItem("token");
+            if (token == null) {
+                navigate("/")
+            }   
+      },[])
     
     useEffect(() => {
         const listaUsers = async () => {

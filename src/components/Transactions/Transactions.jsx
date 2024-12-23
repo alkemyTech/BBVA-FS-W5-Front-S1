@@ -16,12 +16,15 @@ import { FaArrowDown } from "react-icons/fa";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import DetalleTransaccionDialog from "../UI/Dialogs/DetalleTransaccionDialog";
+import { useNavigate } from 'react-router-dom';
+import { formatearFechaSimple } from '../../utils/helpers';
 
 export default function Transactions() {
+    const navigate = useNavigate();
     const [transactions, setTransactions] = useState([]);
-    const [totalPages, setTotalPages] = useState(0);  // Estado para manejar el total de páginas
+    const [totalPages, setTotalPages] = useState(0);  
     const [page, setPage] = useState(1);
-    const itemsPerPage = 10;  // Número de elementos por página
+    const itemsPerPage = 10; 
     const [currencyFilter, setCurrencyFilter] = useState("ALL");
     const [typeFilter, setTypeFilter] = useState("ALL");
     const [amountFilter, setAmountFilter] = useState("ALL");
@@ -66,6 +69,13 @@ export default function Transactions() {
 
         return fechaFormateada;
     };
+
+    useEffect(() => {
+        let token = localStorage.getItem("token");
+        if (token == null) {
+            navigate("/")
+        }   
+    }, [])
 
     useEffect(() => {
         fetchTransactions();
@@ -131,16 +141,17 @@ export default function Transactions() {
             <Grid item size={9.1}>
             <Paper 
                     elevation={3} sx={{
-                        padding: '20px',
+                        m: '20px',
                         borderRadius: '8px',
                         backgroundColor: '#fff',
+                        
                     }}
                     >
-                <Grid container sx={{justifyContent:"space-around"}} spacing={2}>
+                <Grid container sx={{justifyContent:"space-around",pt:"20px"}} spacing={2}>
    
 
                     
-                    <Grid item size={2}>
+                    <Grid item size={3}>
                         <FormControl fullWidth>
                             <InputLabel>Filtros por tipo</InputLabel>
                             <Select
@@ -155,7 +166,7 @@ export default function Transactions() {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item size={2}>
+                    <Grid item size={3}>
                         <FormControl fullWidth>
                             <InputLabel>Filtros por Moneda</InputLabel>
 
@@ -171,7 +182,7 @@ export default function Transactions() {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item size={2}>
+                    <Grid item size={3}>
                         <FormControl fullWidth>
                             <InputLabel>Filtros por Monto</InputLabel>
 

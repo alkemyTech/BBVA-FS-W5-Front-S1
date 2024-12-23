@@ -1,22 +1,15 @@
 
 import Grid from '@mui/material/Grid2';
-import {
-    Typography, Pagination, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, MenuItem,
-    IconButton, Select,
-    FormControl,
-    InputLabel, Button, Card,
-    Link as MuiLink, CardContent,
-    TextField,
-    Divider
-} from '@mui/material';
+import {Typography, Pagination, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, MenuItem, Select, FormControl, 
+    InputLabel, Button, Card, Link, CardContent} from '@mui/material';
 import { useEffect, useState } from 'react';
 import apiConfig from '../../Config/axiosConfig';
 import { format } from "date-fns";
-import { es, id } from "date-fns/locale";
+import { es } from "date-fns/locale";
 import PersonIcon from '@mui/icons-material/Person';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
-import { Link, useNavigate } from 'react-router-dom';
+import {useNavigate } from 'react-router-dom';
 import AlertaDialog from '../UI/Dialogs/ActivarDesactivarUserDialog';
 
 export default function GestionUsuarios() {

@@ -202,7 +202,7 @@ export default function Home() {
     };
 
     fetchFavList();
-  }, []);
+  }, [navigate]);
 
   const crearCuentaUsd = async () => {
     setMostrarDialogCrearCuentaDolar(false);
@@ -234,7 +234,7 @@ export default function Home() {
     setIsLoading(false)
     setCargaFinalizada(false)
     try {
-      const response = await apiConfig.patch(
+        await apiConfig.patch(
         `/accounts/${cbuCuentaEditarLimite.cbu}`,
         {
           transactionLimit: transactionLimitFinal,

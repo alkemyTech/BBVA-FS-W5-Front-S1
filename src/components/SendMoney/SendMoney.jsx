@@ -12,7 +12,6 @@ import { useSelector } from "react-redux";
 import AlertaDialog from "../UI/Dialogs/AlertaDialog";
 import { useParams } from "react-router-dom";
 import PropTypes from "prop-types";
-import { formatearNumero } from "../../utils/helpers"
 
 export default function SendMoney({ send }) {
   const { cbuParam, tipoCuentaParam } = useParams();
@@ -82,7 +81,7 @@ export default function SendMoney({ send }) {
       }
     };
     fetchAccounts();
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     if (transaction.cbu.length == 20) {
@@ -90,10 +89,6 @@ export default function SendMoney({ send }) {
       setCbuCompleto(true);
     }
   }, [transaction.cbu || deposit.currencyType]);
-
-  const handleGoHome = () => {
-    navigate("/home");
-  };
 
   const buscarCuentaCbu = async () => {
     setSnackbarVisibility(false);

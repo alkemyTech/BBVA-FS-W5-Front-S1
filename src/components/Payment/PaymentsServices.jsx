@@ -1,16 +1,8 @@
 import { useEffect, useState } from "react";
-import {
-
-  Card,
-  CardContent,
-  Typography,
-  Button,
-  Box,
-  CardMedia,
-} from "@mui/material";
+import {Card, CardContent, Typography, Button, Box, CardMedia} from "@mui/material";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import apiConfig from "../../Config/axiosConfig";
-import { useDispatch, useSelector } from "react-redux";
+import {useSelector } from "react-redux";
 import Grid from "@mui/material/Grid2";
 import { useNavigate } from "react-router-dom";
 import AlertaDialog from "../UI/Dialogs/AlertaDialog";
@@ -23,7 +15,6 @@ const Payment = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentService, setCurrentService] = useState(null);
   const [concept, setConcept] = useState("");
-  const dispatch = useDispatch();
   const [serviceAlert, setServiceAlert] = useState({
     name: "",
     price: "",
@@ -95,7 +86,7 @@ const Payment = () => {
         });
         setSnackbarVisibility(true);
         setCargaFinalizada(true);
-      }, 2500);
+      }, 3000);
     } catch (e) {
       setSnackbar({
         status: "error",
@@ -120,7 +111,7 @@ const Payment = () => {
       }
     };
     fetchAccounts();
-  }, []);
+  }, [cargaFinalizada]);
 
   const accountPesos = accounts.filter((account) => account.currency === "ARS");
 

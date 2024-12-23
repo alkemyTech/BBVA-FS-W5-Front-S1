@@ -47,7 +47,6 @@ export default function PlazosFijos() {
     totalGeneral: 0,
   });
 
-  const [loadingTotals, setLoadingTotals] = useState(false);
   const [cotizando, setCotizando] = useState(false);
   const [cotizacionCompleta, setCotizacionCompleta] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -222,7 +221,6 @@ export default function PlazosFijos() {
     };
 
     const fetchTotals = async () => {
-      setLoadingTotals(true);
       try {
         const response = await apiConfig.get("/fixedTerm/totals");
         if (response.data) {
@@ -237,16 +235,13 @@ export default function PlazosFijos() {
       } catch (error) {
         console.error("Error fetching totals:", error);
       }
-      setLoadingTotals(false);
     };
 
     fetchTotals();
     fetchFixedTermDeposits();
 
-    const fetchTotalsInterval = setInterval(fetchTotals, 10000);
     const fetchFixedTermDepositsInterval = setInterval(fetchFixedTermDeposits, 10000); 
     return () => {
-      clearInterval(fetchTotalsInterval);
       clearInterval(fetchFixedTermDepositsInterval);
     }; 
 
@@ -257,7 +252,7 @@ export default function PlazosFijos() {
       if (token == null) {
           navigate("/")
       }   
-    }, []);
+    }, [navigate]);
 
   const textFieldStyle = {
     width: "50%",
@@ -484,7 +479,6 @@ export default function PlazosFijos() {
             {fixedTerms.length > 0 ? (
               <>
                 {/* Tabla de Totales */}
-                {!loadingTotals && (
                   <TableContainer component={Paper}>
                     <Table aria-label="totals table">
                       <TableBody>
@@ -511,8 +505,6 @@ export default function PlazosFijos() {
                       </TableBody>
                     </Table>
                   </TableContainer>
-                )}
-                
                 {/* Tabla Principal */}
                 <TableContainer component={Paper}>
                   <Table aria-label="main table">

@@ -13,33 +13,24 @@ import {
 } from "@mui/material";
 import { formatearFechaCompleta } from "../../utils/helpers";
 import apiConfig from "../../Config/axiosConfig";
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useNavigate } from "react-router-dom";
 import AlertaDialog from "../UI/Dialogs/AlertaDialog";
+import EditarDatosDePerfilDialog from "../UI/Dialogs/EditarDatosDePerfilDialog";
 import LoadingScreen from "../UI/LoadingScreen/LoadingScreen";
 import GenericSnackbar from "../UI/Snackbar/Snackbar";
 import EditIcon from "@mui/icons-material/Edit";
+import { useDispatch } from "react-redux";
+import { updateUserAttribute } from "../../Redux/Slices/userAuthenticatedSlice";
 
 export default function MyAccount() {
     const navigate = useNavigate()
-    const [userProfile, setUserProfile] = useState({});
+    const [cargaFinalizada, setCargaFinalizada] = useState(false);
     const [staticUserProfile, setStaticUserProfile] = useState({
         firstName: "",
         lastName: "",
         email: "",
         creationDate: ""    
     });
-    const [userUpdate, setUserUpdate] = useState({
-        firstName: "",
-        lastName: "",
-        password: "",
-    });
-
-    const [passwordVisibility, setPasswordVisibility] = useState(false);
-    const [habilitarEdicion, setHabilitarEdicion] = useState(false);
-    const [editando, setEditando] = useState(false)
-
     const [isLoading, setIsLoading] = useState(false);
     const [loadingScreen, setLoadingScreen] = useState({
         message: "",
@@ -49,34 +40,30 @@ export default function MyAccount() {
         status: "",
         message: "",
     });
-
+    const dispatch = useDispatch();
     const [snackbarVisibility, setSnackbarVisibility] = useState(false);
 
-    const abrirEdicion = () => {
-        setHabilitarEdicion(true);
-        setEditando(true);
-    }
 
+    const [datoAmodificar, setDatoAmodificar] = useState("");
+    const [datoAnterior, setDatoAnterior] = useState("");
+    const [mostrarDialogEdicion, setMostrarDialogEdicion] = useState(false);
+    const abrirEdicion = (dato, datoAnterior) => {
+        setDatoAmodificar(dato);
+        setDatoAnterior(datoAnterior);
+        setMostrarDialogEdicion(true);
+    }
     const cerrarEdicion = () => {
-        setHabilitarEdicion(false);
-        setEditando(false);
-        setUserUpdate({
-            firstName: "",
-            lastName: "",
-            password: "",
-        })
+        setMostrarDialogEdicion(false);
     }
-
-    const changePasswordVisibility = () => {
-        setPasswordVisibility((prev) => !prev);
-    };
+    const handleEdit = (nuevaAsignacion) => {
+        editUser(nuevaAsignacion);
+        setMostrarDialogEdicion(false);
+    }
 
     const [mostrarDialog, setMostrarDialog] = useState(false);
-    
     const closeDialog = () => {
         setMostrarDialog(false);
     };
-    
     const openDialog = () => {
         setMostrarDialog(true);
     };
@@ -90,7 +77,6 @@ export default function MyAccount() {
             try {
                 const response = await apiConfig.get("/users/userProfile");
                 console.log("User Profile Response:", response.data);
-                setUserProfile(response.data);
                 setStaticUserProfile({
                     firstName: response.data.firstName,
                     lastName: response.data.lastName,
@@ -102,7 +88,7 @@ export default function MyAccount() {
             }
         };
         fetchUserProfile();
-    }, []);
+    }, [cargaFinalizada, navigate]);
 
     const desactivarUsuario = async () => {
         setMostrarDialog(false);
@@ -125,6 +111,70 @@ export default function MyAccount() {
                 navigate("/");
             }, 3000);
         } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const editUser = async (nuevaAsignacion) => {
+        setSnackbarVisibility(false)
+        setIsLoading(false)
+        setCargaFinalizada(false)
+        try {
+            if (datoAmodificar == "Nombre") {
+                await apiConfig.patch("/users/update/firstName", {
+                    firstName: nuevaAsignacion
+                });
+                setLoadingScreen({
+                    message: "Actualizando Nombre de Usuario",
+                    duration: 3000,
+                });
+                setIsLoading(true);
+                setTimeout(() => {
+                    setSnackbar({
+                        status: "success",
+                        message: "¡Nombre de usuario actualizado con éxito!",
+                    });
+                    setSnackbarVisibility(true);
+                    setCargaFinalizada(true);
+                    dispatch(updateUserAttribute({key: "firstName", value: nuevaAsignacion}));
+                }, 3000);
+            } else if (datoAmodificar == "Apellido") {
+                await apiConfig.patch("/users/update/lastName", {
+                    lastName: nuevaAsignacion
+                });
+                setLoadingScreen({
+                    message: "Actualizando Apellido",
+                    duration: 3000,
+                });
+                setIsLoading(true);
+                setTimeout(() => {
+                    setSnackbar({
+                        status: "success",
+                        message: "¡Apellido actualizado con éxito!",
+                    });
+                    setSnackbarVisibility(true);
+                    setCargaFinalizada(true);
+                    dispatch(updateUserAttribute({key: "lastName", value: nuevaAsignacion}));
+                }, 3000);
+            } else {
+                await apiConfig.patch("/users/update/password", {
+                    password: nuevaAsignacion
+                });
+                setLoadingScreen({
+                    message: "Actualizando Contraseña",
+                    duration: 3000,
+                });
+                setIsLoading(true);
+                setTimeout(() => {
+                    setSnackbar({
+                        status: "success",
+                        message: "¡Contraseña actualizada con éxito!",
+                    });
+                    setSnackbarVisibility(true);
+                    setCargaFinalizada(true);
+                }, 3000);
+            }
+            } catch (error) {
             console.log(error);
         }
     }
@@ -202,12 +252,8 @@ export default function MyAccount() {
                                         </Typography>
                                         <Box sx={{display:"flex", alignItems:"center"}}>
                                             <TextField
-                                                disabled={!habilitarEdicion}
-                                                placeholder="Ingrese su nombre"
-                                                value={userProfile.firstName}
-                                                onChange={(e) =>
-                                                    setUserProfile({ ...userProfile, firstName: e.target.value })
-                                                }
+                                                disabled="true"
+                                                value={staticUserProfile.firstName}
                                                 size="small"
                                                 sx={{
                                                     '& .MuiInputBase-root.Mui-disabled': {
@@ -216,7 +262,7 @@ export default function MyAccount() {
                                                     width:"100%"
                                                 }}
                                             />
-                                            <IconButton>
+                                            <IconButton onClick={() => abrirEdicion("Nombre", staticUserProfile.firstName)}>
                                                 <EditIcon sx={{width:"90%",mb:"4px", color:"#535bf2" }}/>
                                             </IconButton>
                                         </Box>
@@ -230,12 +276,8 @@ export default function MyAccount() {
                                         </Typography>
                                         <Box sx={{display:"flex", alignItems:"center"}}>
                                             <TextField
-                                                disabled={!habilitarEdicion}
-                                                placeholder="Ingrese su apellido"
-                                                value={userProfile.lastName}
-                                                onChange={(e) =>
-                                                    setUserProfile({ ...userProfile, lastName: e.target.value })
-                                                }
+                                                disabled="true"
+                                                value={staticUserProfile.lastName}
                                                 size="small"
                                                 sx={{
                                                     '& .MuiInputBase-root.Mui-disabled': {
@@ -244,7 +286,7 @@ export default function MyAccount() {
                                                     width:"100%"
                                                 }}
                                             />
-                                            <IconButton>
+                                            <IconButton onClick={()=> abrirEdicion ("Apellido", staticUserProfile.lastName)}>
                                                 <EditIcon sx={{width:"90%",mb:"4px", color:"#535bf2" }}/>
                                             </IconButton>
                                         </Box>     
@@ -261,14 +303,9 @@ export default function MyAccount() {
                                         </Typography>
                                         <Box sx={{display:"flex", alignItems:"center"}}>
                                             <TextField
-                                                disabled={!habilitarEdicion}
-                                                placeholder={habilitarEdicion ? "Nueva contraseña" : "*********"}
-                                                value={userUpdate.password || ""}
-                                                onChange={(e) =>
-                                                    setUserUpdate({ ...userUpdate, password: e.target.value })
-                                                }
+                                                disabled="true"
+                                                value="*******************"
                                                 size="small"
-                                                type={passwordVisibility ? "text" : "password"}
                                                 sx={{
                                                     '& .MuiInputBase-root.Mui-disabled': {
                                                         backgroundColor: "#ebebeb", 
@@ -276,7 +313,7 @@ export default function MyAccount() {
                                                     width:"100%"
                                                 }}
                                             />
-                                            <IconButton>
+                                            <IconButton onClick={()=> abrirEdicion("Contraseña", "")}>
                                                 <EditIcon sx={{width:"90%",mb:"4px", color:"#535bf2" }}/>
                                             </IconButton>
                                         </Box>
@@ -305,6 +342,13 @@ export default function MyAccount() {
                 accion={desactivarUsuario}
                 closeAlerta={closeDialog}
                 mensajeAlerta="Vas a darte de baja del sistema"
+            />
+            <EditarDatosDePerfilDialog
+                mostrarDialogEditarDatosDePerfil={mostrarDialogEdicion}
+                funcionEditar={handleEdit}
+                cerrarDialogEditarDatosDePerfil={cerrarEdicion}
+                datoAnterior={datoAnterior}
+                datoAeditar={datoAmodificar}
             />
         </Grid>
     );

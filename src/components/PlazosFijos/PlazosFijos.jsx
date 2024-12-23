@@ -47,7 +47,6 @@ export default function PlazosFijos() {
     totalGeneral: 0,
   });
 
-  const [loadingTotals, setLoadingTotals] = useState(false);
   const [cotizando, setCotizando] = useState(false);
   const [cotizacionCompleta, setCotizacionCompleta] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -222,7 +221,6 @@ export default function PlazosFijos() {
     };
 
     const fetchTotals = async () => {
-      setLoadingTotals(true);
       try {
         const response = await apiConfig.get("/fixedTerm/totals");
         if (response.data) {
@@ -237,16 +235,13 @@ export default function PlazosFijos() {
       } catch (error) {
         console.error("Error fetching totals:", error);
       }
-      setLoadingTotals(false);
     };
 
     fetchTotals();
     fetchFixedTermDeposits();
 
-    const fetchTotalsInterval = setInterval(fetchTotals, 10000);
     const fetchFixedTermDepositsInterval = setInterval(fetchFixedTermDeposits, 10000); 
     return () => {
-      clearInterval(fetchTotalsInterval);
       clearInterval(fetchFixedTermDepositsInterval);
     }; 
 
@@ -257,7 +252,7 @@ export default function PlazosFijos() {
       if (token == null) {
           navigate("/")
       }   
-    }, []);
+    }, [navigate]);
 
   const textFieldStyle = {
     width: "50%",
@@ -415,7 +410,7 @@ export default function PlazosFijos() {
           </Card>
         )}
         <Button variant="contained" disabled={presenciaDeErrores || !datosCompletos(plazoFijo, ["amount", "cantidadDias"]) || cotizando || cotizacionCompleta} onClick={cotizarPlazo}
-          sx={{ backgroundColor: "#6655D9", cursor: "pointer", width: "60%" }}>Calcular Plazo</Button>
+          sx={{ backgroundColor: "#6655D9", cursor: "pointer", width: "50%" }}>Calcular Plazo</Button>
         {cotizando && (
           <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "15px", pt: 5 }}>
             <img src="/assets/iconoPaginaVioleta.png" alt="" style={{ height: "45px" }} />
@@ -484,7 +479,6 @@ export default function PlazosFijos() {
             {fixedTerms.length > 0 ? (
               <>
                 {/* Tabla de Totales */}
-                {!loadingTotals && (
                   <TableContainer component={Paper}>
                     <Table aria-label="totals table">
                       <TableBody>
@@ -511,8 +505,6 @@ export default function PlazosFijos() {
                       </TableBody>
                     </Table>
                   </TableContainer>
-                )}
-                
                 {/* Tabla Principal */}
                 <TableContainer component={Paper}>
                   <Table aria-label="main table">
@@ -534,7 +526,7 @@ export default function PlazosFijos() {
                           Interés Diario (2%)
                         </TableCell>
                         <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>
-                          Importe con Interés
+                          Monto + interés diario
                         </TableCell>
                       </TableRow>
                     </TableHead>
@@ -566,13 +558,15 @@ export default function PlazosFijos() {
                 </TableContainer>
 
                 {/* Paginación */}
-                <Pagination
-                  count={totalPages}
-                  page={page}
-                  onChange={handleChangePage}
-                  color="primary"
-                  sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}
-                />
+                {totalPages > 1 && (
+                  <Pagination
+                    count={totalPages}
+                    page={page}
+                    onChange={handleChangePage}
+                    color="primary"
+                    sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}
+                  />
+                )}
               </>
             ) : (
               <Typography

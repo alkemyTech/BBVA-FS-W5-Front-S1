@@ -331,8 +331,8 @@ export default function Favoritos() {
                     </Grid>
                     <Grid container spacing={2} alignItems="center" sx={{pb:2}}>
                         <Grid item size={12} sx={{display:"flex", justifyContent:"center", gap:"30px"}}>
-                            <Button variant="contained" size="small" sx={{fontWeight:"bold", backgroundColor:"#6655D9"}} onClick={()=> setMostrarDatosUsuario(false)}>Cancelar</Button>
-                            <Button variant="contained" size="small" sx={{fontWeight:"bold", backgroundColor:"#228B22"}} onClick={()=> agregarUsuarioFavorito()}>Agregar a Favoritos</Button>
+                            <Button variant="outlined" size="small" color="error" onClick={()=> setMostrarDatosUsuario(false)}>Cancelar</Button>
+                            <Button variant="contained" size="small" sx={{fontWeight:"bold", backgroundColor:"#6655D9"}} onClick={()=> agregarUsuarioFavorito()}>Agregar a Favoritos</Button>
                         </Grid>
                     </Grid>
                 </Card>
@@ -403,13 +403,15 @@ export default function Favoritos() {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    <Pagination
-                        count={totalPages}
-                        page={page}
-                        onChange={handleChangePage}
-                        color="primary"
-                        sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}
-                    />
+                    {totalPages > 1 && (
+                        <Pagination
+                            count={totalPages}
+                            page={page}
+                            onChange={handleChangePage}
+                            color="primary"
+                            sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}
+                        />
+                    )}
                 </>
                 ) :
                     <Typography variant="body1" color="grey" fontWeight="bold" sx={{ textAlign: "center" }}>Aún no tenes favoritos.</Typography>

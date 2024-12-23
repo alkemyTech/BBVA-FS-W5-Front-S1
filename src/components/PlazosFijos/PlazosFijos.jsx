@@ -240,7 +240,8 @@ export default function PlazosFijos() {
     fetchTotals();
     fetchFixedTermDeposits();
 
-    const fetchFixedTermDepositsInterval = setInterval(fetchFixedTermDeposits, 10000); 
+    const fetchFixedTermDepositsInterval = setInterval(fetchFixedTermDeposits, 2000);
+
     return () => {
       clearInterval(fetchFixedTermDepositsInterval);
     }; 
@@ -432,7 +433,7 @@ export default function PlazosFijos() {
                 <Typography variant="body1" color="#6655D9" fontWeight="bold">${plazoFijo.amount}</Typography>
               </Typography>
               <Typography variant="p" color="black" sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "5px" }}>- Interes:
-                <Typography variant="body1" color="#6655D9" fontWeight="bold">{plazoFijo.interest}</Typography>
+                <Typography variant="body1" color="#6655D9" fontWeight="bold">{plazoFijo.amount} x (1 + 2) ^ {plazoFijo.cantidadDias}</Typography>
               </Typography>
               <Typography variant="p" color="black" sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "5px" }}>- Interes ganado
                 <Typography variant="body1" color="#6655D9" fontWeight="bold">${plazoFijo.interestEarned}</Typography>
@@ -444,12 +445,10 @@ export default function PlazosFijos() {
                 <Typography variant="body1" color="#6655D9" fontWeight="bold">{formatearFecha(plazoFijo.closingDate)}</Typography>
               </Typography>
               <Box sx={{ display: "flex", flexDirection: "row", gap: "10px", alignItems: "center", justifyContent: "space-around", pt: 1 }}>
-                <Button variant="contained" size="small" onClick={() => setCotizacionCompleta(false)} sx={{
-                  backgroundColor: "#6655D9", cursor: "pointer",
-                  fontWeight: "bold"
-                }}>Cerrar cotización</Button>
+                <Button variant="outlined" size="small" color="error" onClick={() => setCotizacionCompleta(false)} sx={{cursor: "pointer",
+                  fontWeight: "bold"}}>Cerrar cotización</Button>
                 <Button variant="contained" size="small" onClick={() => realizarInversion()} sx={{
-                  backgroundColor: "#228B22", cursor: "pointer",
+                  backgroundColor: "#6655D9", cursor: "pointer",
                   fontWeight: "bold"
                 }}>Realizar inversión</Button>
               </Box>

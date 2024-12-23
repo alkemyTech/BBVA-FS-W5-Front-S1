@@ -172,7 +172,7 @@ export default function Favoritos() {
         setCargaFinalizada(false);
         setMostrarDialogEliminarUsuarioFavorito(false);  
         try {    
-            const response = await apiConfig.delete(`/users/favUser/${idUser}`);
+            await apiConfig.delete(`/users/favUser/${idUser}`);
             setLoadingScreen({
                 message:"Eliminando usuario de Favoritos",
                 duration:3000
@@ -202,7 +202,7 @@ export default function Favoritos() {
             if (token == null) {
                 navigate("/")
             }   
-      },[])
+      },[navigate])
 
     useEffect(() => {
         const fetchFavoritos = async () => {

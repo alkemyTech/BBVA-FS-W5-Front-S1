@@ -41,7 +41,7 @@ export default function Prestamos() {
         if (token == null) {
             navigate("/")
         }   
-  },[])
+  },[navigate])
 
   const presenciaDeErrores = Object.values(errores).some(
     (valor) => valor != null
@@ -279,9 +279,6 @@ export default function Prestamos() {
               </Typography>
               <Typography variant="p" color="black" sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "5px" }}>- Fecha de Vencimiento:
                 <Typography variant="body1" color="#6655D9" fontWeight="bold">{prestamo.fechaDeCierre}</Typography>
-              </Typography>
-              <Typography variant="p" color="black" sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "5px" }}>- Interes:
-                <Typography variant="body1" color="#6655D9" fontWeight="bold">5%</Typography>
               </Typography>
               <Typography variant="p" color="black" sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "5px" }}>- Cuota mensual:
                 <Typography variant="body1" color="#6655D9" fontWeight="bold">${prestamo.cuotaMensual}</Typography>

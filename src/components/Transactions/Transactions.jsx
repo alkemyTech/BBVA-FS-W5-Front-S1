@@ -1,20 +1,11 @@
 import Grid from '@mui/material/Grid2';
-import {
-    Typography, Pagination, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, MenuItem,
-    IconButton, Select,
-    FormControl,
-    InputLabel,
-    Card,
-    CardContent
-} from '@mui/material';
+import {Typography, Pagination, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, MenuItem, IconButton, Select,
+FormControl, InputLabel} from '@mui/material';
 import { useEffect, useState } from 'react';
 import apiConfig from '../../Config/axiosConfig';
-import MovingIcon from '@mui/icons-material/Moving';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import { GrTransaction } from "react-icons/gr";
 import { FaArrowDown } from "react-icons/fa";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import DetalleTransaccionDialog from "../UI/Dialogs/DetalleTransaccionDialog";
 import { useNavigate } from 'react-router-dom';
 import { formatearFechaSimple } from '../../utils/helpers';
@@ -60,22 +51,12 @@ export default function Transactions() {
         setMostrarDetalleTransaccion(false);
     }
 
-
-    const formatearFecha = (fechaOriginal) => {
-
-        const fechaFormateada = format(new Date(fechaOriginal), "dd, MMM, HH:mm:ss", {
-            locale: es,
-        }).toUpperCase();
-
-        return fechaFormateada;
-    };
-
     useEffect(() => {
         let token = localStorage.getItem("token");
         if (token == null) {
             navigate("/")
         }   
-    }, [])
+    }, [navigate])
 
     useEffect(() => {
         fetchTransactions();
